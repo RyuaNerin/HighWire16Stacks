@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -70,11 +69,11 @@ namespace FFXIVBuff.Core
 
         static Worker()
         {
-            if (Settings.Instance != null)
-                Delay = (int)Settings.Instance.RefreshTime;
-
             for (int i = 0; i < StatusesCount; ++i)
                 Statuses[i] = new UStatus();
+
+            if (Settings.Instance != null)
+                Delay = (int)Settings.Instance.RefreshTime;
         }
 
         public static void Stop()

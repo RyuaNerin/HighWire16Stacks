@@ -21,7 +21,7 @@ namespace FFXIVBuff.Core
         public void Update()
         {
             this.Id      = 0;
-            this.FStatus = null;
+            this.FStatus = FResource.StatusListDic[0];
             if (this.PropertyChanged != null)
                 this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Visible"), null, null);
         }

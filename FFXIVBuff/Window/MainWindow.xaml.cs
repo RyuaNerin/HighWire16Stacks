@@ -60,13 +60,14 @@ namespace FFXIVBuff.Window
 
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
-
-            Worker.OverlayInstance.Show();
-            
+                        
             this.ctlBuffList.ItemsSource = this.m_buffListView;
             this.ctlProcessList.ItemsSource = this.m_processListView;
 
+
             this.ctlProcessRefresh_Click(null, null);
+
+            Worker.OverlayInstance.Show();
 
             this.ctlContent.IsEnabled = true;
         }
@@ -127,6 +128,10 @@ namespace FFXIVBuff.Window
         {
             var item = obj as FStatus;
             return
+                (
+                    item.Id != 0
+                )
+                &&
                 (
                     (this.m_buffShowBuff   &&  item.IsBuff)
                     ||

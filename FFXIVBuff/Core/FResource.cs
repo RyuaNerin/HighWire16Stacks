@@ -62,10 +62,15 @@ namespace FFXIVBuff.Core
                 }
             }
 
+            FStatus status;
+
+            status = new FStatus(0, null, null, 0, false);
+            StatusList.Add(status);
+            StatusListDic.Add(0, status);
+
             using (var reader = new StringReader(Properties.Resources.status_exh_ko))
             {
                 var csv = new CsvReader(reader);
-                FStatus status;
 
                 int id;
                 int icon;

@@ -5,19 +5,31 @@ using System.Windows.Data;
 
 namespace FFXIVBuff.Converter
 {
-    internal class BoolToVisibilityConverter : IValueConverter
+    internal class UStatusVisibilityConverter : IMultiValueConverter
     {
-        public Visibility WhenTrue { get; set; }
-        public Visibility WhenFalse { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is bool && (bool)value) ? this.WhenTrue : this.WhenFalse;
+            if (value.Length != 3)
+                return null;
+
+            if (!(value[1] is bool))
+                return Visibility.Collapsed;
+            
+            var visible = (bool)value[0];
+            if (!visible)
+                return Visibility.Collapsed;
+
+            // s | c | !c | v
+            // 0 | 0 |  1 | 1
+            // 0 | 1 |  0 | 0
+            // 1 | 0 |  1 | 0
+            // 1 | 1 |  0 | 1
+            return (visible && ((bool)value[1] ^ !(bool)value[2])) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
         {
-            return value is Visibility && (Visibility)value == this.WhenTrue;
+            return null;
         }
     }
 }
