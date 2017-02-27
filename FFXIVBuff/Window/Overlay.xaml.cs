@@ -9,11 +9,19 @@ namespace FFXIVBuff.Window
     {
         private readonly bool m_clickThrough;
 
+        private readonly IntPtr m_handle;
+        public IntPtr Handle { get { return this.m_handle; } }
+
         public Overlay(bool clickThrough)
         {
             this.m_clickThrough = clickThrough;
 
             InitializeComponent();
+            
+            var interop = new WindowInteropHelper(this);
+            interop.EnsureHandle();
+
+            this.m_handle = new WindowInteropHelper(this).Handle;
 
             this.DataContext = Core.Settings.Instance;
 
@@ -29,16 +37,14 @@ namespace FFXIVBuff.Window
         {
             base.OnSourceInitialized(e);
 
-            var interop = new WindowInteropHelper(this);
-
-            var v = NativeMethods.GetWindowLong(interop.Handle, NativeMethods.GWL_EXSTYLE);
+            var v = NativeMethods.GetWindowLong(this.Handle, NativeMethods.GWL_EXSTYLE);
 
             if (this.m_clickThrough)
                 v |= NativeMethods.WS_EX_TRANSPARENT;
 
             v |= NativeMethods.WS_EX_NOACTIVATE;
 
-            NativeMethods.SetWindowLong(interop.Handle, NativeMethods.GWL_EXSTYLE, v);
+            NativeMethods.SetWindowLong(this.Handle, NativeMethods.GWL_EXSTYLE, v);
         }
 
         private static class NativeMethods

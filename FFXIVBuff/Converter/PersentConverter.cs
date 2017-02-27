@@ -8,11 +8,11 @@ namespace FFXIVBuff.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? 0 : (double)value * 100;
+            return (value is double) ? ((double)value * 100) : 0d;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? 0 : (double)value / 100;
+            return (value is double) ? ((double)value / 100) : 0d;
         }
     }
 }

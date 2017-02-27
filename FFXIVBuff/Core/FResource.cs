@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CsvHelper;
@@ -19,7 +20,6 @@ namespace FFXIVBuff.Core
 
         public static readonly IList<FStatus> StatusList = new SortedList<FStatus>();
         public static readonly IDictionary<int, FStatus> StatusListDic = new SortedDictionary<int, FStatus>();
-        public static readonly IDictionary<int, FStatus> IconToStatus = new SortedDictionary<int, FStatus>();
 
         private static class NativeMethods
         {
@@ -30,15 +30,33 @@ namespace FFXIVBuff.Core
 
         static FResource()
         {
-            var handle = Properties.Resources.icons.GetHbitmap();
+            var bitmap = Properties.Resources.icons;
+            BitmapData scan0 = null;
+
             try
             {
-                IconBitmap = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                scan0 = bitmap.LockBits(
+                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                IconBitmap = BitmapSource.Create(
+                    scan0.Width,
+                    scan0.Height,
+                    96,
+                    96,
+                    PixelFormats.Bgra32,
+                    null,
+                    scan0.Scan0,
+                    scan0.Stride * scan0.Height,
+                    scan0.Stride);
             }
             finally
-            {
-                NativeMethods.DeleteObject(handle);
+            { 
+                if (scan0 != null)
+                    bitmap.UnlockBits(scan0);
             }
+
 
             IconCollection.Add(0, null);
         }

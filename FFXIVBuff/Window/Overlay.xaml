@@ -42,13 +42,16 @@
                       Margin="0 0 1 0">
                     <Grid.Visibility>
                         <MultiBinding Converter="{StaticResource UStatusVisibilityConverter}">
-                            <Binding Path="Visible" />
-                            <Binding Path="FStatus.IsChecked" />
-                            <Binding Path="ShowingMode" Source="{x:Static core:Settings.Instance}" />
+                            <Binding Path="Visible" Mode="OneWay" />
+                            <Binding Path="IsChecked" Mode="OneWay" />
+                            <Binding Path="ShowingMode" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                         </MultiBinding>
                     </Grid.Visibility>
                     
-                    <Image Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}}" />
+                    <Image Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}, Mode=OneWay}"
+                           RenderOptions.BitmapScalingMode="Fant"
+                           RenderOptions.ClearTypeHint="Enabled"
+                           RenderOptions.EdgeMode="Aliased" />
                     
                     <utility:OutlinedTextBlock HorizontalAlignment="Stretch"
                                                VerticalAlignment="Bottom"
@@ -63,8 +66,8 @@
                                                Margin="-3 0 -3 0">
                         <utility:OutlinedTextBlock.Text>
                             <MultiBinding Converter="{StaticResource UStatusTimeConverter}">
-                                <Binding Path="Remain" />
-                                <Binding Path="ShowDecimal" Source="{x:Static core:Settings.Instance}" />
+                                <Binding Path="Remain" Mode="OneWay" />
+                                <Binding Path="ShowDecimal" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                             </MultiBinding>
                         </utility:OutlinedTextBlock.Text>
                     </utility:OutlinedTextBlock>

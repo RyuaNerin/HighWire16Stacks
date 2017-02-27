@@ -8,7 +8,7 @@ namespace FFXIVBuff.Converter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Length != 2 || !(value[0] is float))
+            if (value.Length != 2 || !(value[0] is float) || !(value[1] is bool))
                 return " ";
 
             var remain = (float)value[0];

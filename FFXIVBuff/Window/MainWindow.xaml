@@ -119,7 +119,7 @@
                               Margin="0 0 0 3" />
 
                     <CheckBox Content="오버레이 잠그기"
-                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"
+                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"                              
                               Margin="0 0 0 3" />
 
                     <CheckBox Content="자동 숨기기"
@@ -160,6 +160,7 @@
                                     Margin="0 0 3 0"
                                     OffLabel=""
                                     OnLabel=""
+                                    ToolTip="체크한 항목만 표시합니다."
                                     Checked="ctlShowChecked_Checked"
                                     Unchecked="ctlShowChecked_Unchecked"/>
 

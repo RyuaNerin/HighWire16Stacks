@@ -11,8 +11,8 @@ namespace FFXIVBuff.Core
     {
         private const int StatusesCount = 21;
 
-        private const int X86Pointer = 0x1554D40;
-        private const int X86Offset  = 0x00018E0;
+        private const int X86Pointer = 0x0;
+        private const int X86Offset  = 0x0;
 
         private const int X64Pointer = 0x1554D40;
         private const int X64Offset  = 0x00018E0;
@@ -79,7 +79,7 @@ namespace FFXIVBuff.Core
         public static void Stop()
         {
             for (int i = 0; i < StatusesCount; ++i)
-                Statuses[i].Update();
+                Statuses[i].Clear();
 
             m_running = false;
             MainWindow.Instance.Dispatcher.BeginInvoke(new Action(MainWindow.Instance.ExitedProcess));
@@ -137,56 +137,47 @@ namespace FFXIVBuff.Core
 
             int iconIndex;
 
-            try
+            while (m_running)
             {
-                while (m_running)
+                ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_arrayPointer);
+                if (ptr == IntPtr.Zero)
+                    Stop();
+
+                NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_arrayOffset, buff, 12 * 21);
+
+                for (i = 0; i < 21; ++i)
                 {
-                    ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_arrayPointer);
-                    if (ptr == IntPtr.Zero)
-                        Stop();
-
-                    NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_arrayOffset, buff, 12 * 21);
-
-                    for (i = 0; i < 21; ++i)
+                    id = BitConverter.ToInt16(buff, 12 * i + 0);
+                    if (id == 0)
                     {
-                        id     = BitConverter.ToInt16(buff, 12 * i + 0);
-
-                        if (id == 0)
-                        {
-                            Statuses[i].Update();
-                            continue;
-                        }
-
-                        param  = BitConverter.ToInt16 (buff, 12 * i + 2);
-                        remain = BitConverter.ToSingle(buff, 12 * i + 4);
-                        owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
-
-                        if (owner == 0xE0000000)
-                        {
-                            remain = 0;
-                            param = 0;
-                        }
-
-                        if (0 < param)
-                        {
-                            if (param < 15)
-                                --param;
-                            else
-                                param = 0;
-                        }
-                        
-                        iconIndex = param;
-                        if (Statuses[i].Id == id)
-                            Statuses[i].Update(iconIndex, remain);
-                        else
-                            Statuses[i].Update(FResource.StatusListDic[id], iconIndex, remain);
+                        Statuses[i].Clear();
+                        continue;
                     }
 
-                    Thread.Sleep(m_delay);
+                    param  = BitConverter.ToInt16 (buff, 12 * i + 2);
+                    remain = BitConverter.ToSingle(buff, 12 * i + 4);
+                    owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
+
+                    if (owner == 0xE0000000)
+                    {
+                        remain = 0;
+                        param = 0;
+                    }
+
+                    if (0 < param)
+                    {
+                        if (param < 15)
+                            --param;
+                        else
+                            param = 0;
+                    }
+                        
+                    iconIndex = param;
+                        
+                    Statuses[i].Update(id, iconIndex, remain);
                 }
-            }
-            catch
-            {
+
+                Thread.Sleep(m_delay);
             }
         }
 

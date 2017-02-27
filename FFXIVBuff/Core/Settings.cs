@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 namespace FFXIVBuff.Core
 {
@@ -21,18 +21,25 @@ namespace FFXIVBuff.Core
         {
             Settings.SettingFilePath = Path.GetFullPath(Assembly.GetExecutingAssembly().Location) + ".cnf";
 
-            if (!File.Exists(SettingFilePath))
+            if (File.Exists(SettingFilePath))
             {
-                Settings.m_instance = new Settings();
-            }
-            else
-            {
-                using (var sreader = new StreamReader(Settings.SettingFilePath, Encoding.UTF8))
-                using (var jreader = new JsonTextReader(sreader))
+                try
                 {
-                    Settings.m_instance = JSerializer.Deserialize<Settings>(jreader);
+                    using (var fr = File.OpenRead(Settings.SettingFilePath))
+                    using (var br = new BinaryReader(fr))
+                    using (var jr = new BsonReader(br))
+                    {
+                        Settings.m_instance = JSerializer.Deserialize<Settings>(jr);
+                    }
+                    
+                    return;
+                }
+                catch
+                {
                 }
             }
+
+            Settings.m_instance = new Settings();
         }
 
         public void Load()
@@ -40,8 +47,16 @@ namespace FFXIVBuff.Core
 
         public void Save()
         {
-            using (var swriter = new StreamWriter(Settings.SettingFilePath, false, Encoding.UTF8))
-                JSerializer.Serialize(swriter, this);
+            try
+            {
+                using (var fw = new FileStream(Settings.SettingFilePath, FileMode.OpenOrCreate))
+                using (var sw = new BinaryWriter(fw))
+                using (var rw = new BsonWriter(sw))
+                    JSerializer.Serialize(rw, this);
+            }
+            catch
+            {
+            }
         }
 
         private static readonly DependencyProperty LeftDP
@@ -115,6 +130,15 @@ namespace FFXIVBuff.Core
             get { return (bool)this.GetValue(ShowingModeDP); }
             set { this.SetValue(ShowingModeDP, value); }
         }
+
+        private static readonly DependencyProperty AutoHideDP
+            = DependencyProperty.Register("AutoHide", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(true, PropertyChangedCallback));
+        [JsonProperty]
+        public bool AutoHide
+        {
+            get { return (bool)this.GetValue(AutoHideDP); }
+            set { this.SetValue(AutoHideDP, value); }
+        }
         
         private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -123,6 +147,11 @@ namespace FFXIVBuff.Core
 
             else if (e.Property == ClickThroughDP)
                 Worker.SetClickThrough((bool)e.NewValue);
+            
+            else if (e.Property == AutoHideDP)
+            {
+
+            }
         }
     }
 }

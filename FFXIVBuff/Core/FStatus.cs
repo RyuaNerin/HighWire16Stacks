@@ -36,7 +36,7 @@ namespace FFXIVBuff.Core
                 this.m_isChecked = value;
 
                 if (this.PropertyChanged != null)
-                    this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("IsChceked"), null, null);
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsChceked"));
             }
         }
 

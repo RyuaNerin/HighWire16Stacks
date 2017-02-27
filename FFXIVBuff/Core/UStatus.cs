@@ -4,73 +4,84 @@ using System.Diagnostics;
 
 namespace FFXIVBuff.Core
 {
-    [DebuggerDisplay("[{FStatus.Id}] {FStatus.Name} ({Param})")]
-    internal class UStatus : IComparable, IComparable<UStatus>, INotifyPropertyChanged
+    [DebuggerDisplay("[{FStatus.Id}] {FStatus.Name}")]
+    internal class UStatus : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public FStatus  FStatus { get; private set; }
-        public int      Icon    { get; private set; }
-        public float    Remain  { get; private set; }
-
-        public int      Id      { get; private set; }
-        public bool     Visible { get { return this.FStatus != null; } }
-
+        
+        private int m_id;
+        private FStatus m_fstatus;
+        public FStatus FStatus { get { return this.m_fstatus; } }
+        
         private int m_iconIndex = -1;
+        private int m_icon;
+        public int Icon { get { return this.m_icon; } }
 
-        public void Update()
+        private float m_remain;
+        public float Remain { get { return this.m_remain; } }
+
+        private bool m_visible;
+        public bool Visible   { get { return this.m_visible; } }
+
+        private bool m_isChecked;
+        public bool IsChecked { get { return this.m_isChecked; } }
+
+        public void Clear()
         {
-            this.Id      = 0;
-            this.FStatus = FResource.StatusListDic[0];
+            if (this.m_fstatus != null)
+                this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
+
+            this.m_id           = 0;
+            this.m_visible      = false;
+            this.m_fstatus      = FResource.StatusListDic[0];
+            this.m_iconIndex    = -1;
+
             if (this.PropertyChanged != null)
-                this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Visible"), null, null);
+                this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
         }
-        public void Update(FStatus fstatus, int iconIndex, float remain)
+        public void Update(int id, int iconIndex, float remain)
         {
-            this.Id      = fstatus.Id;
-            this.FStatus = fstatus;
-            this.Icon    = fstatus.Icon + iconIndex;
-            this.Remain  = remain;
+            bool visibleUpdated = false;
+            bool iconUpdated = false;
 
-            if (this.PropertyChanged != null)
+            visibleUpdated = this.m_id != id;
+            if (visibleUpdated)
             {
-                this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Visible"), null, null);
-                this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Icon"), null, null);
-                this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Remain"), null, null);
+                this.m_visible   = true;
+                this.m_id        = id;
+                this.m_fstatus   = FResource.StatusListDic[id];
+                this.m_icon      = this.FStatus.Icon + iconIndex;
+                this.m_iconIndex = iconIndex;
+                this.m_isChecked = this.m_fstatus.IsChecked;
             }
-        }
-        public void Update(int iconIndex, float remain)
-        {
-            bool iconUpdated = this.m_iconIndex == iconIndex;;
 
-            this.Remain = remain;
+            iconUpdated = this.m_iconIndex != iconIndex;
             if (iconUpdated)
             {
-                this.Icon = this.FStatus.Icon + iconIndex;
+                this.m_icon      = this.m_fstatus.Icon + iconIndex;
                 this.m_iconIndex = iconIndex;
             }
 
+            this.m_remain = remain;
+
             if (this.PropertyChanged != null)
             {
-                this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Remain"), null, null);
+                if (visibleUpdated)
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
 
                 if (iconUpdated)
-                    this.PropertyChanged.BeginInvoke(this, new PropertyChangedEventArgs("Icon"), null, null);
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Icon"));
+
+                this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
             }
         }
 
-        public int CompareTo(object obj)
+        private void FStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var status = obj as UStatus;
-            if (status == null)
-                return -1;
-            else
-                return this.CompareTo(status);
-        }
+            this.m_isChecked = this.m_fstatus.IsChecked;
 
-        public int CompareTo(UStatus obj)
-        {
-            return this.FStatus.CompareTo(obj.FStatus);
+            if (this.PropertyChanged != null)
+                this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
         }
     }
 }

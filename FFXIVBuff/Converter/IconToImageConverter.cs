@@ -10,7 +10,6 @@ namespace FFXIVBuff.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value is int ? FResource.GetImage((int)value) : null;
-
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

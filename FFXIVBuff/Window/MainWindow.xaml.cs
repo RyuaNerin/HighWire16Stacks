@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using FFXIVBuff.Core;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 
 namespace FFXIVBuff.Window
 {
@@ -42,6 +39,7 @@ namespace FFXIVBuff.Window
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
+#if !DEBUG
             var newVersionUrl = await Task.Factory.StartNew(() => GithubLastestRealease.CheckNewVersion("RyuaNerin", "FFXIVStatusOverlay", (vs) => {
                     Version v;    
                     if (!Version.TryParse(vs, out v))
@@ -57,6 +55,7 @@ namespace FFXIVBuff.Window
                 Application.Current.Shutdown();
                 return;
             }
+#endif
 
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
