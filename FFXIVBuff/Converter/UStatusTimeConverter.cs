@@ -24,7 +24,11 @@ namespace FFXIVBuff.Converter
                 if (remain > 60)
                     return string.Format("{0:##0}분", Math.Floor(remain / 60));
                 else
-                    return string.Format("{0:##0}", Math.Floor(remain));
+                {
+                    var v = Math.Round(remain, 0);
+
+                    return v == 0 ? " " : string.Format("{0:##0}", v);
+                }
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

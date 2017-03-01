@@ -13,7 +13,7 @@ namespace FFXIVBuff.Converter
                 !(value[0] is bool) ||
                 !(value[1] is bool) ||
                 !(value[2] is bool))
-                return null;
+                return Visibility.Collapsed;
             
             var visible = (bool)value[0];
             if (!visible)

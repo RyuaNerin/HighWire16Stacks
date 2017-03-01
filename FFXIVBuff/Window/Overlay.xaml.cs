@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using FFXIVBuff.Core;
+using System.Windows.Threading;
 
 namespace FFXIVBuff.Window
 {
@@ -9,7 +10,9 @@ namespace FFXIVBuff.Window
     {
         private readonly bool m_clickThrough;
 
-        private readonly IntPtr m_handle;
+        private readonly DispatcherTimer m_timer;
+
+        private IntPtr m_handle;
         public IntPtr Handle { get { return this.m_handle; } }
 
         public Overlay(bool clickThrough)
@@ -17,15 +20,21 @@ namespace FFXIVBuff.Window
             this.m_clickThrough = clickThrough;
 
             InitializeComponent();
-            
-            var interop = new WindowInteropHelper(this);
-            interop.EnsureHandle();
-
-            this.m_handle = new WindowInteropHelper(this).Handle;
 
             this.DataContext = Core.Settings.Instance;
 
             this.ctlStatusesList.ItemsSource = Worker.Statuses;
+
+            this.m_timer = new DispatcherTimer();
+            this.m_timer.Tick += m_timer_Tick;
+            this.m_timer.Interval = new TimeSpan(0, 0, 5);
+            this.m_timer.Start();
+        }
+
+        private void m_timer_Tick(object sender, EventArgs e)
+        {
+            this.Topmost = false;
+            this.Topmost = true;
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -37,7 +46,12 @@ namespace FFXIVBuff.Window
         {
             base.OnSourceInitialized(e);
 
-            var v = NativeMethods.GetWindowLong(this.Handle, NativeMethods.GWL_EXSTYLE);
+
+            var interop = new WindowInteropHelper(this);
+            interop.EnsureHandle();
+            this.m_handle = new WindowInteropHelper(this).Handle;
+
+            var v = NativeMethods.GetWindowLong(this.m_handle, NativeMethods.GWL_EXSTYLE);
 
             if (this.m_clickThrough)
                 v |= NativeMethods.WS_EX_TRANSPARENT;

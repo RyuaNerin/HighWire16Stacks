@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using FFXIVBuff.Window;
 
 namespace FFXIVBuff.Core
@@ -67,6 +68,8 @@ namespace FFXIVBuff.Core
             set { m_delay = value; }
         }
 
+        public static IntPtr m_ffxivWindowHandle { get; private set; }
+
         static Worker()
         {
             for (int i = 0; i < StatusesCount; ++i)
@@ -102,6 +105,8 @@ namespace FFXIVBuff.Core
                 m_ffxivHandle = NativeMethods.OpenProcess(NativeMethods.ProcessAccessFlags.All, false, m_ffxivProcess.Id);
                 m_ffxivDx11 = !NativeMethods.IsX86Process(m_ffxivHandle);
 
+                m_ffxivWindowHandle = process.MainWindowHandle;
+
                 if (!m_ffxivDx11)
                 {
                     m_arrayOffset  = X86Offset;
@@ -135,8 +140,6 @@ namespace FFXIVBuff.Core
             float remain;
             uint owner;
 
-            int iconIndex;
-
             while (m_running)
             {
                 ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_arrayPointer);
@@ -164,25 +167,83 @@ namespace FFXIVBuff.Core
                         param = 0;
                     }
 
-                    if (0 < param)
-                    {
-                        if (param < 15)
-                            --param;
-                        else
-                            param = 0;
-                    }
-                        
-                    iconIndex = param;
-                        
-                    Statuses[i].Update(id, iconIndex, remain);
+                    Statuses[i].Update(id, param, remain);
                 }
 
                 Thread.Sleep(m_delay);
             }
         }
 
+        private static NativeMethods.WinEventDelegate m_autohideDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
+        private static IntPtr m_eventhook;
+        public static void SetAutohide(bool enabled)
+        {
+            if (enabled)
+            {
+                m_eventhook = NativeMethods.SetWinEventHook(
+                    NativeMethods.EVENT_SYSTEM_FOREGROUND,
+                    NativeMethods.EVENT_SYSTEM_FOREGROUND,
+                    IntPtr.Zero,
+                    m_autohideDelegate,
+                    0,
+                    0,
+                    NativeMethods.WINEVENT_OUTOFCONTEXT);
+            }
+            else
+            {
+                NativeMethods.UnhookWinEvent(m_eventhook);
+
+                m_overlayInstance.Visibility = Visibility.Visible;
+            }
+        }
+        
+        private static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            Console.WriteLine(idObject);
+            Console.WriteLine(idChild);
+
+            if (idObject == 0 || idChild == 0)
+                return;
+
+            if (hwnd == Worker.m_ffxivWindowHandle ||
+                hwnd == MainWindow.Instance.Handle)
+            {
+                m_overlayInstance.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                m_overlayInstance.Visibility = Visibility.Hidden;
+            }
+        }
+
         private static class NativeMethods
         {
+            public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+            [DllImport("user32.dll")]
+            public static extern IntPtr SetWinEventHook(
+                uint eventMin,
+                uint eventMax,
+                IntPtr hmodWinEventProc,
+                WinEventDelegate lpfnWinEventProc,
+                uint idProcess,
+                uint idThread,
+                uint dwFlags);
+
+            [DllImport("user32.dll")]
+            public static extern bool UnhookWinEvent(
+                IntPtr hWinEventHook);
+
+            [DllImport("user32.dll")]
+            public static extern bool SetWindowPos(
+                IntPtr hWnd,
+                IntPtr hWndInsertAfter,
+                int X,
+                int Y,
+                int cx,
+                int cy,
+                uint uFlags);
+
             [DllImport("kernel32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool WriteProcessMemory(
@@ -249,6 +310,15 @@ namespace FFXIVBuff.Core
                 QueryLimitedInformation = 0x00001000,
                 Synchronize = 0x00100000
             }
+
+            
+            public const int HWND_TOPMOST = -1;
+            public const int SWP_NOMOVE = 0x2;
+            public const int SWP_NOSIZE = 0x1;
+
+            public const int EVENT_SYSTEM_FOREGROUND = 0x3;
+
+            public const int WINEVENT_OUTOFCONTEXT = 0;
 
             public static bool IsX86Process(IntPtr handle)
             {

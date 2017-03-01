@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
+using System.Collections.Generic;
+using FFXIVBuff.Object;
 
 namespace FFXIVBuff.Core
 {
@@ -21,25 +23,29 @@ namespace FFXIVBuff.Core
         {
             Settings.SettingFilePath = Path.GetFullPath(Assembly.GetExecutingAssembly().Location) + ".cnf";
 
+            Settings.m_instance = new Settings();
+
             if (File.Exists(SettingFilePath))
             {
                 try
                 {
                     using (var fr = File.OpenRead(Settings.SettingFilePath))
-                    using (var br = new BinaryReader(fr))
-                    using (var jr = new BsonReader(br))
+#if DEBUG
+                    using (var sr = new StreamReader(fr, System.Text.Encoding.UTF8))
+                    using (var jr = new JsonTextReader(sr))
+#else
+                    using (var sr = new BinaryReader(fr))
+                    using (var jr = new BsonReader(sr))
+#endif
                     {
-                        Settings.m_instance = JSerializer.Deserialize<Settings>(jr);
+                        JSerializer.Populate(jr, Settings.m_instance);
                     }
-                    
-                    return;
                 }
                 catch
                 {
                 }
             }
 
-            Settings.m_instance = new Settings();
         }
 
         public void Load()
@@ -50,9 +56,14 @@ namespace FFXIVBuff.Core
             try
             {
                 using (var fw = new FileStream(Settings.SettingFilePath, FileMode.OpenOrCreate))
+#if DEBUG
+                using (var sw = new StreamWriter(fw, System.Text.Encoding.UTF8))
+                using (var jw = new JsonTextWriter(sw))
+#else
                 using (var sw = new BinaryWriter(fw))
-                using (var rw = new BsonWriter(sw))
-                    JSerializer.Serialize(rw, this);
+                using (var jw = new BsonWriter(sw))
+#endif
+                    JSerializer.Serialize(jw, this);
             }
             catch
             {
@@ -78,7 +89,7 @@ namespace FFXIVBuff.Core
         }
 
         private static readonly DependencyProperty OpacityDP
-            = DependencyProperty.Register("Opacity", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(0d));
+            = DependencyProperty.Register("Opacity", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(100d));
         [JsonProperty]
         public double Opacity
         {
@@ -139,6 +150,39 @@ namespace FFXIVBuff.Core
             get { return (bool)this.GetValue(AutoHideDP); }
             set { this.SetValue(AutoHideDP, value); }
         }
+
+        private SortedList<int> m_checkedList = new SortedList<int>();
+        [JsonProperty]
+        public int[] Checekd
+        {
+            get
+            {
+                lock (this.m_checkedList)
+                    return this.m_checkedList.ToArray();
+            }
+            set
+            {
+                lock (this.m_checkedList)
+                    for (int i = 0; i < value.Length; ++i)
+                        this.m_checkedList.AddRange(value);
+            }
+        }
+
+        public void SetChecked(bool isChecked, int id)
+        {
+            lock (this.m_checkedList)
+            {
+                if (isChecked)
+                    this.m_checkedList.Add(id);
+                else
+                    this.m_checkedList.Remove(id);
+            }
+        }
+        public bool GetIsChecked(int id)
+        {
+            lock (this.m_checkedList)
+                return this.m_checkedList.Contains(id);
+        }
         
         private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -149,9 +193,7 @@ namespace FFXIVBuff.Core
                 Worker.SetClickThrough((bool)e.NewValue);
             
             else if (e.Property == AutoHideDP)
-            {
-
-            }
+                Worker.SetAutohide((bool)e.NewValue);
         }
     }
 }

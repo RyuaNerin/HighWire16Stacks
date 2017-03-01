@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Interop;
 using FFXIVBuff.Core;
 using MahApps.Metro.Controls;
 
@@ -23,6 +25,8 @@ namespace FFXIVBuff.Window
         private bool m_buffShowDebuff = false;
         private bool m_buffShowCheckedOnly = false;
 
+        public IntPtr Handle { get; private set; }
+
         public MainWindow()
         {
             MainWindow.m_instance = this;
@@ -34,7 +38,17 @@ namespace FFXIVBuff.Window
 
             InitializeComponent();
 
+            var interop = new WindowInteropHelper(this);
+            interop.EnsureHandle();
+            this.Handle = interop.Handle;
+
             this.ctlContent.IsEnabled = false;
+        }
+
+        private void MetroWindow_Closed(object sender, System.EventArgs e)
+        {
+            Worker.Stop();
+            App.Current.Shutdown();
         }
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -45,12 +59,16 @@ namespace FFXIVBuff.Window
                     if (!Version.TryParse(vs, out v))
                         return false;
 
-                    return v > Assembly.GetExecutingAssembly().GetName().Version;
+                    return v > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
                 }));
 
             if (newVersionUrl != null)
             {
-                await this.ShowMessageAsync(App.Name, "새로운 업데이트가 있습니다", MessageDialogStyle.Affirmative);
+                await MahApps.Metro.Controls.Dialogs.DialogManager.ShowMessageAsync(
+                    this,
+                    App.Name,
+                    "새로운 업데이트가 있습니다",
+                    MahApps.Metro.Controls.Dialogs.MessageDialogStyle.Affirmative);
 
                 Application.Current.Shutdown();
                 return;
@@ -132,9 +150,9 @@ namespace FFXIVBuff.Window
                 )
                 &&
                 (
-                    (this.m_buffShowBuff   &&  item.IsBuff)
+                    (this.m_buffShowBuff   && !item.IsDebuff)
                     ||
-                    (this.m_buffShowDebuff && !item.IsBuff)
+                    (this.m_buffShowDebuff &&  item.IsDebuff)
                 )
                 &&
                 (

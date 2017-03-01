@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Windows.Media;
 
 namespace FFXIVBuff.Core
 {
@@ -10,19 +9,26 @@ namespace FFXIVBuff.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public FStatus(int id, string name, string desc, int icon, bool isBuff)
+        public FStatus(int id, string name, string desc, int icon, int iconStack, bool isBad, bool isNonExpries, bool isChecked)
         {
-            this.Id     = id;
-            this.Icon   = icon;
-            this.Name   = name;
-            this.Desc   = desc;
-            this.IsBuff = isBuff;
+            this.Id         = id;
+            this.Icon       = icon;
+            this.Name       = name;
+            this.Desc       = desc;
+            this.IsDebuff   = isBad;
+            this.IconCount  = iconStack;
+            this.IsNonExpries = isNonExpries;
+            
+            this.IsChecked  = isChecked;
         }
-        public int    Id     { get; private set; }
-        public int    Icon   { get; private set; }
-        public string Name   { get; private set; }
-        public string Desc   { get; private set; }
-        public bool   IsBuff { get; private set; }
+        public int      Id              { get; private set; }
+        public int      Icon            { get; private set; }
+        public string   Name            { get; private set; }
+        public string   Desc            { get; private set; }
+        public int      IconCount       { get; private set; }
+        public bool     IsDebuff        { get; private set; }
+        public bool     IsNonExpries    { get; private set; }
+
 
         private bool m_isChecked;
         public bool IsChecked
@@ -34,6 +40,8 @@ namespace FFXIVBuff.Core
             set
             {
                 this.m_isChecked = value;
+
+                Settings.Instance.SetChecked(value, this.Id);
 
                 if (this.PropertyChanged != null)
                     this.PropertyChanged(this, new PropertyChangedEventArgs("IsChceked"));

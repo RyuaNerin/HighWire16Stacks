@@ -39,7 +39,7 @@ namespace FFXIVBuff.Core
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
         }
-        public void Update(int id, int iconIndex, float remain)
+        public void Update(int id, int param, float remain)
         {
             bool visibleUpdated = false;
             bool iconUpdated = false;
@@ -47,27 +47,43 @@ namespace FFXIVBuff.Core
             visibleUpdated = this.m_id != id;
             if (visibleUpdated)
             {
+                if (this.m_fstatus != null)
+                    this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
+
                 this.m_visible   = true;
                 this.m_id        = id;
                 this.m_fstatus   = FResource.StatusListDic[id];
-                this.m_icon      = this.FStatus.Icon + iconIndex;
-                this.m_iconIndex = iconIndex;
                 this.m_isChecked = this.m_fstatus.IsChecked;
-            }
 
-            iconUpdated = this.m_iconIndex != iconIndex;
-            if (iconUpdated)
+                this.m_iconIndex = param;
+
+                this.m_icon = this.m_fstatus.Icon;
+                if (this.m_fstatus.IconCount != 0 && param <= this.m_fstatus.IconCount)
+                    this.m_icon += param - 1;
+
+                this.m_fstatus.PropertyChanged += FStatus_PropertyChanged;
+
+                iconUpdated = true;
+            }
+            else
             {
-                this.m_icon      = this.m_fstatus.Icon + iconIndex;
-                this.m_iconIndex = iconIndex;
+                iconUpdated = this.m_iconIndex != param;
+                if (iconUpdated)
+                {
+                    this.m_icon      = this.m_fstatus.Icon + param;
+                    this.m_iconIndex = param;
+                }
             }
 
-            this.m_remain = remain;
+            this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;
 
             if (this.PropertyChanged != null)
             {
                 if (visibleUpdated)
+                {
                     this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                }
 
                 if (iconUpdated)
                     this.PropertyChanged(this, new PropertyChangedEventArgs("Icon"));

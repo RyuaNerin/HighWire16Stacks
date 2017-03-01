@@ -80,6 +80,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SharpRaven, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpRaven.2.2.0\lib\net45\SharpRaven.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -118,6 +122,7 @@
     <Compile Include="Core\FResource.cs" />
     <Compile Include="Core\UStatus.cs" />
     <Compile Include="GithubLastestRealease.cs" />
+    <Compile Include="Sentry.cs" />
     <Compile Include="Utility\OutlinedTextBlock.cs" />
     <Compile Include="Object\WpfScreen.cs" />
     <Compile Include="Window\Overlay.xaml.cs">

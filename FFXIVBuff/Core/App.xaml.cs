@@ -8,6 +8,8 @@ namespace FFXIVBuff.Core
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            Sentry.Load();
+
             Settings.Instance.Load();
         }
 

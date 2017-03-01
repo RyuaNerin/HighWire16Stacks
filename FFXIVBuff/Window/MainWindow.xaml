@@ -13,7 +13,8 @@
                    MinWidth="370"
                    MinHeight="453"
                    WindowStartupLocation="CenterScreen"
-                   Loaded="MetroWindow_Loaded">
+                   Loaded="MetroWindow_Loaded"
+                   Closed="MetroWindow_Closed">
     <metro:MetroWindow.Resources>
         <ResourceDictionary>
             <converters:PersentConverter x:Key="PersentConverter" />

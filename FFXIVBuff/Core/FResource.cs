@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -20,13 +18,6 @@ namespace FFXIVBuff.Core
 
         public static readonly IList<FStatus> StatusList = new SortedList<FStatus>();
         public static readonly IDictionary<int, FStatus> StatusListDic = new SortedDictionary<int, FStatus>();
-
-        private static class NativeMethods
-        {
-            [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool DeleteObject([In] IntPtr hObject);
-        }
 
         static FResource()
         {
@@ -80,9 +71,7 @@ namespace FFXIVBuff.Core
                 }
             }
 
-            FStatus status;
-
-            status = new FStatus(0, null, null, 0, false);
+            FStatus status = new FStatus(0, null, null, 0, 0, false, false, false);
             StatusList.Add(status);
             StatusListDic.Add(0, status);
 
@@ -90,22 +79,25 @@ namespace FFXIVBuff.Core
             {
                 var csv = new CsvReader(reader);
 
-                int id;
-                int icon;
-                string name;
-                string desc;
-                int isBuff;
+                int     id;
+                string  name;
+                string  desc;
+                int     icon;
+                int     buffStack;
+                int     isBad;
+                string  isNonExpries;
+
                 while (csv.Read())
                 {
-                    if (csv.TryGetField<int>(0, out id) &&
-                        csv.TryGetField<string>(1, out name) &&
-                        csv.TryGetField<string>(2, out desc) &&
-                        csv.TryGetField<int>(3, out icon) &&
-                        csv.TryGetField<int>(5, out isBuff) &&
-                        IconPosition.ContainsKey(icon) &&
-                        !string.IsNullOrEmpty(name))
+                    if (csv.TryGetField<int>   ((int)('A' - 'A'), out id)           &&
+                        csv.TryGetField<string>((int)('B' - 'A'), out name)         && !string.IsNullOrEmpty(name)    &&
+                        csv.TryGetField<string>((int)('C' - 'A'), out desc)         &&
+                        csv.TryGetField<int>   ((int)('D' - 'A'), out icon)         && IconPosition.ContainsKey(icon) &&
+                        csv.TryGetField<int>   ((int)('E' - 'A'), out buffStack)    &&
+                        csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
+                        csv.TryGetField<string>((int)('P' - 'A'), out isNonExpries))
                     {
-                        status = new FStatus(id, name, desc, icon, isBuff == 1);
+                        status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries == "TRUE", Settings.Instance.GetIsChecked(id));
                         StatusList.Add(status);
                         StatusListDic.Add(id, status);
                     }
