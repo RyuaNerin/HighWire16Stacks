@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Interop;
-using FFXIVBuff.Core;
 using System.Windows.Threading;
+using FFXIVBuff.Core;
+using FFXIVBuff.Objects;
 
 namespace FFXIVBuff.Windows
 {
@@ -35,6 +37,17 @@ namespace FFXIVBuff.Windows
         {
             this.Topmost = false;
             this.Topmost = true;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WpfScreen screen = WpfScreen.FromWindow(this);
+
+            if (!screen.WorkingArea.IntersectsWith(new Rect(this.Left, this.Top, this.Width, this.Height)))
+            {
+                this.Left = screen.WorkingArea.Left + 200;
+                this.Top  = screen.WorkingArea.Top + 200;
+            }
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

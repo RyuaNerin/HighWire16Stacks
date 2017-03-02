@@ -54,7 +54,7 @@ namespace FFXIVBuff.Windows
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
 #if !DEBUG
-            var newVersionUrl = await Task.Factory.StartNew(() => GithubLastestRealease.CheckNewVersion("RyuaNerin", "FFXIVStatusOverlay", (vs) => {
+            var newVersionUrl = await Task.Factory.StartNew(() => GithubLastestRealease.CheckNewVersion("RyuaNerin", "FBOverlay", (vs) => {
                     Version v;    
                     if (!Version.TryParse(vs, out v))
                         return false;
@@ -74,6 +74,8 @@ namespace FFXIVBuff.Windows
                 return;
             }
 #endif
+
+            await Task.Factory.StartNew(Worker.Update);
 
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();

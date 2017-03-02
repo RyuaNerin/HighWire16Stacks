@@ -111,26 +111,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converter\UStatusVisibilityConverter.cs" />
-    <Compile Include="Converter\IconToImageConverter.cs" />
-    <Compile Include="Converter\UStatusTimeConverter.cs" />
-    <Compile Include="Converter\BooleanInvert.cs" />
-    <Compile Include="Converter\BooleanConverter.cs" />
-    <Compile Include="Converter\PersentConverter.cs" />
-    <Compile Include="Converter\ProcessNameConverter.cs" />
+    <Compile Include="Converters\UStatusVisibilityConverter.cs" />
+    <Compile Include="Converters\IconToImageConverter.cs" />
+    <Compile Include="Converters\UStatusTimeConverter.cs" />
+    <Compile Include="Converters\BooleanInvert.cs" />
+    <Compile Include="Converters\BooleanConverter.cs" />
+    <Compile Include="Converters\PersentConverter.cs" />
+    <Compile Include="Converters\ProcessNameConverter.cs" />
     <Compile Include="Core\FStatus.cs" />
     <Compile Include="Core\FResource.cs" />
+    <Compile Include="Core\MemoryOffset.cs" />
     <Compile Include="Core\UStatus.cs" />
     <Compile Include="GithubLastestRealease.cs" />
     <Compile Include="Sentry.cs" />
-    <Compile Include="Utility\OutlinedTextBlock.cs" />
+    <Compile Include="Utilities\OutlinedTextBlock.cs" />
     <Compile Include="Objects\WpfScreen.cs" />
-    <Compile Include="Window\Overlay.xaml.cs">
+    <Compile Include="Windows\Overlay.xaml.cs">
       <DependentUpon>Overlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Settings.cs" />
     <Compile Include="Objects\SortedList.cs" />
-    <Page Include="Window\MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -139,11 +140,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Window\MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Window\Overlay.xaml">
+    <Page Include="Windows\Overlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

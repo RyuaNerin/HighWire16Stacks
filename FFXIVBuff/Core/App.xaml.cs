@@ -4,8 +4,6 @@ namespace FFXIVBuff.Core
 {
     internal partial class App : Application
     {
-        public const string Name = "FFIXV-StatusOverlay";
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             Sentry.Load();

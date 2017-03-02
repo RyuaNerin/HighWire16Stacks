@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using FFXIVBuff.Windows;
+using Newtonsoft.Json;
 
 namespace FFXIVBuff.Core
 {
     internal static class Worker
     {
-        private const int StatusesCount = 21;
-
-        private const int X86Pointer = 0x0F67940;
-        private const int X86Offset  = 0x0001518;
-
-        private const int X64Pointer = 0x1551FE0;
-        private const int X64Offset  = 0x00018E0;
+        //v3.21, 2016.12.26.0000.0000(2245781, ex1:2016.12.26.0000.0000)
+        public static readonly MemoryOffsets DefaultMemoryOffset =
+            new MemoryOffsets
+            {
+                count = 21,
+                x86 = new MemoryOffset
+                {
+                    ptr = 0x0F67940,
+                    off = 0x0001518
+                },
+                x64 = new MemoryOffset
+                {
+                    ptr = 0x1551FE0,
+                    off = 0x00018E0
+                }
+            };
 
         private static object m_overlayInstanceSync = new object();
         private static Overlay m_overlayInstance;
@@ -49,7 +62,7 @@ namespace FFXIVBuff.Core
             }
         }
 
-        public readonly static UStatus[] Statuses = new UStatus[StatusesCount];
+        public static UStatus[] Statuses;
 
         private static volatile bool m_running = false;
         private static Task m_task;
@@ -58,8 +71,8 @@ namespace FFXIVBuff.Core
         private static IntPtr m_ffxivModulePtr;
         private static bool m_ffxivDx11;
 
-        private static int m_arrayPointer;
-        private static int m_arrayOffset;
+        private static MemoryOffsets m_memoryOffsets;
+        private static MemoryOffset m_memoryOffset;
 
         private static int m_delay = 1;
         public static int Delay
@@ -72,16 +85,36 @@ namespace FFXIVBuff.Core
 
         static Worker()
         {
-            for (int i = 0; i < StatusesCount; ++i)
-                Statuses[i] = new UStatus();
-
             if (Settings.Instance != null)
                 Delay = (int)Settings.Instance.RefreshTime;
         }
 
+        public static void Update()
+        {
+            try
+            {
+                var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/FBOverlay/master/patch.json") as HttpWebRequest;
+                req.UserAgent = Assembly.GetExecutingAssembly().FullName;
+                req.Timeout = 5000;
+                using (var res = req.GetResponse())
+                using (var stream = res.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                    m_memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(reader.ReadToEnd());
+            }
+            catch
+            {
+                m_memoryOffsets = DefaultMemoryOffset;
+            }
+            
+            Statuses = new UStatus[m_memoryOffsets.count];
+            for (int i = 0; i < m_memoryOffsets.count; ++i)
+                Statuses[i] = new UStatus();
+        }
+
+
         public static void Stop()
         {
-            for (int i = 0; i < StatusesCount; ++i)
+            for (int i = 0; i < m_memoryOffsets.count; ++i)
                 Statuses[i].Clear();
 
             m_running = false;
@@ -107,16 +140,7 @@ namespace FFXIVBuff.Core
 
                 m_ffxivWindowHandle = process.MainWindowHandle;
 
-                if (!m_ffxivDx11)
-                {
-                    m_arrayOffset  = X86Offset;
-                    m_arrayPointer = X86Pointer;
-                }
-                else
-                {
-                    m_arrayOffset  = X64Offset;
-                    m_arrayPointer = X64Pointer;
-                }
+                m_memoryOffset = m_ffxivDx11 ? m_memoryOffsets.x64 : m_memoryOffsets.x86;
 
                 m_running = true;
                 m_task = Task.Factory.StartNew(WorkerThread);
@@ -132,7 +156,7 @@ namespace FFXIVBuff.Core
         private static void WorkerThread()
         {
             IntPtr ptr;
-            byte[] buff = new byte[12 * 21];
+            byte[] buff = new byte[12 * m_memoryOffsets.count];
             int i;
 
             int id;
@@ -142,40 +166,41 @@ namespace FFXIVBuff.Core
 
             while (m_running)
             {
-                ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_arrayPointer);
+                ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_memoryOffset.ptr);
                 if (ptr == IntPtr.Zero)
                 {
                     Stop();
                     return;
                 }
 
-                NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_arrayOffset, buff, 12 * 21);
-
-                for (i = 0; i < 21; ++i)
+                if (NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_memoryOffset.off, buff, buff.Length) == buff.Length)
                 {
-                    id = BitConverter.ToInt16(buff, 12 * i + 0);
-                    if (id == 0)
+                    for (i = 0; i < m_memoryOffsets.count; ++i)
                     {
+                        id = BitConverter.ToInt16(buff, 12 * i + 0);
+                        if (id == 0)
+                        {
+                            try
+                            {
+                                Statuses[i].Clear();
+                            }
+                            catch
+                            {
+                            }
+                            continue;
+                        }
+
+                        param  = BitConverter.ToInt16(buff, 12 * i + 2);
+                        remain = BitConverter.ToSingle(buff, 12 * i + 4);
+                        owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
+
                         try
                         {
-                            Statuses[i].Clear();
+                            Statuses[i].Update(id, param, remain);
                         }
                         catch
                         {
                         }
-                        continue;
-                    }
-
-                    param  = BitConverter.ToInt16 (buff, 12 * i + 2);
-                    remain = BitConverter.ToSingle(buff, 12 * i + 4);
-                    owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
-
-                    try
-                    {
-                        Statuses[i].Update(id, param, remain);
-                    }
-                    catch
-                    {
                     }
                 }
 

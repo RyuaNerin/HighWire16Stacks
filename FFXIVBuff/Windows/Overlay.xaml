@@ -15,7 +15,8 @@
         Background="Transparent"
         ShowInTaskbar="False"
         Topmost="True"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>
             <converters:UStatusTimeConverter x:Key="UStatusTimeConverter" />
