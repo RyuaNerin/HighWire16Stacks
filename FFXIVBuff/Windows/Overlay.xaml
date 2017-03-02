@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:FFXIVBuff.Converters"
         xmlns:core="clr-namespace:FFXIVBuff.Core"
-        xmlns:utility="clr-namespace:FFXIVBuff.Utility"
+        xmlns:utility="clr-namespace:FFXIVBuff.Utilities"
         WindowStartupLocation="Manual"
         Left="{Binding Path=Left, Mode=TwoWay}"
         Top="{Binding Path=Top, Mode=TwoWay}"
