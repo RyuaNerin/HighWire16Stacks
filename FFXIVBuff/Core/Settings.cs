@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using FFXIVBuff.Object;
+using FFXIVBuff.Objects;
 using Newtonsoft.Json;
 
 namespace FFXIVBuff.Core
