@@ -15,7 +15,7 @@ namespace FFXIVBuff.Core
         private const int X86Pointer = 0x0;
         private const int X86Offset  = 0x0;
 
-        private const int X64Pointer = 0x1554D40;
+        private const int X64Pointer = 0x1551FE0;
         private const int X64Offset  = 0x00018E0;
 
         private static object m_overlayInstanceSync = new object();
@@ -153,7 +153,13 @@ namespace FFXIVBuff.Core
                     id = BitConverter.ToInt16(buff, 12 * i + 0);
                     if (id == 0)
                     {
-                        Statuses[i].Clear();
+                        try
+                        {
+                            Statuses[i].Clear();
+                        }
+                        catch
+                        {
+                        }
                         continue;
                     }
 
@@ -167,7 +173,13 @@ namespace FFXIVBuff.Core
                         param = 0;
                     }
 
-                    Statuses[i].Update(id, param, remain);
+                    try
+                    {
+                        Statuses[i].Update(id, param, remain);
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 Thread.Sleep(m_delay);
@@ -199,10 +211,7 @@ namespace FFXIVBuff.Core
         
         private static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            Console.WriteLine(idObject);
-            Console.WriteLine(idChild);
-
-            if (idObject == 0 || idChild == 0)
+            if (hwnd == m_overlayInstance.Handle)
                 return;
 
             if (hwnd == Worker.m_ffxivWindowHandle ||

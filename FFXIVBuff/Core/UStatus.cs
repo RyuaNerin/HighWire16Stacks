@@ -55,12 +55,6 @@ namespace FFXIVBuff.Core
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
 
-                this.m_iconIndex = param;
-
-                this.m_icon = this.m_fstatus.Icon;
-                if (this.m_fstatus.IconCount != 0 && param <= this.m_fstatus.IconCount)
-                    this.m_icon += param - 1;
-
                 this.m_fstatus.PropertyChanged += FStatus_PropertyChanged;
 
                 iconUpdated = true;
@@ -68,11 +62,15 @@ namespace FFXIVBuff.Core
             else
             {
                 iconUpdated = this.m_iconIndex != param;
-                if (iconUpdated)
-                {
-                    this.m_icon      = this.m_fstatus.Icon + param;
-                    this.m_iconIndex = param;
-                }
+            }
+
+            if (iconUpdated)
+            {
+                this.m_iconIndex = param;
+                this.m_icon = this.m_fstatus.Icon;
+
+                if (this.m_fstatus.IconCount != 0 && param <= this.m_fstatus.IconCount)
+                    this.m_icon += param - 1;
             }
 
             this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;

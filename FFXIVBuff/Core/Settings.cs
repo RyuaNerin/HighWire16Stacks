@@ -143,7 +143,7 @@ namespace FFXIVBuff.Core
         }
 
         private static readonly DependencyProperty AutoHideDP
-            = DependencyProperty.Register("AutoHide", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(true, PropertyChangedCallback));
+            = DependencyProperty.Register("AutoHide", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false, PropertyChangedCallback));
         [JsonProperty]
         public bool AutoHide
         {

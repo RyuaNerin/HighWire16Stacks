@@ -11,15 +11,15 @@ namespace FFXIVBuff.Core
 
         public FStatus(int id, string name, string desc, int icon, int iconStack, bool isBad, bool isNonExpries, bool isChecked)
         {
-            this.Id         = id;
-            this.Icon       = icon;
-            this.Name       = name;
-            this.Desc       = desc;
-            this.IsDebuff   = isBad;
-            this.IconCount  = iconStack;
-            this.IsNonExpries = isNonExpries;
+            this.Id             = id;
+            this.Icon           = icon;
+            this.Name           = name;
+            this.Desc           = desc;
+            this.IsDebuff       = isBad;
+            this.IconCount      = iconStack;
+            this.IsNonExpries   = isNonExpries;
             
-            this.IsChecked  = isChecked;
+            this.IsChecked      = isChecked;
         }
         public int      Id              { get; private set; }
         public int      Icon            { get; private set; }
