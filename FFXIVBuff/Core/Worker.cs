@@ -12,8 +12,8 @@ namespace FFXIVBuff.Core
     {
         private const int StatusesCount = 21;
 
-        private const int X86Pointer = 0x0;
-        private const int X86Offset  = 0x0;
+        private const int X86Pointer = 0x0F67940;
+        private const int X86Offset  = 0x0001518;
 
         private const int X64Pointer = 0x1551FE0;
         private const int X64Offset  = 0x00018E0;
@@ -144,7 +144,10 @@ namespace FFXIVBuff.Core
             {
                 ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_arrayPointer);
                 if (ptr == IntPtr.Zero)
+                {
                     Stop();
+                    return;
+                }
 
                 NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_arrayOffset, buff, 12 * 21);
 
@@ -166,12 +169,6 @@ namespace FFXIVBuff.Core
                     param  = BitConverter.ToInt16 (buff, 12 * i + 2);
                     remain = BitConverter.ToSingle(buff, 12 * i + 4);
                     owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
-
-                    if (owner == 0xE0000000)
-                    {
-                        remain = 0;
-                        param = 0;
-                    }
 
                     try
                     {
