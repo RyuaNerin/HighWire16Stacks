@@ -2,10 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using System.Collections.Generic;
 using FFXIVBuff.Object;
+using Newtonsoft.Json;
 
 namespace FFXIVBuff.Core
 {
@@ -35,7 +33,7 @@ namespace FFXIVBuff.Core
                     using (var jr = new JsonTextReader(sr))
 #else
                     using (var sr = new BinaryReader(fr))
-                    using (var jr = new BsonReader(sr))
+                    using (var jr = new Newtonsoft.Json.Bson.BsonReader(sr))
 #endif
                     {
                         JSerializer.Populate(jr, Settings.m_instance);
@@ -56,14 +54,16 @@ namespace FFXIVBuff.Core
             try
             {
                 using (var fw = new FileStream(Settings.SettingFilePath, FileMode.OpenOrCreate))
+                {
 #if DEBUG
-                using (var sw = new StreamWriter(fw, System.Text.Encoding.UTF8))
-                using (var jw = new JsonTextWriter(sw))
+                    using (var sw = new StreamWriter(fw, System.Text.Encoding.UTF8))
+                    using (var jw = new JsonTextWriter(sw))
 #else
-                using (var sw = new BinaryWriter(fw))
-                using (var jw = new BsonWriter(sw))
+                    using (var sw = new BinaryWriter(fw))
+                    using (var jw = new Newtonsoft.Json.Bson.BsonWriter(sw))
 #endif
                     JSerializer.Serialize(jw, this);
+                }
             }
             catch
             {
