@@ -10,7 +10,7 @@ namespace FFXIVBuff.Core
         {
             Sentry.Load();
 
-            Settings.Instance.Load();
+            Settings.Load();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

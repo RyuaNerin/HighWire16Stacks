@@ -9,7 +9,7 @@ using System.Windows.Interop;
 using FFXIVBuff.Core;
 using MahApps.Metro.Controls;
 
-namespace FFXIVBuff.Window
+namespace FFXIVBuff.Windows
 {
     internal partial class MainWindow : MetroWindow
     {
@@ -164,7 +164,7 @@ namespace FFXIVBuff.Window
                 (
                     this.m_buffListFilter == null
                     ||
-                    item.Name.IndexOf(this.m_buffListFilter) != -1
+                    item.Name.IndexOf(this.m_buffListFilter, StringComparison.CurrentCultureIgnoreCase) != -1
                 );
         }
 

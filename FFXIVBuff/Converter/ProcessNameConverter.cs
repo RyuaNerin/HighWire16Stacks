@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace FFXIVBuff.Converter
+namespace FFXIVBuff.Converters
 {
     public sealed class ProcessNameConverter : IValueConverter
     {

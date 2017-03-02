@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using FFXIVBuff.Window;
+using FFXIVBuff.Windows;
 
 namespace FFXIVBuff.Core
 {
@@ -353,26 +353,6 @@ namespace FFXIVBuff.Core
                     return new IntPtr(BitConverter.ToInt64(buffer, 0));
                 else
                     return new IntPtr(BitConverter.ToInt32(buffer, 0));
-            }
-
-            public static int ReadInt8(IntPtr handle, IntPtr address, byte[] buffer)
-            {
-                byte[] lpBuffer = new byte[1];
-                IntPtr read;
-                if (!NativeMethods.ReadProcessMemory(handle, address, lpBuffer, new IntPtr(1), out read) || read.ToInt64() != 1)
-                    return 0;
-
-                return lpBuffer[0];
-            }
-
-            public static int ReadInt32(IntPtr handle, IntPtr address, byte[] buffer)
-            {
-                byte[] lpBuffer = new byte[4];
-                IntPtr read;
-                if (!NativeMethods.ReadProcessMemory(handle, address, lpBuffer, new IntPtr(4), out read) || read.ToInt64() != 4)
-                    return 0;
-
-                return BitConverter.ToInt32(lpBuffer, 0);
             }
 
             public static int ReadBytes(IntPtr handle, IntPtr address, byte[] array, int length)

@@ -6,7 +6,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace FFXIVBuff.Utility
+namespace FFXIVBuff.Utilities
 {
     [ContentProperty("Text")]
     public class OutlinedTextBlock : FrameworkElement

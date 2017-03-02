@@ -3,13 +3,14 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace FFXIVBuff.Converter
+namespace FFXIVBuff.Converters
 {
     internal class UStatusVisibilityConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Length != 3 ||
+            if (value == null ||
+                value.Length != 3 ||
                 !(value[0] is bool) ||
                 !(value[1] is bool) ||
                 !(value[2] is bool))

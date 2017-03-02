@@ -2,13 +2,16 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace FFXIVBuff.Converter
+namespace FFXIVBuff.Converters
 {
     internal class UStatusTimeConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Length != 2 || !(value[0] is float) || !(value[1] is bool))
+            if (value == null ||
+                value.Length != 2 ||
+                !(value[0] is float) ||
+                !(value[1] is bool))
                 return " ";
 
             var remain = (float)value[0];

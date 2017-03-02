@@ -46,7 +46,7 @@ namespace FFXIVBuff.Core
 
         }
 
-        public void Load()
+        public static void Load()
         { }
 
         public void Save()
@@ -55,6 +55,8 @@ namespace FFXIVBuff.Core
             {
                 using (var fw = new FileStream(Settings.SettingFilePath, FileMode.OpenOrCreate))
                 {
+                    fw.SetLength(0);
+
 #if DEBUG
                     using (var sw = new StreamWriter(fw, System.Text.Encoding.UTF8))
                     using (var jw = new JsonTextWriter(sw))

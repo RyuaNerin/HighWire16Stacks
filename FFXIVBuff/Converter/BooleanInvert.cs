@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace FFXIVBuff.Converter
+namespace FFXIVBuff.Converters
 {
     internal class BooleanInvert : IValueConverter
     {

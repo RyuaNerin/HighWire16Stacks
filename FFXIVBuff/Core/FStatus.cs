@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace FFXIVBuff.Core
 {
     [DebuggerDisplay("[{Id}] {Name} : {Desc}")]
-    internal class FStatus : IComparable, IComparable<FStatus>, INotifyPropertyChanged
+    internal class FStatus : IComparable<FStatus>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -46,15 +46,6 @@ namespace FFXIVBuff.Core
                 if (this.PropertyChanged != null)
                     this.PropertyChanged(this, new PropertyChangedEventArgs("IsChceked"));
             }
-        }
-
-        public int CompareTo(object obj)
-        {
-            var status = obj as FStatus;
-            if (status == null)
-                return -1;
-            else
-                return this.CompareTo(status);
         }
 
         public int CompareTo(FStatus obj)

@@ -4,7 +4,7 @@ using System.Windows.Interop;
 using FFXIVBuff.Core;
 using System.Windows.Threading;
 
-namespace FFXIVBuff.Window
+namespace FFXIVBuff.Windows
 {
     public partial class Overlay : System.Windows.Window
     {
@@ -64,7 +64,7 @@ namespace FFXIVBuff.Window
         private static class NativeMethods
         {
             [DllImport("user32.dll")]
-            public static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+            public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
             [DllImport("user32.dll")]
             public static extern int GetWindowLong(IntPtr hWnd, int nIndex);

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using FFXIVBuff.Core;
 
-namespace FFXIVBuff.Converter
+namespace FFXIVBuff.Converters
 {
     public sealed class IconToImageConverter : IValueConverter
     {
