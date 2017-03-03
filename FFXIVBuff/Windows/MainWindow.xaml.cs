@@ -79,7 +79,7 @@ namespace FFXIVBuff.Windows
 
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
-                        
+                                    
             this.ctlBuffList.ItemsSource = this.m_buffListView;
             this.ctlProcessList.ItemsSource = this.m_processListView;
 

@@ -48,11 +48,23 @@ namespace FFXIVBuff.Windows
                 this.Left = screen.WorkingArea.Left + 200;
                 this.Top  = screen.WorkingArea.Top + 200;
             }
+
+            this.Visibility = Visibility.Visible;
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this.DragMove();
+        }
+
+        public void Refresh()
+        {
+            this.Dispatcher.BeginInvoke(new Action(this.RefreshPriv));
+        }
+
+        public void RefreshPriv()
+        {
+            this.ctlStatusesList.Items.Refresh();
         }
 
         protected override void OnSourceInitialized(EventArgs e)

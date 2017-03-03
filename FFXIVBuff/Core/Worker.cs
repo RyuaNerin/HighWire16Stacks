@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -62,7 +63,7 @@ namespace FFXIVBuff.Core
             }
         }
 
-        public static UStatus[] Statuses;
+        public readonly static List<UStatus> Statuses = new List<UStatus>();
 
         private static volatile bool m_running = false;
         private static Task m_task;
@@ -106,9 +107,10 @@ namespace FFXIVBuff.Core
                 m_memoryOffsets = DefaultMemoryOffset;
             }
             
-            Statuses = new UStatus[m_memoryOffsets.count];
             for (int i = 0; i < m_memoryOffsets.count; ++i)
-                Statuses[i] = new UStatus();
+                Statuses.Add(new UStatus());
+
+            m_overlayInstance.Refresh();
         }
 
 
