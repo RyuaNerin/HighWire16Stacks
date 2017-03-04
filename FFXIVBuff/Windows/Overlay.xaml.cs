@@ -41,6 +41,8 @@ namespace FFXIVBuff.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Sentry.AddHandler(this.Dispatcher);
+
             WpfScreen screen = WpfScreen.FromWindow(this);
 
             if (!screen.WorkingArea.IntersectsWith(new Rect(this.Left, this.Top, this.Width, this.Height)))
@@ -50,6 +52,11 @@ namespace FFXIVBuff.Windows
             }
 
             this.Visibility = Visibility.Visible;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Sentry.RemoveHandler(this.Dispatcher);
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

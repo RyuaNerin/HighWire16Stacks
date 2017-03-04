@@ -90,6 +90,17 @@ namespace FFXIVBuff.Core
                 Delay = (int)Settings.Instance.RefreshTime;
         }
 
+        public static void Load()
+        {
+        }
+
+        public static void Unload()
+        {
+            if (m_eventhook != IntPtr.Zero)
+                NativeMethods.UnhookWinEvent(m_eventhook);
+            m_running = false;
+        }
+
         public static void Update()
         {
             try
@@ -109,8 +120,6 @@ namespace FFXIVBuff.Core
             
             for (int i = 0; i < m_memoryOffsets.count; ++i)
                 Statuses.Add(new UStatus());
-
-            m_overlayInstance.Refresh();
         }
 
 
@@ -147,8 +156,9 @@ namespace FFXIVBuff.Core
                 m_running = true;
                 m_task = Task.Factory.StartNew(WorkerThread);
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return false;
             }
 

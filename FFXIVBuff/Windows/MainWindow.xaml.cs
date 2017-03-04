@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using FFXIVBuff.Core;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace FFXIVBuff.Windows
 {
@@ -43,11 +44,15 @@ namespace FFXIVBuff.Windows
             this.Handle = interop.Handle;
 
             this.ctlContent.IsEnabled = false;
+
+            Sentry.AddHandler(this.Dispatcher);
         }
 
         private void MetroWindow_Closed(object sender, System.EventArgs e)
         {
-            Worker.Stop();
+            Sentry.RemoveHandler(this.Dispatcher);
+
+            Worker.Unload();
             App.Current.Shutdown();
         }
 
@@ -64,9 +69,8 @@ namespace FFXIVBuff.Windows
 
             if (newVersionUrl != null)
             {
-                await MahApps.Metro.Controls.Dialogs.DialogManager.ShowMessageAsync(
-                    this,
-                    App.Name,
+                await this.ShowMessageAsync(
+                    this.Title,
                     "새로운 업데이트가 있습니다",
                     MahApps.Metro.Controls.Dialogs.MessageDialogStyle.Affirmative);
 
@@ -75,20 +79,22 @@ namespace FFXIVBuff.Windows
             }
 #endif
 
+            Worker.Load();
+
             await Task.Factory.StartNew(Worker.Update);
 
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
-                                    
+
+            Worker.OverlayInstance.Show();
+            Worker.OverlayInstance.Refresh();
+
             this.ctlBuffList.ItemsSource = this.m_buffListView;
             this.ctlProcessList.ItemsSource = this.m_processListView;
 
+            this.ctlContent.IsEnabled = true;
 
             this.ctlProcessRefresh_Click(null, null);
-
-            Worker.OverlayInstance.Show();
-
-            this.ctlContent.IsEnabled = true;
         }
 
         internal void ExitedProcess()
@@ -112,19 +118,27 @@ namespace FFXIVBuff.Windows
             {
                 this.ctlProcessList.SelectedIndex = 0;
                 this.ctlProcessSelect.IsEnabled = true;
-            }
 
-            if (this.m_processList.Count == 1)
-                this.ctlProcessSelect_Click(null, null);
+                if (this.m_processList.Count == 1)
+                    this.ctlProcessSelect_Click(null, null);
+            }
         }
 
-        private void ctlProcessSelect_Click(object sender, RoutedEventArgs e)
+        private async void ctlProcessSelect_Click(object sender, RoutedEventArgs e)
         {
             if (this.ctlProcessList.SelectedIndex >= 0)
             {
                 var proc = (Process)this.ctlProcessList.SelectedItem;
 
-                Worker.SetProcess(proc);
+                if (!Worker.SetProcess(proc))
+                {
+                    await this.ShowMessageAsync(
+                        this.Title,
+                        "지원되지 않는 클라이언트입니다",
+                        MahApps.Metro.Controls.Dialogs.MessageDialogStyle.Affirmative);
+
+                    return;
+                }
                 this.m_processList.RemoveAll(le => le != proc);
 
                 this.m_processListView.Refresh();

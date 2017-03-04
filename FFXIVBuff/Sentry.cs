@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using SharpRaven;
 using SharpRaven.Data;
 
@@ -16,15 +16,30 @@ namespace FFXIVBuff
             ravenClient.Environment = Application.ProductName;
             ravenClient.Logger = Application.ProductName;
             ravenClient.Release = Application.ProductVersion;
-            
+
             System.AppDomain.CurrentDomain.UnhandledException                += (s, e) => HandleException(e.ExceptionObject as Exception);
             System.Threading.Tasks.TaskScheduler.UnobservedTaskException     += (s, e) => HandleException(e.Exception);
             System.Windows.Forms.Application.ThreadException                 += (s, e) => HandleException(e.Exception);
-            System.Windows.Application.Current.Dispatcher.UnhandledException += (s, e) => HandleException(e.Exception);
+
+            AddHandler(System.Windows.Application.Current.Dispatcher);
         }
 
         public static void Load()
         {
+        }
+
+        public static void AddHandler(Dispatcher dispatcher)
+        {
+            dispatcher.UnhandledException += Dispatcher_UnhandledException;
+        }
+        public static void RemoveHandler(Dispatcher dispatcher)
+        {
+            dispatcher.UnhandledException -= Dispatcher_UnhandledException;
+        }
+
+        private static void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            HandleException(e.Exception);
         }
 
         public static void HandleException(Exception ex)
@@ -43,7 +58,11 @@ namespace FFXIVBuff
 
             Report(ev);
         }
-
+        
+        public static void Error(Exception ex)
+        {
+            Error(ex);
+        }
         public static void Error(Exception ex, object data)
         {
             var ev = new SentryEvent(ex);
