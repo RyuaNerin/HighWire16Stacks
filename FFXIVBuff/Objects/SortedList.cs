@@ -75,7 +75,7 @@ namespace FFXIVBuff.Objects
         }
         public bool Contains(T item)
         {
-            return this.m_lst.Contains(item);
+            return this.m_lst.BinarySearch(item) != -1;
         }
         public List<TOutput> ConvertAll<TOutput>(Converter<T, TOutput> converter)
         {

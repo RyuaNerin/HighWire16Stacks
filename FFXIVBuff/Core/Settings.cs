@@ -153,6 +153,15 @@ namespace FFXIVBuff.Core
             set { this.SetValue(AutoHideDP, value); }
         }
 
+        private static readonly DependencyProperty SortByTimeDP
+            = DependencyProperty.Register("SortByTime", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false, PropertyChangedCallback));
+        [JsonProperty]
+        public bool SortByTime
+        {
+            get { return (bool)this.GetValue(SortByTimeDP); }
+            set { this.SetValue(SortByTimeDP, value); }
+        }
+
         private SortedList<int> m_checkedList = new SortedList<int>();
         [JsonProperty]
         public int[] Checekd
@@ -196,6 +205,11 @@ namespace FFXIVBuff.Core
             
             else if (e.Property == AutoHideDP)
                 Worker.SetAutohide((bool)e.NewValue);
+
+            else if (e.Property == SortByTimeDP)
+            {
+                Worker.OverlayInstance.SetSortByTime((bool)e.NewValue);
+            }
         }
     }
 }

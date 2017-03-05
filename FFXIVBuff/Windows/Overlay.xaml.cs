@@ -25,7 +25,7 @@ namespace FFXIVBuff.Windows
 
             this.DataContext = Core.Settings.Instance;
 
-            this.ctlStatusesList.ItemsSource = Worker.Statuses;
+            SetSortByTime(Settings.Instance.SortByTime);
 
             this.m_timer = new DispatcherTimer();
             this.m_timer.Tick += m_timer_Tick;
@@ -37,6 +37,14 @@ namespace FFXIVBuff.Windows
         {
             this.Topmost = false;
             this.Topmost = true;
+        }
+
+        public void SetSortByTime(bool enable)
+        {
+            if (enable)
+                this.ctlStatusesList.ItemsSource = Worker.SortedStatusesByTime;
+            else
+                this.ctlStatusesList.ItemsSource = Worker.SortedStatuses;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -77,8 +85,7 @@ namespace FFXIVBuff.Windows
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-
-
+            
             var interop = new WindowInteropHelper(this);
             interop.EnsureHandle();
             this.m_handle = new WindowInteropHelper(this).Handle;

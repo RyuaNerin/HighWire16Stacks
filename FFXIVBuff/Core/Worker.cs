@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using FFXIVBuff.Objects;
 using FFXIVBuff.Windows;
 using Newtonsoft.Json;
 
@@ -63,6 +64,8 @@ namespace FFXIVBuff.Core
             }
         }
 
+        public readonly static List<UStatus> SortedStatuses = new List<UStatus>();
+        public readonly static List<UStatus> SortedStatusesByTime = new List<UStatus>();
         public readonly static List<UStatus> Statuses = new List<UStatus>();
 
         private static volatile bool m_running = false;
@@ -118,11 +121,15 @@ namespace FFXIVBuff.Core
                 m_memoryOffsets = DefaultMemoryOffset;
             }
             
+            UStatus ustatus;
             for (int i = 0; i < m_memoryOffsets.count; ++i)
-                Statuses.Add(new UStatus(i));
+            {
+                ustatus = new UStatus(i);
+                Statuses.Add(ustatus);
+                SortedStatuses.Add(ustatus);
+            }
         }
-
-
+        
         public static void Stop()
         {
             for (int i = 0; i < m_memoryOffsets.count; ++i)
@@ -209,7 +216,8 @@ namespace FFXIVBuff.Core
 
                     if (orderUpdated)
                     {
-                        Statuses.Sort();
+                        SortedStatuses.Sort(UStatus.Compare);
+                        SortedStatusesByTime.Sort(UStatus.CompareWithTime);
                         m_overlayInstance.Refresh();
                     }
                 }

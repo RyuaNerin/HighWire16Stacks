@@ -9,9 +9,9 @@
                    xmlns:core="clr-namespace:FFXIVBuff.Core"
                    Title="FFXIV Buff Overlay"
                    Width="370"
-                   Height="453"
+                   Height="474"
                    MinWidth="370"
-                   MinHeight="453"
+                   MinHeight="474"
                    WindowStartupLocation="CenterScreen"
                    Loaded="MetroWindow_Loaded"
                    Closed="MetroWindow_Closed">
@@ -120,11 +120,15 @@
                               Margin="0 0 0 3" />
 
                     <CheckBox Content="오버레이 잠그기"
-                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"                              
+                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"
                               Margin="0 0 0 3" />
 
                     <CheckBox Content="자동 숨기기"
-                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}" />
+                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}"
+                              Margin="0 0 0 3" />
+
+                    <CheckBox Content="시간순 정렬"
+                              IsChecked="{Binding Path=SortByTime, Source={x:Static core:Settings.Instance}}" />
                 </StackPanel>
             </GroupBox>
         </StackPanel>

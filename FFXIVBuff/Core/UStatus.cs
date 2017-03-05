@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System;
 
 namespace FFXIVBuff.Core
 {
     [DebuggerDisplay("[{FStatus.Id}] {FStatus.Name}")]
-    internal class UStatus : INotifyPropertyChanged, IComparable<UStatus>
+    internal class UStatus : INotifyPropertyChanged
     {
         private readonly int m_index;
         public UStatus(int index)
@@ -128,13 +127,39 @@ namespace FFXIVBuff.Core
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
         }
-        
-        public int CompareTo(UStatus other)
-        {
-            if ( this.m_fstatus.IsDebuff && !other.m_fstatus.IsDebuff) return  1;
-            if (!this.m_fstatus.IsDebuff &&  other.m_fstatus.IsDebuff) return -1;
 
-            return this.m_index.CompareTo(other.m_index);
+        public static int CompareWithTime(UStatus a, UStatus b)
+        {
+            if (a.m_fstatus == null && b.m_fstatus == null) return  0;
+            if (a.m_fstatus == null && b.m_fstatus != null) return  1;
+            if (a.m_fstatus != null && b.m_fstatus == null) return -1;
+
+            if (a.m_fstatus != null && b.m_fstatus != null)
+            {
+                if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return  1;
+                if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return -1;
+            }
+
+            var compare = a.m_remain.CompareTo(b.m_remain);
+            if (compare != 0)
+                return compare;
+            
+            return a.m_index.CompareTo(b.m_index);
+        }
+
+        public static int Compare(UStatus a, UStatus b)
+        {
+            if (a.m_fstatus == null && b.m_fstatus == null) return 0;
+            if (a.m_fstatus == null && b.m_fstatus != null) return 1;
+            if (a.m_fstatus != null && b.m_fstatus == null) return -1;
+
+            if (a.m_fstatus != null && b.m_fstatus != null)
+            {
+                if (a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return 1;
+                if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return -1;
+            }
+
+            return a.m_index.CompareTo(b.m_index);
         }
     }
 }
