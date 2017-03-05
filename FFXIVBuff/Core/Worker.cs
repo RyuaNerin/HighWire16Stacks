@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using FFXIVBuff.Objects;
 using FFXIVBuff.Windows;
 using Newtonsoft.Json;
 
@@ -53,14 +52,16 @@ namespace FFXIVBuff.Core
         {
             lock (m_overlayInstanceSync)
             {
-                if (m_overlayInstance != null)
-                {
-                    m_overlayInstance.Close();
-                    m_overlayInstance = null;
-                }
+                var old = m_overlayInstance;
 
                 m_overlayInstance = new Overlay(enabled);
                 m_overlayInstance.Show();
+
+                if (old != null)
+                {
+                    old.Close();
+                    old = null;
+                }
             }
         }
 
