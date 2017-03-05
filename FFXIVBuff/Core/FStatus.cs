@@ -21,12 +21,19 @@ namespace FFXIVBuff.Core
             
             this.IsChecked      = isChecked;
         }
+        /// <summary>A</summary>
         public int      Id              { get; private set; }
+        /// <summary>B</summary>
         public int      Icon            { get; private set; }
+        /// <summary>C</summary>
         public string   Name            { get; private set; }
+        /// <summary>D</summary>
         public string   Desc            { get; private set; }
+        /// <summary>E</summary>
         public int      IconCount       { get; private set; }
+        /// <summary>F==2</summary>
         public bool     IsDebuff        { get; private set; }
+        /// <summary>O</summary>
         public bool     IsNonExpries    { get; private set; }
 
 

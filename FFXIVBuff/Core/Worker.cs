@@ -119,7 +119,7 @@ namespace FFXIVBuff.Core
             }
             
             for (int i = 0; i < m_memoryOffsets.count; ++i)
-                Statuses.Add(new UStatus());
+                Statuses.Add(new UStatus(i));
         }
 
 
@@ -176,6 +176,8 @@ namespace FFXIVBuff.Core
             float remain;
             uint owner;
 
+            bool orderUpdated;
+
             while (m_running)
             {
                 ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_memoryOffset.ptr);
@@ -187,18 +189,14 @@ namespace FFXIVBuff.Core
 
                 if (NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_memoryOffset.off, buff, buff.Length) == buff.Length)
                 {
+                    orderUpdated = false;
+
                     for (i = 0; i < m_memoryOffsets.count; ++i)
                     {
                         id = BitConverter.ToInt16(buff, 12 * i + 0);
                         if (id == 0)
                         {
-                            try
-                            {
-                                Statuses[i].Clear();
-                            }
-                            catch
-                            {
-                            }
+                            Statuses[i].Clear();
                             continue;
                         }
 
@@ -206,13 +204,13 @@ namespace FFXIVBuff.Core
                         remain = BitConverter.ToSingle(buff, 12 * i + 4);
                         owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
 
-                        try
-                        {
-                            Statuses[i].Update(id, param, remain);
-                        }
-                        catch
-                        {
-                        }
+                        orderUpdated |= Statuses[i].Update(id, param, remain);
+                    }
+
+                    if (orderUpdated)
+                    {
+                        Statuses.Sort();
+                        m_overlayInstance.Refresh();
                     }
                 }
 

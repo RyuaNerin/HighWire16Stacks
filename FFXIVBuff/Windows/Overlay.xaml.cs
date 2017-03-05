@@ -69,7 +69,7 @@ namespace FFXIVBuff.Windows
             this.Dispatcher.BeginInvoke(new Action(this.RefreshPriv));
         }
 
-        public void RefreshPriv()
+        private void RefreshPriv()
         {
             this.ctlStatusesList.Items.Refresh();
         }

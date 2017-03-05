@@ -99,7 +99,7 @@ namespace FFXIVBuff.Core
                             csv.TryGetField<int>   ((int)('D' - 'A'), out icon)         && IconPosition.ContainsKey(icon) &&
                             csv.TryGetField<int>   ((int)('E' - 'A'), out buffStack)    &&
                             csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
-                            csv.TryGetField<bool>  ((int)('P' - 'A'), out isNonExpries))
+                            csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries))
                         {
                             status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, Settings.Instance.GetIsChecked(id));
                             StatusList.Add(status);

@@ -86,15 +86,15 @@ namespace FFXIVBuff.Windows
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
 
-            Worker.OverlayInstance.Show();
-            Worker.OverlayInstance.Refresh();
-
             this.ctlBuffList.ItemsSource = this.m_buffListView;
             this.ctlProcessList.ItemsSource = this.m_processListView;
 
             this.ctlContent.IsEnabled = true;
 
             this.ctlProcessRefresh_Click(null, null);
+
+            Worker.OverlayInstance.Show();
+            Worker.OverlayInstance.Refresh();
         }
 
         internal void ExitedProcess()

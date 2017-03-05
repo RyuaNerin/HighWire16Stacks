@@ -28,10 +28,10 @@ namespace FFXIVBuff.Core
     [JsonObject]
     internal class MemoryOffset
     {
-        [JsonProperty]
+        [JsonProperty(ItemConverterType=typeof(JsonHexToInt))]
         public int ptr { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(ItemConverterType=typeof(JsonHexToInt))]
         public int off { get; set; }
     }
 

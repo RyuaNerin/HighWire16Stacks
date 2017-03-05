@@ -68,6 +68,7 @@
                                                Margin="-3 0 -3 0">
                         <utility:OutlinedTextBlock.Text>
                             <MultiBinding Converter="{StaticResource UStatusTimeConverter}">
+                                <Binding Path="IsCount" Mode="OneWay" />
                                 <Binding Path="Remain" Mode="OneWay" />
                                 <Binding Path="ShowDecimal" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                             </MultiBinding>

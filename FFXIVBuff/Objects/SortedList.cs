@@ -207,9 +207,9 @@ namespace FFXIVBuff.Objects
         public void Reverse(int index, int count)
         {
         }
-        [Obsolete]
         public void Sort()
         {
+            this.m_lst.Sort((a, b) => a.CompareTo(b));
         }
         [Obsolete]
         public void Sort(Comparison<T> comparison)

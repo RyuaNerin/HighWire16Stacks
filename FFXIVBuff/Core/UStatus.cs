@@ -1,12 +1,19 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System;
 
 namespace FFXIVBuff.Core
 {
     [DebuggerDisplay("[{FStatus.Id}] {FStatus.Name}")]
-    internal class UStatus : INotifyPropertyChanged
+    internal class UStatus : INotifyPropertyChanged, IComparable<UStatus>
     {
+        private readonly int m_index;
+        public UStatus(int index)
+        {
+            this.m_index = index;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         
         private int m_id;
@@ -26,8 +33,14 @@ namespace FFXIVBuff.Core
         private bool m_isChecked;
         public bool IsChecked { get { return this.m_isChecked; } }
 
+        private bool m_isCount;
+        public bool IsCount { get { return this.m_isCount; } }
+
         public void Clear()
         {
+            if (this.m_id == 0)
+                return;
+
             if (this.m_fstatus != null)
                 this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
 
@@ -39,14 +52,23 @@ namespace FFXIVBuff.Core
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
         }
-        public void Update(int id, int param, float remain)
+        public bool Update(int id, int param, float remain)
         {
+            bool result = false;
+
             bool visibleUpdated = false;
             bool iconUpdated = false;
 
             visibleUpdated = this.m_id != id;
             if (visibleUpdated)
             {
+                result = true;
+                if (!FResource.StatusListDic.ContainsKey(id))
+                {
+                    this.Clear();
+                    return true;
+                }
+
                 if (this.m_fstatus != null)
                     this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
 
@@ -55,31 +77,38 @@ namespace FFXIVBuff.Core
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
 
+                this.m_isCount   = remain == 0 && !this.m_fstatus.IsNonExpries && param > 0;
+
                 this.m_fstatus.PropertyChanged += FStatus_PropertyChanged;
 
                 iconUpdated = true;
+                result = true;
             }
-            else
+            else if (!this.m_isCount)
             {
                 iconUpdated = this.m_iconIndex != param;
-            }
+            }            
 
             if (iconUpdated)
             {
                 this.m_iconIndex = param;
                 this.m_icon = this.m_fstatus.Icon;
 
-                if (this.m_fstatus.IconCount != 0 && param <= this.m_fstatus.IconCount)
+                if (this.m_fstatus.IconCount > 0 && param <= this.m_fstatus.IconCount)
                     this.m_icon += param - 1;
             }
 
-            this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;
+            if (this.m_isCount)
+                this.m_remain = param;
+            else
+                this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;
 
             if (this.PropertyChanged != null)
             {
                 if (visibleUpdated)
                 {
                     this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsCount"));
                     this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
                 }
 
@@ -88,6 +117,8 @@ namespace FFXIVBuff.Core
 
                 this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
             }
+
+            return result;
         }
 
         private void FStatus_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -96,6 +127,14 @@ namespace FFXIVBuff.Core
 
             if (this.PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+        }
+        
+        public int CompareTo(UStatus other)
+        {
+            if ( this.m_fstatus.IsDebuff && !other.m_fstatus.IsDebuff) return  1;
+            if (!this.m_fstatus.IsDebuff &&  other.m_fstatus.IsDebuff) return -1;
+
+            return this.m_index.CompareTo(other.m_index);
         }
     }
 }
