@@ -20,7 +20,7 @@
             <converters:BooleanInvert x:Key="BooleanInvert" />
 
             <converters:MilliConverter x:Key="MilliConverter" />
-            
+
             <converters:ProcessNameConverter x:Key="ProcessNameConverter" />
 
             <converters:IconToImageConverter x:Key="IconToImageConverter" />
@@ -119,7 +119,8 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="갱신 주기">
+            <GroupBox Header="갱신 주기"
+                      ToolTip="오버레이를 갱신할 텀을 설정합니다.">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50" />
@@ -139,7 +140,8 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="투명도">
+            <GroupBox Header="투명도"
+                      ToolTip="오버레이의 투명도를 설정합니다.">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50" />
@@ -161,7 +163,8 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="크기 설정">
+            <GroupBox Header="크기 설정"
+                      ToolTip="오버레이의 크기를 설정합니다">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50" />
@@ -194,16 +197,20 @@
                     </StackPanel.Resources>
                     
                     <CheckBox Content="소수점 자릿수 표시"
-                              IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}" />
+                              IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}"
+                              ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다" />
 
                     <CheckBox Content="오버레이 잠그기"
-                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}" />
+                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"
+                              ToolTip="오버레이를 클릭할 수 없게 설정합니다" />
 
                     <CheckBox Content="자동 숨기기"
-                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}" />
+                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}"
+                              ToolTip="다른 용무중에 오버레이를 보이지 않게 합니다" />
 
                     <CheckBox Content="시간순 정렬"
-                              IsChecked="{Binding Path=SortByTime, Source={x:Static core:Settings.Instance}}" />
+                              IsChecked="{Binding Path=SortByTime, Source={x:Static core:Settings.Instance}}"
+                              ToolTip="오버레이를 시간순으로 정렬합니다" />
                 </StackPanel>
             </GroupBox>
         </StackPanel>
@@ -294,12 +301,14 @@
                               Content="버프"
                               IsChecked="True"
                               Margin="0 0 10 0"
+                              ToolTip="버프만 표시합니다"
                               Checked="ctlShowBuff_Checked"
                               Unchecked="ctlShowBuff_Unchecked" />
                     
                     <CheckBox x:Name="ctlShowDebuff"
                               Content="디버프"
                               IsChecked="True"
+                              ToolTip="디버프만 표시합니다"
                               Checked="ctlShowDebuff_Checked"
                               Unchecked="ctlShowDebuff_Unchecked" />
                 </StackPanel>
