@@ -11,7 +11,7 @@ namespace FFXIVBuff.Core
     [JsonObject(MemberSerialization.OptIn)]
     internal class Settings : DependencyObject
     {
-        private static readonly Settings m_instance;
+        private static readonly Settings m_instance = new Settings();
         public static Settings Instance { get { return Settings.m_instance; } }
 
         private readonly static JsonSerializer JSerializer = new JsonSerializer { Formatting = Formatting.Indented };
@@ -20,9 +20,10 @@ namespace FFXIVBuff.Core
         static Settings()
         {
             Settings.SettingFilePath = Path.GetFullPath(Assembly.GetExecutingAssembly().Location) + ".cnf";
+        }
 
-            Settings.m_instance = new Settings();
-
+        public static void Load()
+        {
             if (File.Exists(SettingFilePath))
             {
                 try
@@ -43,11 +44,7 @@ namespace FFXIVBuff.Core
                 {
                 }
             }
-
         }
-
-        public static void Load()
-        { }
 
         public void Save()
         {
@@ -75,7 +72,7 @@ namespace FFXIVBuff.Core
         private static readonly DependencyProperty OverlayLeftDP
             = DependencyProperty.Register("OverlayLeft", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
         [JsonProperty]
-        public double Left
+        public double OverlayLeft
         {
             get { return (double)this.GetValue(OverlayLeftDP); }
             set { this.SetValue(OverlayLeftDP, value); }
