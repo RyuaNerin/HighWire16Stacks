@@ -27,17 +27,21 @@ namespace FFXIVBuff.Windows
 
             SetSortByTime(Settings.Instance.SortByTime);
 
+            /*
             this.m_timer = new DispatcherTimer();
             this.m_timer.Tick += m_timer_Tick;
-            this.m_timer.Interval = new TimeSpan(0, 0, 5);
+            this.m_timer.Interval = new TimeSpan(0, 0, 3);
             this.m_timer.Start();
+            */
         }
 
+        /*
         private void m_timer_Tick(object sender, EventArgs e)
         {
             this.Topmost = false;
             this.Topmost = true;
         }
+        */
 
         public void SetSortByTime(bool enable)
         {

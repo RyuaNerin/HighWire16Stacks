@@ -34,7 +34,7 @@ namespace FFXIVBuff.Core
                     using (var jr = new JsonTextReader(sr))
 #else
                     using (var sr = new BinaryReader(fr))
-                    using (var jr = new Newtonsoft.Json.Bson.BsonReader(sr))
+                    using (var jr = new Newtonsoft.Json.Bson.BsonReader(fr))
 #endif
                     {
                         JSerializer.Populate(jr, Settings.m_instance);

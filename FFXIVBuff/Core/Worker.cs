@@ -82,8 +82,8 @@ namespace FFXIVBuff.Core
 
         public static void Unload()
         {
-            if (m_eventhook != IntPtr.Zero)
-                NativeMethods.UnhookWinEvent(m_eventhook);
+            if (m_eventhook != null && !m_eventhook.IsClosed)
+                m_eventhook.Close();
             m_running = false;
         }
 
@@ -213,24 +213,23 @@ namespace FFXIVBuff.Core
             }
         }
 
-        private static NativeMethods.WinEventDelegate m_autohideDelegate = new NativeMethods.WinEventDelegate(WinEventProc);
-        private static IntPtr m_eventhook;
+        private static WinEventHook.WinEventDelegate m_autohideDelegate = new WinEventHook.WinEventDelegate(WinEventProc);
+        private static SafeHandle m_eventhook;
+
+        public const int HWND_TOPMOST = -1;
+        public const int SWP_NOMOVE = 0x2;
+        public const int SWP_NOSIZE = 0x1;
+
         public static void SetAutohide(bool enabled)
         {
             if (enabled)
             {
-                m_eventhook = NativeMethods.SetWinEventHook(
-                    NativeMethods.EVENT_SYSTEM_FOREGROUND,
-                    NativeMethods.EVENT_SYSTEM_FOREGROUND,
-                    IntPtr.Zero,
-                    m_autohideDelegate,
-                    0,
-                    0,
-                    NativeMethods.WINEVENT_OUTOFCONTEXT);
+                m_eventhook = WinEventHook.SetForegroundEvent(m_autohideDelegate);
             }
             else
             {
-                NativeMethods.UnhookWinEvent(m_eventhook);
+                m_eventhook.Close();
+                m_eventhook.Dispose();
 
                 m_overlayInstance.Visibility = Visibility.Visible;
             }
@@ -254,22 +253,6 @@ namespace FFXIVBuff.Core
 
         private static class NativeMethods
         {
-            public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-
-            [DllImport("user32.dll")]
-            public static extern IntPtr SetWinEventHook(
-                uint eventMin,
-                uint eventMax,
-                IntPtr hmodWinEventProc,
-                WinEventDelegate lpfnWinEventProc,
-                uint idProcess,
-                uint idThread,
-                uint dwFlags);
-
-            [DllImport("user32.dll")]
-            public static extern bool UnhookWinEvent(
-                IntPtr hWinEventHook);
-
             [DllImport("user32.dll")]
             public static extern bool SetWindowPos(
                 IntPtr hWnd,
@@ -346,15 +329,6 @@ namespace FFXIVBuff.Core
                 QueryLimitedInformation = 0x00001000,
                 Synchronize = 0x00100000
             }
-
-            
-            public const int HWND_TOPMOST = -1;
-            public const int SWP_NOMOVE = 0x2;
-            public const int SWP_NOSIZE = 0x1;
-
-            public const int EVENT_SYSTEM_FOREGROUND = 0x3;
-
-            public const int WINEVENT_OUTOFCONTEXT = 0;
 
             public static bool IsX86Process(IntPtr handle)
             {
