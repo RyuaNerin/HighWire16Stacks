@@ -111,6 +111,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\MilliConverter.cs" />
     <Compile Include="Converters\UStatusVisibilityConverter.cs" />
     <Compile Include="Converters\IconToImageConverter.cs" />
     <Compile Include="Converters\UStatusTimeConverter.cs" />

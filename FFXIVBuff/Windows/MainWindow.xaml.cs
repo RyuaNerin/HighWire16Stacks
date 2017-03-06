@@ -38,12 +38,11 @@ namespace FFXIVBuff.Windows
             this.m_processListView = CollectionViewSource.GetDefaultView(this.m_processList);
 
             InitializeComponent();
+            this.ctlContent.IsEnabled = false;
 
             var interop = new WindowInteropHelper(this);
             interop.EnsureHandle();
             this.Handle = interop.Handle;
-
-            this.ctlContent.IsEnabled = false;
 
             Sentry.AddHandler(this.Dispatcher);
         }
@@ -95,8 +94,6 @@ namespace FFXIVBuff.Windows
 
             Worker.OverlayInstance.Show();
             Worker.OverlayInstance.Refresh();
-
-            await this.ShowMessageAsync("test", "123 456 13 135 153 135 135 153 435 13 51 35 43");
         }
 
         internal void ExitedProcess()
@@ -205,19 +202,6 @@ namespace FFXIVBuff.Windows
 
         private void ctlShowBuff_Unchecked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (!this.ctlShowDebuff.IsChecked.Value)
-                {
-                    this.ctlShowBuff.IsChecked = true;
-                    return;
-                }
-            }
-            catch
-            {
-                return;
-            }
-
             this.m_buffShowBuff = false;
             this.m_buffListView.Refresh();
         }
@@ -230,19 +214,6 @@ namespace FFXIVBuff.Windows
 
         private void ctlShowDebuff_Unchecked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (!this.ctlShowBuff.IsChecked.Value)
-                {
-                    this.ctlShowDebuff.IsChecked = true;
-                    return;
-                }
-            }
-            catch
-            {
-                return;
-            }
-
             this.m_buffShowDebuff = false;
             this.m_buffListView.Refresh();
         }

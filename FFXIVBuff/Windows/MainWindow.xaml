@@ -8,10 +8,8 @@
                    xmlns:converters="clr-namespace:FFXIVBuff.Converters"
                    xmlns:core="clr-namespace:FFXIVBuff.Core"
                    Title="FFXIV Buff Overlay"
-                   Width="370"
-                   Height="474"
-                   MinWidth="370"
-                   MinHeight="474"
+                   Width="350"
+                   Height="448"
                    WindowStartupLocation="CenterScreen"
                    Loaded="MetroWindow_Loaded"
                    Closed="MetroWindow_Closed">
@@ -20,6 +18,8 @@
             <converters:PersentConverter x:Key="PersentConverter" />
 
             <converters:BooleanInvert x:Key="BooleanInvert" />
+
+            <converters:MilliConverter x:Key="MilliConverter" />
             
             <converters:ProcessNameConverter x:Key="ProcessNameConverter" />
 
@@ -27,7 +27,7 @@
 
             <converters:BooleanConverter x:Key="True2Visible"
                                          TrueValue="{x:Static Visibility.Visible}"
-                                         FalseValue="{x:Static Visibility.Hidden}" />
+                                         FalseValue="{x:Static Visibility.Collapsed}" />
         </ResourceDictionary>
     </metro:MetroWindow.Resources>
     
@@ -37,15 +37,46 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-
-        <metro:ProgressRing Grid.ColumnSpan="2"  IsActive="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource BooleanInvert}}"
-                            Margin="0 0 0 0" />
-
-        <StackPanel Grid.Column="0"
+        
+        <metro:ProgressRing Grid.ColumnSpan="2"
+                            IsActive="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource BooleanInvert}}" />
+        
+        <StackPanel x:Name="ctlLeftPanel"
+                    Grid.Column="0"
                     Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource True2Visible}}"
-                    Margin="0">
-            <GroupBox Header="파이널 판타지 프로세스"
-                      Margin="0 0 0 5">
+                    VerticalAlignment="Top">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type GroupBox}"
+                       BasedOn="{StaticResource MetroGroupBox}">
+                    <Setter Property="Margin"
+                            Value="0 0 0 5" />
+                    
+                    <Style.Resources>
+                        <Style TargetType="{x:Type Grid}">
+                            <Style.Resources>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment"
+                                            Value="Stretch" />
+                                    <Setter Property="VerticalAlignment"
+                                            Value="Stretch" />
+                                    <Setter Property="TextAlignment"
+                                            Value="Center" />
+                                </Style>
+                                
+                                <Style TargetType="{x:Type Slider}"
+                                       BasedOn="{StaticResource FlatSlider}">
+                                    <Setter Property="metro:SliderHelper.ChangeValueBy"
+                                            Value="LargeChange" />
+                                    <Setter Property="metro:SliderHelper.EnableMouseWheel"
+                                            Value="MouseHover" />
+                                </Style>
+                            </Style.Resources>
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </StackPanel.Resources>
+            
+            <GroupBox Header="파이널 판타지 프로세스">
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -88,16 +119,27 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="갱신 주기 (0.001 초)"
-                      Margin="0 0 0 5">
-                <metro:NumericUpDown Minimum="10"
-                                     Value="{Binding Path=RefreshTime, Source={x:Static core:Settings.Instance}}"
-                                     Maximum="1000"
-                                     StringFormat="{}{0:##0}" />
+            <GroupBox Header="갱신 주기">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource MilliConverter}, StringFormat={}{0:##0.00} 초}" />
+
+                    <Slider Grid.Column="1"
+                            x:Name="ctlRefreshTime"
+                            Value="{Binding Path=RefreshTime, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Minimum="10"
+                            Maximum="1000"
+                            LargeChange="100"
+                            SmallChange="10" />
+                </Grid>
             </GroupBox>
 
-            <GroupBox Header="투명도"
-                      Margin="0 0 0 5">
+            <GroupBox Header="투명도">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50" />
@@ -105,20 +147,21 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Column="0"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"
-                               TextAlignment="Center"
-                               Text="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}, Mode=OneWay, StringFormat={}{0:##0} %}" />
+                               Text="{Binding Path=Value, ElementName=ctlOpacity, Mode=OneWay, StringFormat={}{0:##0} %}" />
                         
                     <Slider Grid.Column="1"
+                            x:Name="ctlOpacity"
                             Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
                             Minimum="0"
-                            Maximum="100"/>
+                            Maximum="100"
+                            LargeChange="10"
+                            SmallChange="5"
+                            metro:SliderHelper.ChangeValueBy="LargeChange"
+                            metro:SliderHelper.EnableMouseWheel="ControlFocused" />
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="크기 설정"
-                      Margin="0 0 0 5">
+            <GroupBox Header="크기 설정">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50" />
@@ -126,32 +169,38 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"
-                               TextAlignment="Center"
-                               Text="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}, Mode=OneWay, StringFormat={}{0:##0} %}" />
+                               Text="{Binding Path=Value, ElementName=ctlSacle, Mode=OneWay, StringFormat={}{0:##0} %}" />
 
                     <Slider Grid.Column="1"
+                            x:Name="ctlSacle"
                             Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
                             Minimum="10"
-                            Maximum="500"/>
+                            Maximum="500"
+                            LargeChange="10"
+                            SmallChange="5"
+                            metro:SliderHelper.ChangeValueBy="LargeChange"
+                            metro:SliderHelper.EnableMouseWheel="ControlFocused" />
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="기타 옵션"
-                      Margin="0 0 0 0">
-                <StackPanel>
+            <GroupBox Header="기타 옵션">
+                <StackPanel Margin="0 0 0 -3">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type CheckBox}"
+                               BasedOn="{StaticResource MetroCheckBox}">
+                            <Setter Property="Margin"
+                                    Value="0 0 0 3" />
+                        </Style>
+                    </StackPanel.Resources>
+                    
                     <CheckBox Content="소수점 자릿수 표시"
-                              IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}"
-                              Margin="0 0 0 3" />
+                              IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}" />
 
                     <CheckBox Content="오버레이 잠그기"
-                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"
-                              Margin="0 0 0 3" />
+                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}" />
 
                     <CheckBox Content="자동 숨기기"
-                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}"
-                              Margin="0 0 0 3" />
+                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}" />
 
                     <CheckBox Content="시간순 정렬"
                               IsChecked="{Binding Path=SortByTime, Source={x:Static core:Settings.Instance}}" />
@@ -187,7 +236,7 @@
                 
                 <metro:ToggleSwitch Grid.Row="1"
                                     x:Name="ctlShowChecked"
-                                    Padding="-3 -4 -4 -5"
+                                    Padding="0"
                                     Margin="0 0 3 0"
                                     OffLabel=""
                                     OnLabel=""
@@ -221,8 +270,8 @@
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     
-                                    <Image Width="24"
-                                           Height="32"
+                                    <Image Width="18"
+                                           Height="24"
                                            Margin="0 0 0 0"
                                            Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}}"/>
 
@@ -244,7 +293,7 @@
                     <CheckBox x:Name="ctlShowBuff"
                               Content="버프"
                               IsChecked="True"
-                              Margin="0 0 5 0"
+                              Margin="0 0 10 0"
                               Checked="ctlShowBuff_Checked"
                               Unchecked="ctlShowBuff_Unchecked" />
                     

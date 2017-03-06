@@ -80,10 +80,9 @@ namespace FFXIVBuff.Core
         private static MemoryOffset m_memoryOffset;
 
         private static int m_delay = 1;
-        public static int Delay
+        public static void SetDelay(int value)
         {
-            get { return m_delay; }
-            set { m_delay = value; }
+            m_delay = value;
         }
 
         public static IntPtr m_ffxivWindowHandle { get; private set; }
@@ -91,7 +90,7 @@ namespace FFXIVBuff.Core
         static Worker()
         {
             if (Settings.Instance != null)
-                Delay = (int)Settings.Instance.RefreshTime;
+                SetDelay((int)Settings.Instance.RefreshTime);
         }
 
         public static void Load()

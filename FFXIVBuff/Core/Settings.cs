@@ -199,7 +199,7 @@ namespace FFXIVBuff.Core
         private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.Property == RefreshTimeDP)
-                Worker.Delay = (int)(double)e.NewValue;
+                Worker.SetDelay((int)(double)e.NewValue);
 
             else if (e.Property == ClickThroughDP)
                 Worker.SetClickThrough((bool)e.NewValue);
