@@ -15,8 +15,6 @@ namespace FFXIVBuff.Core
 {
     internal static class Worker
     {
-        public static MemoryOffsets DefaultMemoryOffset;
-
         private static object m_overlayInstanceSync = new object();
         private static Overlay m_overlayInstance;
         public static Overlay OverlayInstance

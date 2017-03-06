@@ -72,22 +72,22 @@ namespace FFXIVBuff.Core
             }
         }
 
-        private static readonly DependencyProperty LeftDP
-            = DependencyProperty.Register("Left", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
+        private static readonly DependencyProperty OverlayLeftDP
+            = DependencyProperty.Register("OverlayLeft", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
         [JsonProperty]
         public double Left
         {
-            get { return (double)this.GetValue(LeftDP); }
-            set { this.SetValue(LeftDP, value); }
+            get { return (double)this.GetValue(OverlayLeftDP); }
+            set { this.SetValue(OverlayLeftDP, value); }
         }
 
-        private static readonly DependencyProperty TopDP
-            = DependencyProperty.Register("Top", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
+        private static readonly DependencyProperty OverlayTopDP
+            = DependencyProperty.Register("OverlayTop", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
         [JsonProperty]
-        public double Top
+        public double OverlayTop
         {
-            get { return (double)this.GetValue(TopDP); }
-            set { this.SetValue(TopDP, value); }
+            get { return (double)this.GetValue(OverlayTopDP); }
+            set { this.SetValue(OverlayTopDP, value); }
         }
 
         private static readonly DependencyProperty OpacityDP
