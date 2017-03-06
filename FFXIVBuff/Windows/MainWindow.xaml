@@ -98,18 +98,44 @@
 
             <GroupBox Header="투명도"
                       Margin="0 0 0 5">
-                <metro:NumericUpDown Minimum="0"
-                                     Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
-                                     Maximum="100"
-                                     StringFormat="{}{0:##0} %" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               TextAlignment="Center"
+                               Text="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}, Mode=OneWay, StringFormat={}{0:##0} %}" />
+                        
+                    <Slider Grid.Column="1"
+                            Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Minimum="0"
+                            Maximum="100"/>
+                </Grid>
             </GroupBox>
 
             <GroupBox Header="크기 설정"
                       Margin="0 0 0 5">
-                <metro:NumericUpDown Minimum="100"
-                                     Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
-                                     Maximum="500"
-                                     StringFormat="{}{0:##0} %" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               TextAlignment="Center"
+                               Text="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}, Mode=OneWay, StringFormat={}{0:##0} %}" />
+
+                    <Slider Grid.Column="1"
+                            Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Minimum="10"
+                            Maximum="500"/>
+                </Grid>
             </GroupBox>
 
             <GroupBox Header="기타 옵션"

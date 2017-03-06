@@ -101,7 +101,7 @@ namespace FFXIVBuff.Core
                             csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
                             csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries))
                         {
-                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, Settings.Instance.GetIsChecked(id));
+                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, Settings.Instance.IsChecked(id));
                             StatusList.Add(status);
                             StatusListDic.Add(id, status);
                         }

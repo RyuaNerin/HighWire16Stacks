@@ -91,7 +91,7 @@ namespace FFXIVBuff.Core
         }
 
         private static readonly DependencyProperty OpacityDP
-            = DependencyProperty.Register("Opacity", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(100d));
+            = DependencyProperty.Register("Opacity", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(1d));
         [JsonProperty]
         public double Opacity
         {
@@ -189,7 +189,8 @@ namespace FFXIVBuff.Core
                     this.m_checkedList.Remove(id);
             }
         }
-        public bool GetIsChecked(int id)
+
+        public bool IsChecked(int id)
         {
             lock (this.m_checkedList)
                 return this.m_checkedList.Contains(id);

@@ -95,6 +95,8 @@ namespace FFXIVBuff.Windows
 
             Worker.OverlayInstance.Show();
             Worker.OverlayInstance.Refresh();
+
+            await this.ShowMessageAsync("test", "123 456 13 135 153 135 135 153 435 13 51 35 43");
         }
 
         internal void ExitedProcess()

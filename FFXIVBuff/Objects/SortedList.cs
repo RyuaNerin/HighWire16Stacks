@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace FFXIVBuff.Objects
 {
     [DebuggerDisplay("Count = {Count}")]
-    public class SortedList<T> : IList<T>, ICollection<T>, IEnumerable<T>
+    public class SortedList<T> : IList<T>, ICollection<T>, IEnumerable<T>, IEnumerable
         where T : IComparable<T>
     {
         private readonly List<T> m_lst = new List<T>();
@@ -141,7 +141,7 @@ namespace FFXIVBuff.Objects
         {
             return this.m_lst.GetEnumerator();
         }
-        IEnumerator IEnumerable.GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             return this.m_lst.GetEnumerator();
         }
