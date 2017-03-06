@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace FFXIVBuff.Core
 {
-    internal class JsonHexToInt : JsonConverter
+    internal class JsonHexToIntConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -12,7 +12,10 @@ namespace FFXIVBuff.Core
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var v = reader.ReadAsString();
+            var v = reader.Value as string;
+            if (v == null)
+                return null;
+
             if (v.StartsWith("0x"))
                 v = v.Substring(2);
 
@@ -28,10 +31,12 @@ namespace FFXIVBuff.Core
     [JsonObject]
     internal class MemoryOffset
     {
-        [JsonProperty(ItemConverterType=typeof(JsonHexToInt))]
+        [JsonProperty]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
         public int ptr { get; set; }
 
-        [JsonProperty(ItemConverterType=typeof(JsonHexToInt))]
+        [JsonProperty]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
         public int off { get; set; }
     }
 

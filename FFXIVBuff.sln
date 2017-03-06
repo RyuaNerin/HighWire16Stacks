@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXIVBuff", "FFXIVBuff\FFXI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconModifier", "IconModifier\IconModifier.csproj", "{FF68047B-11A9-4B90-9EEA-669875A0ABAE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A50DB3C-A94F-420F-B966-72DE5A81C31A}"
-	ProjectSection(SolutionItems) = preProject
-		offset.json = offset.json
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

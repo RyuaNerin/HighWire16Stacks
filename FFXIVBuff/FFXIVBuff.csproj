@@ -167,6 +167,7 @@
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\offset.json" />
     <None Include="Resources\status.exh_ko.csv" />
     <None Include="snk.snk" />
   </ItemGroup>

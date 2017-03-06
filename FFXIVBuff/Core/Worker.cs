@@ -15,22 +15,7 @@ namespace FFXIVBuff.Core
 {
     internal static class Worker
     {
-        //v3.21, 2016.12.26.0000.0000(2245781, ex1:2016.12.26.0000.0000)
-        public static readonly MemoryOffsets DefaultMemoryOffset =
-            new MemoryOffsets
-            {
-                count = 21,
-                x86 = new MemoryOffset
-                {
-                    ptr = 0x0F67940,
-                    off = 0x0001518
-                },
-                x64 = new MemoryOffset
-                {
-                    ptr = 0x1551FE0,
-                    off = 0x00018E0
-                }
-            };
+        public static MemoryOffsets DefaultMemoryOffset;
 
         private static object m_overlayInstanceSync = new object();
         private static Overlay m_overlayInstance;
@@ -106,6 +91,8 @@ namespace FFXIVBuff.Core
 
         public static void Update()
         {
+            string body;
+
             try
             {
                 var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/FBOverlay/master/patch.json") as HttpWebRequest;
@@ -114,12 +101,14 @@ namespace FFXIVBuff.Core
                 using (var res = req.GetResponse())
                 using (var stream = res.GetResponseStream())
                 using (var reader = new StreamReader(stream))
-                    m_memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(reader.ReadToEnd());
+                    body = reader.ReadToEnd();
             }
             catch
             {
-                m_memoryOffsets = DefaultMemoryOffset;
+                body = Properties.Resources.offset;
             }
+            
+            m_memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(body);
             
             UStatus ustatus;
             for (int i = 0; i < m_memoryOffsets.count; ++i)

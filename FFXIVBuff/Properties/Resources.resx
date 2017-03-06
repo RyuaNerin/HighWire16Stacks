@@ -124,6 +124,9 @@
   <data name="icons_pos" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\icons-pos.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="offset" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\offset.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="status_exh_ko" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\status.exh_ko.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
