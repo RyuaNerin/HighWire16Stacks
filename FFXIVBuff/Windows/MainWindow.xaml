@@ -8,9 +8,11 @@
                    xmlns:converters="clr-namespace:FFXIVBuff.Converters"
                    xmlns:core="clr-namespace:FFXIVBuff.Core"
                    Title="FFXIV Buff Overlay"
+                   WindowStartupLocation="CenterScreen"
                    Width="350"
                    Height="448"
-                   WindowStartupLocation="CenterScreen"
+                   BorderBrush="{DynamicResource AccentColorBrush}"
+                   BorderThickness="1"
                    Loaded="MetroWindow_Loaded"
                    Closed="MetroWindow_Closed">
     <metro:MetroWindow.Resources>
@@ -20,6 +22,8 @@
             <converters:BooleanInvert x:Key="BooleanInvert" />
 
             <converters:MilliConverter x:Key="MilliConverter" />
+
+            <converters:Ms2FpsConverter x:Key="Ms2FpsConverter" />
 
             <converters:ProcessNameConverter x:Key="ProcessNameConverter" />
 
@@ -119,7 +123,8 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="갱신 주기"
+            <GroupBox Header="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource Ms2FpsConverter}}"
+                      HeaderStringFormat="갱신주기 (약 {0:##0} fps)"
                       ToolTip="오버레이를 갱신할 텀을 설정합니다.">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -128,15 +133,15 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0"
-                               Text="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource MilliConverter}, StringFormat={}{0:##0.00} 초}" />
+                               Text="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource MilliConverter}, StringFormat={}{0:##0.000} 초}" />
 
                     <Slider Grid.Column="1"
                             x:Name="ctlRefreshTime"
-                            Value="{Binding Path=RefreshTime, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Value="{Binding Path=RefreshTime, Source={x:Static core:Settings.Instance}}"
                             Minimum="10"
                             Maximum="1000"
                             LargeChange="100"
-                            SmallChange="10" />
+                            SmallChange="1" />
                 </Grid>
             </GroupBox>
 
@@ -157,7 +162,7 @@
                             Minimum="0"
                             Maximum="100"
                             LargeChange="10"
-                            SmallChange="5"
+                            SmallChange="1"
                             metro:SliderHelper.ChangeValueBy="LargeChange"
                             metro:SliderHelper.EnableMouseWheel="ControlFocused" />
                 </Grid>
@@ -180,7 +185,7 @@
                             Minimum="10"
                             Maximum="500"
                             LargeChange="10"
-                            SmallChange="5"
+                            SmallChange="1"
                             metro:SliderHelper.ChangeValueBy="LargeChange"
                             metro:SliderHelper.EnableMouseWheel="ControlFocused" />
                 </Grid>

@@ -231,7 +231,6 @@ namespace FFXIVBuff.Core
             else
             {
                 m_eventhook.Close();
-                m_eventhook.Dispose();
 
                 m_overlayInstance.Visibility = Visibility.Visible;
             }
@@ -239,11 +238,13 @@ namespace FFXIVBuff.Core
         
         private static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            if (hwnd == m_overlayInstance.Handle)
+            var ptr = NativeMethods.GetForegroundWindow();
+
+            if (ptr == m_overlayInstance.Handle)
                 return;
 
-            if (hwnd == Worker.m_ffxivWindowHandle ||
-                hwnd == MainWindow.Instance.Handle)
+            if (ptr == Worker.m_ffxivWindowHandle ||
+                ptr == MainWindow.Instance.Handle)
             {
                 m_overlayInstance.Visibility = Visibility.Visible;
             }
@@ -255,6 +256,9 @@ namespace FFXIVBuff.Core
 
         private static class NativeMethods
         {
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+
             [DllImport("kernel32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool WriteProcessMemory(

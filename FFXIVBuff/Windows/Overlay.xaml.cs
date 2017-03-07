@@ -32,7 +32,9 @@ namespace FFXIVBuff.Windows
 
         private void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            if (hwnd == Worker.FFXIVHandle)
+            var ptr = NativeMethods.GetForegroundWindow();
+
+            if (ptr == Worker.FFXIVHandle)
             {
                 this.Topmost = false;
                 this.Topmost = true;
@@ -58,8 +60,6 @@ namespace FFXIVBuff.Windows
                 this.Left = screen.WorkingArea.Left + 200;
                 this.Top  = screen.WorkingArea.Top + 200;
             }
-
-            this.Visibility = Visibility.Visible;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -104,6 +104,9 @@ namespace FFXIVBuff.Windows
 
         private static class NativeMethods
         {
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+
             [DllImport("user32.dll")]
             public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
