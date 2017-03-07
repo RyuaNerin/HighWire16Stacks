@@ -121,18 +121,18 @@
     <Compile Include="Converters\ProcessNameConverter.cs" />
     <Compile Include="Core\FStatus.cs" />
     <Compile Include="Core\FResource.cs" />
-    <Compile Include="Core\WinEventHookHandle.cs" />
+    <Compile Include="Utilities\WinEventHookHandle.cs" />
     <Compile Include="Core\MemoryOffset.cs" />
     <Compile Include="Core\UStatus.cs" />
     <Compile Include="GithubLastestRealease.cs" />
     <Compile Include="Sentry.cs" />
     <Compile Include="Utilities\OutlinedTextBlock.cs" />
-    <Compile Include="Objects\WpfScreen.cs" />
+    <Compile Include="Utilities\WpfScreen.cs" />
     <Compile Include="Windows\Overlay.xaml.cs">
       <DependentUpon>Overlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Settings.cs" />
-    <Compile Include="Objects\SortedList.cs" />
+    <Compile Include="Utilities\SortedList.cs" />
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using FFXIVBuff.Core;
-using FFXIVBuff.Objects;
+using FFXIVBuff.Utilities;
 
 namespace FFXIVBuff.Windows
 {

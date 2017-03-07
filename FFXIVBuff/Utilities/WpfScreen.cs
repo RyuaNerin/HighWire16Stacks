@@ -7,7 +7,7 @@ using System.Windows.Interop;
 using DPoint = System.Drawing.Point;
 using WPoint = System.Windows.Point;
 
-namespace FFXIVBuff.Objects
+namespace FFXIVBuff.Utilities
 {
     using Window = System.Windows.Window;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FFXIVBuff.Core
+namespace FFXIVBuff.Utilities
 {
     internal class WinEventHookHandle : SafeHandle
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-namespace FFXIVBuff.Objects
+namespace FFXIVBuff.Utilities
 {
     [DebuggerDisplay("Count = {Count}")]
     public class SortedList<T> : IList<T>, ICollection<T>, IEnumerable<T>, IEnumerable

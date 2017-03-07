@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CsvHelper;
-using FFXIVBuff.Objects;
+using FFXIVBuff.Utilities;
 
 namespace FFXIVBuff.Core
 {

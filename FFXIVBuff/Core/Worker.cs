@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using FFXIVBuff.Utilities;
 using FFXIVBuff.Windows;
 using Newtonsoft.Json;
 
