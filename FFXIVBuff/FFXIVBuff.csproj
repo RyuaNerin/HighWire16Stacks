@@ -121,7 +121,7 @@
     <Compile Include="Converters\ProcessNameConverter.cs" />
     <Compile Include="Core\FStatus.cs" />
     <Compile Include="Core\FResource.cs" />
-    <Compile Include="Core\WinEventHook.cs" />
+    <Compile Include="Core\WinEventHookHandle.cs" />
     <Compile Include="Core\MemoryOffset.cs" />
     <Compile Include="Core\UStatus.cs" />
     <Compile Include="GithubLastestRealease.cs" />

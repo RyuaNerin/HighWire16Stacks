@@ -62,6 +62,11 @@ namespace FFXIVBuff.Core
         private static MemoryOffsets m_memoryOffsets;
         private static MemoryOffset m_memoryOffset;
 
+        public static IntPtr FFXIVHandle
+        {
+            get { return m_ffxivHandle; }
+        }
+
         private static int m_delay = 1;
         public static void SetDelay(int value)
         {
@@ -213,18 +218,14 @@ namespace FFXIVBuff.Core
             }
         }
 
-        private static WinEventHook.WinEventDelegate m_autohideDelegate = new WinEventHook.WinEventDelegate(WinEventProc);
+        private static WinEventHookHandle.WinEventDelegate m_autohideDelegate = new WinEventHookHandle.WinEventDelegate(WinEventProc);
         private static SafeHandle m_eventhook;
-
-        public const int HWND_TOPMOST = -1;
-        public const int SWP_NOMOVE = 0x2;
-        public const int SWP_NOSIZE = 0x1;
 
         public static void SetAutohide(bool enabled)
         {
             if (enabled)
             {
-                m_eventhook = WinEventHook.SetForegroundEvent(m_autohideDelegate);
+                m_eventhook = WinEventHookHandle.SetForegroundEvent(m_autohideDelegate);
             }
             else
             {
@@ -253,16 +254,6 @@ namespace FFXIVBuff.Core
 
         private static class NativeMethods
         {
-            [DllImport("user32.dll")]
-            public static extern bool SetWindowPos(
-                IntPtr hWnd,
-                IntPtr hWndInsertAfter,
-                int X,
-                int Y,
-                int cx,
-                int cy,
-                uint uFlags);
-
             [DllImport("kernel32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool WriteProcessMemory(

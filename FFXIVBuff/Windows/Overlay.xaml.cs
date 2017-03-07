@@ -12,7 +12,7 @@ namespace FFXIVBuff.Windows
     {
         private readonly bool m_clickThrough;
 
-        private readonly DispatcherTimer m_timer;
+        private readonly SafeHandle m_topMost;
 
         private IntPtr m_handle;
         public IntPtr Handle { get { return this.m_handle; } }
@@ -27,21 +27,17 @@ namespace FFXIVBuff.Windows
 
             SetSortByTime(Settings.Instance.SortByTime);
 
-            /*
-            this.m_timer = new DispatcherTimer();
-            this.m_timer.Tick += m_timer_Tick;
-            this.m_timer.Interval = new TimeSpan(0, 0, 3);
-            this.m_timer.Start();
-            */
+            this.m_topMost = WinEventHookHandle.SetForegroundEvent(this.WinEventProc);
         }
 
-        /*
-        private void m_timer_Tick(object sender, EventArgs e)
+        private void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            this.Topmost = false;
-            this.Topmost = true;
+            if (hwnd == Worker.FFXIVHandle)
+            {
+                this.Topmost = false;
+                this.Topmost = true;
+            }
         }
-        */
 
         public void SetSortByTime(bool enable)
         {
@@ -69,6 +65,8 @@ namespace FFXIVBuff.Windows
         private void Window_Closed(object sender, EventArgs e)
         {
             Sentry.RemoveHandler(this.Dispatcher);
+
+            this.m_topMost.Close();
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
