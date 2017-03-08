@@ -106,7 +106,7 @@ namespace FFXIVBuff.Core
         }
 
         private static readonly DependencyProperty RefreshTimeDP
-            = DependencyProperty.Register("RefreshTime", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(100d, PropertyChangedCallback));
+            = DependencyProperty.Register("RefreshTime", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(33d, PropertyChangedCallback));
         [JsonProperty]
         public double RefreshTime
         {
