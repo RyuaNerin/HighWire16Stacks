@@ -8,7 +8,7 @@
         Left="{Binding Path=OverlayLeft, Mode=TwoWay}"
         Top="{Binding Path=OverlayTop, Mode=TwoWay}"
         SizeToContent="WidthAndHeight"
-        Opacity="{Binding Path=Opacity, Mode=TwoWay}"
+        Opacity="{Binding Path=Opacity, Mode=OneWay}"
         ResizeMode="NoResize"
         WindowStyle="None"
         AllowsTransparency="True"
