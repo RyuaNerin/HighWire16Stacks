@@ -4,15 +4,17 @@ using System.Windows.Data;
 
 namespace FFXIVBuff.Converters
 {
-    internal class Ms2FpsConverter : IValueConverter
+    public sealed class MultiplyConverter : IValueConverter
     {
+        public double Multiply { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is double) ? Math.Ceiling(1000 / (double)value) : 0d;
+            return (value is double) ? ((double)value * this.Multiply) : 0d;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            return (value is double) ? ((double)value / this.Multiply) : 0d;
         }
     }
 }

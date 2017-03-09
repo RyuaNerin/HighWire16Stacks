@@ -79,7 +79,7 @@ namespace FFXIVBuff.Core
         static Worker()
         {
             if (Settings.Instance != null)
-                SetDelay((int)Settings.Instance.RefreshTime);
+                SetDelay(Settings.Instance.OverlayRefreshCycle);
         }
 
         public static void Load()

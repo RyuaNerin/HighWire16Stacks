@@ -10,20 +10,19 @@
                    Title="FFXIV Buff Overlay"
                    WindowStartupLocation="CenterScreen"
                    Width="350"
-                   Height="448"
+                   Height="520"
                    BorderBrush="{DynamicResource AccentColorBrush}"
                    BorderThickness="1"
                    Loaded="MetroWindow_Loaded"
                    Closed="MetroWindow_Closed">
     <metro:MetroWindow.Resources>
         <ResourceDictionary>
-            <converters:PersentConverter x:Key="PersentConverter" />
-
             <converters:BooleanInvert x:Key="BooleanInvert" />
 
-            <converters:MilliConverter x:Key="MilliConverter" />
+            <converters:MultiplyConverter x:Key="PersentConverter"
+                                          Multiply="100" />
 
-            <converters:Ms2FpsConverter x:Key="Ms2FpsConverter" />
+            <converters:MilliConverter x:Key="MilliConverter" />
 
             <converters:ProcessNameConverter x:Key="ProcessNameConverter" />
 
@@ -58,13 +57,15 @@
                     <Style.Resources>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Resources>
-                                <Style TargetType="{x:Type TextBlock}">
+                                <Style TargetType="{x:Type TextBox}">
                                     <Setter Property="HorizontalAlignment"
                                             Value="Stretch" />
                                     <Setter Property="VerticalAlignment"
                                             Value="Stretch" />
                                     <Setter Property="TextAlignment"
                                             Value="Center" />
+                                    <Setter Property="Margin"
+                                            Value="0 0 3 0" />
                                 </Style>
                                 
                                 <Style TargetType="{x:Type Slider}"
@@ -73,6 +74,8 @@
                                             Value="LargeChange" />
                                     <Setter Property="metro:SliderHelper.EnableMouseWheel"
                                             Value="MouseHover" />
+                                    <Setter Property="Margin"
+                                            Value="0 0 0 3" />
                                 </Style>
                             </Style.Resources>
                         </Style>
@@ -80,7 +83,7 @@
                 </Style>
             </StackPanel.Resources>
             
-            <GroupBox Header="파이널 판타지 프로세스">
+            <GroupBox Header="파이널 판타지 14">
                 <Grid Margin="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -95,7 +98,7 @@
                     <ComboBox Grid.Row="0"
                               Grid.ColumnSpan="2"
                               x:Name="ctlProcessList"
-                              Width="130">
+                              Width="120">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={StaticResource ProcessNameConverter}}"
@@ -123,41 +126,41 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource Ms2FpsConverter}}"
-                      HeaderStringFormat="갱신주기 (약 {0:##0} fps)"
+            <GroupBox Header="오버레이 FPS"
                       ToolTip="오버레이를 갱신할 텀을 설정합니다.">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding Path=Value, ElementName=ctlRefreshTime, Mode=OneWay, Converter={StaticResource MilliConverter}, StringFormat={}{0:##0.000} 초}" />
+                    <Slider Grid.Row="0"
+                            Value="{Binding Path=OverlayFPS, Source={x:Static core:Settings.Instance}}"
+                            Minimum="1"
+                            Maximum="60"
+                            LargeChange="10"
+                            SmallChange="1"
+                            metro:SliderHelper.ChangeValueBy="LargeChange"
+                            metro:SliderHelper.EnableMouseWheel="ControlFocused" />
 
-                    <Slider Grid.Column="1"
-                            x:Name="ctlRefreshTime"
-                            Value="{Binding Path=RefreshTime, Source={x:Static core:Settings.Instance}}"
-                            Minimum="10"
-                            Maximum="1000"
-                            LargeChange="100"
-                            SmallChange="1" />
+                    <metro:NumericUpDown Grid.Row="1"
+                                         StringFormat="{}{0:##0} fps"
+                                         Value="{Binding Path=OverlayFPS, Source={x:Static core:Settings.Instance}}"
+                                         Interval="1"
+                                         Minimum="1"
+                                         Maximum="60" />
                 </Grid>
             </GroupBox>
 
             <GroupBox Header="투명도"
                       ToolTip="오버레이의 투명도를 설정합니다.">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding Path=Value, ElementName=ctlOpacity, Mode=OneWay, StringFormat={}{0:##0} %}" />
-                        
-                    <Slider Grid.Column="1"
-                            x:Name="ctlOpacity"
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Slider Grid.Row="0"
                             Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
                             Minimum="0"
                             Maximum="100"
@@ -165,29 +168,39 @@
                             SmallChange="1"
                             metro:SliderHelper.ChangeValueBy="LargeChange"
                             metro:SliderHelper.EnableMouseWheel="ControlFocused" />
+
+                    <metro:NumericUpDown Grid.Row="1"
+                                         StringFormat="{}{0:##0} %"
+                                         Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                                         Interval="10"
+                                         Minimum="0"
+                                         Maximum="100" />
                 </Grid>
             </GroupBox>
 
             <GroupBox Header="크기 설정"
                       ToolTip="오버레이의 크기를 설정합니다">
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding Path=Value, ElementName=ctlSacle, Mode=OneWay, StringFormat={}{0:##0} %}" />
-
-                    <Slider Grid.Column="1"
-                            x:Name="ctlSacle"
+                    <Slider Grid.Row="0"
                             Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
                             Minimum="10"
-                            Maximum="500"
-                            LargeChange="10"
-                            SmallChange="1"
+                            Maximum="1000"
+                            LargeChange="20"
+                            SmallChange="10"
                             metro:SliderHelper.ChangeValueBy="LargeChange"
                             metro:SliderHelper.EnableMouseWheel="ControlFocused" />
+
+                    <metro:NumericUpDown Grid.Row="1"
+                                         StringFormat="{}{0:##0} %"
+                                         Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                                         Interval="20"
+                                         Minimum="10"
+                                         Maximum="1000" />
                 </Grid>
             </GroupBox>
 
@@ -201,7 +214,7 @@
                         </Style>
                     </StackPanel.Resources>
                     
-                    <CheckBox Content="소수점 자릿수 표시"
+                    <CheckBox Content="소수점 표시"
                               IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}"
                               ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다" />
 
@@ -268,6 +281,8 @@
                          Grid.ColumnSpan="2"
                          x:Name="ctlBuffList"
                          Margin="0 3 0 3"
+                         BorderBrush="{DynamicResource AccentColorBrush}"
+                         BorderThickness="1"
                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          SelectionMode="Single">

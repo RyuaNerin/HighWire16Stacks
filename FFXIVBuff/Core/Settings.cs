@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using FFXIVBuff.Utilities;
 using Newtonsoft.Json;
+using System;
 
 namespace FFXIVBuff.Core
 {
@@ -105,13 +106,18 @@ namespace FFXIVBuff.Core
             set { this.SetValue(ScaleDP, value); }
         }
 
-        private static readonly DependencyProperty RefreshTimeDP
-            = DependencyProperty.Register("RefreshTime", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(33d, PropertyChangedCallback));
+        private static readonly DependencyProperty OverlayFPSDP
+            = DependencyProperty.Register("OverlayFPS", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(30d, PropertyChangedCallback));
         [JsonProperty]
-        public double RefreshTime
+        public double OverlayFPS
         {
-            get { return (double)this.GetValue(RefreshTimeDP); }
-            set { this.SetValue(RefreshTimeDP, value); }
+            get { return (double)this.GetValue(OverlayFPSDP); }
+            set { this.SetValue(OverlayFPSDP, value); }
+        }
+
+        public int OverlayRefreshCycle
+        {
+            get { return (int)Math.Ceiling(1000 / OverlayFPS); }
         }
 
         private static readonly DependencyProperty ClickThroughDP
@@ -195,8 +201,8 @@ namespace FFXIVBuff.Core
         
         private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.Property == RefreshTimeDP)
-                Worker.SetDelay((int)(double)e.NewValue);
+            if (e.Property == OverlayFPSDP)
+                Worker.SetDelay(((Settings)d).OverlayRefreshCycle);
 
             else if (e.Property == ClickThroughDP)
                 Worker.SetClickThrough((bool)e.NewValue);
@@ -205,9 +211,7 @@ namespace FFXIVBuff.Core
                 Worker.SetAutohide((bool)e.NewValue);
 
             else if (e.Property == SortByTimeDP)
-            {
                 Worker.OverlayInstance.SetSortByTime((bool)e.NewValue);
-            }
         }
     }
 }

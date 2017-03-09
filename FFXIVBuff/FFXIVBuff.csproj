@@ -112,16 +112,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\MilliConverter.cs" />
-    <Compile Include="Converters\Ms2FpsConverter.cs" />
     <Compile Include="Converters\UStatusVisibilityConverter.cs" />
     <Compile Include="Converters\IconToImageConverter.cs" />
     <Compile Include="Converters\UStatusTimeConverter.cs" />
     <Compile Include="Converters\BooleanInvert.cs" />
     <Compile Include="Converters\BooleanConverter.cs" />
-    <Compile Include="Converters\PersentConverter.cs" />
+    <Compile Include="Converters\MultiplyConverter.cs" />
     <Compile Include="Converters\ProcessNameConverter.cs" />
     <Compile Include="Core\FStatus.cs" />
     <Compile Include="Core\FResource.cs" />
+    <Compile Include="Utilities\ExTextBoxBehavior.cs" />
     <Compile Include="Utilities\WinEventHookHandle.cs" />
     <Compile Include="Core\MemoryOffset.cs" />
     <Compile Include="Core\UStatus.cs" />
