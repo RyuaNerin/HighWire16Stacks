@@ -49,9 +49,9 @@ namespace FFXIVBuff.Core
             }
         }
 
-        public readonly static List<UStatus> SortedStatuses = new List<UStatus>();
-        public readonly static List<UStatus> SortedStatusesByTime = new List<UStatus>();
-        public readonly static List<UStatus> Statuses = new List<UStatus>();
+        public          static      UStatus[] Statuses;
+        public readonly static List<UStatus>  SortedStatuses = new List<UStatus>();
+        public readonly static List<UStatus>  SortedStatusesByTime = new List<UStatus>();
 
         private static volatile bool m_running = false;
         private static Task m_task;
@@ -115,11 +115,13 @@ namespace FFXIVBuff.Core
             m_memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(body);
             
             UStatus ustatus;
+            Statuses = new UStatus[m_memoryOffsets.count];
             for (int i = 0; i < m_memoryOffsets.count; ++i)
             {
                 ustatus = new UStatus(i);
-                Statuses.Add(ustatus);
+                Statuses[i] = ustatus;
                 SortedStatuses.Add(ustatus);
+                SortedStatusesByTime.Add(ustatus);
             }
         }
         
@@ -211,7 +213,9 @@ namespace FFXIVBuff.Core
                     {
                         SortedStatuses.Sort(UStatus.Compare);
                         SortedStatusesByTime.Sort(UStatus.CompareWithTime);
-                        m_overlayInstance.Refresh();
+                        
+                        if (m_overlayInstance != null)
+                            m_overlayInstance.Refresh();
                     }
                 }
 

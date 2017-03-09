@@ -142,7 +142,7 @@ namespace FFXIVBuff.Core
             var compare = a.m_remain.CompareTo(b.m_remain);
             if (compare != 0)
                 return compare;
-            
+
             return a.m_index.CompareTo(b.m_index);
         }
 

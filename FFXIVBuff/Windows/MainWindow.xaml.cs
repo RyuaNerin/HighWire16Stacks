@@ -90,10 +90,10 @@ namespace FFXIVBuff.Windows
 
             this.ctlContent.IsEnabled = true;
 
-            this.ctlProcessRefresh_Click(null, null);
-
             Worker.OverlayInstance.Show();
             Worker.OverlayInstance.Refresh();
+
+            this.ctlProcessRefresh_Click(null, null);
         }
 
         internal void ExitedProcess()
