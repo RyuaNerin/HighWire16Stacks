@@ -281,8 +281,6 @@
                          Grid.ColumnSpan="2"
                          x:Name="ctlBuffList"
                          Margin="0 3 0 3"
-                         BorderBrush="{DynamicResource AccentColorBrush}"
-                         BorderThickness="1"
                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          SelectionMode="Single">
