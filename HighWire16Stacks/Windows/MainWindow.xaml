@@ -13,6 +13,8 @@
                    Height="520"
                    BorderBrush="{DynamicResource AccentColorBrush}"
                    BorderThickness="1"
+                   EnableDWMDropShadow="True"
+                   Icon="/HighWire16Stacks;component/icon.png"
                    Loaded="MetroWindow_Loaded"
                    Closed="MetroWindow_Closed">
     <metro:MetroWindow.Resources>
