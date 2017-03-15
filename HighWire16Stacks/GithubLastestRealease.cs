@@ -24,7 +24,7 @@ namespace HighWire16Stacks
             {
                 LastestRealease last;
 
-                var req = HttpWebRequest.Create(string.Format("https://api.github.com/repos/{0}/{1}/releases", owner, repository)) as HttpWebRequest;
+                var req = HttpWebRequest.Create(string.Format("https://api.github.com/repos/{0}/{1}/releases/latest", owner, repository)) as HttpWebRequest;
                 req.UserAgent = Assembly.GetExecutingAssembly().FullName;
                 req.Timeout = 5000;
                 using (var res = req.GetResponse())

@@ -63,7 +63,7 @@ namespace HighWire16Stacks.Windows
                     if (!Version.TryParse(vs, out v))
                         return false;
 
-                    return v > System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                    return v > System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
                 }));
 
             if (newVersionUrl != null)
