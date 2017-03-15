@@ -8,7 +8,7 @@ using System.Windows;
 // 어셈블리와 관련된 정보를 수정하려면
 // 이 특성 값을 변경하십시오.
 [assembly: AssemblyTitle("고양감 16 스택")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("파이널 판타지 14 자기 캐릭터의 버프를 별도의 창으로 보여주는 프로그램")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("고양감 16 스택")]
@@ -51,5 +51,5 @@ using System.Windows;
 // 모든 값을 지정하거나 아래와 같이 '*'를 사용하여 빌드 번호 및 수정 버전이 자동으로
 // 지정되도록 할 수 있습니다.
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("2016.3.16.1")]
+[assembly: AssemblyFileVersion("2016.3.16.1")]

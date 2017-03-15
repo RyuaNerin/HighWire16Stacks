@@ -99,7 +99,7 @@ namespace HighWire16Stacks.Core
 
             try
             {
-                var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/HighWire16Stacks/Resources/offset.json") as HttpWebRequest;
+                var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/offset.json") as HttpWebRequest;
                 req.UserAgent = Assembly.GetExecutingAssembly().FullName;
                 req.Timeout = 5000;
                 using (var res = req.GetResponse())
