@@ -1,14 +1,12 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using HighWire16Stacks.Utilities;
 using Newtonsoft.Json;
-using System;
 
 namespace HighWire16Stacks.Core
 {
-    [Export(typeof(Settings))]
     [JsonObject(MemberSerialization.OptIn)]
     internal class Settings : DependencyObject
     {

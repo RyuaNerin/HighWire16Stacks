@@ -51,6 +51,8 @@ namespace HighWire16Stacks.Core
 
             IconCollection.Add(0, null);
         }
+        public static void Load()
+        { }
 
         public static void ReadResources()
         {            

@@ -129,14 +129,11 @@ namespace HighWire16Stacks.Core
         public static int CompareWithTime(UStatus a, UStatus b)
         {
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
-            if (a.m_fstatus == null && b.m_fstatus != null) return  1;
-            if (a.m_fstatus != null && b.m_fstatus == null) return -1;
+            if (a.m_fstatus == null && b.m_fstatus != null) return -1;
+            if (a.m_fstatus != null && b.m_fstatus == null) return  1;
 
-            if (a.m_fstatus != null && b.m_fstatus != null)
-            {
-                if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return  1;
-                if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return -1;
-            }
+            if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
+            if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
 
             var compare = a.m_remain.CompareTo(b.m_remain);
             if (compare != 0)
@@ -148,14 +145,11 @@ namespace HighWire16Stacks.Core
         public static int Compare(UStatus a, UStatus b)
         {
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
-            if (a.m_fstatus == null && b.m_fstatus != null) return  1;
-            if (a.m_fstatus != null && b.m_fstatus == null) return -1;
+            if (a.m_fstatus == null && b.m_fstatus != null) return -1;
+            if (a.m_fstatus != null && b.m_fstatus == null) return  1;
 
-            if (a.m_fstatus != null && b.m_fstatus != null)
-            {
-                if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return  1;
-                if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return -1;
-            }
+            if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
+            if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
 
             return a.m_index.CompareTo(b.m_index);
         }

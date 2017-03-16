@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using SharpRaven;
 using SharpRaven.Data;
+using System.Diagnostics;
 
 namespace HighWire16Stacks
 {
@@ -65,11 +66,15 @@ namespace HighWire16Stacks
         }
         public static void Error(Exception ex, object data)
         {
+#if DEBUG
+            Debug.Assert(false, ex.ToString());
+#else
             var ev = new SentryEvent(ex);
             ev.Level = ErrorLevel.Error;
             ev.Extra = data;
 
             Report(ev);
+#endif
         }
         
         private static void Report(SentryEvent @event)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -18,9 +19,10 @@ namespace HighWire16Stacks.Windows
         public static MainWindow Instance { get { return MainWindow.m_instance; } }
 
         private readonly List<Process> m_processList = new List<Process>();
-        private readonly ICollectionView m_processListView;
+        private readonly CollectionView m_processListView;
 
-        private readonly ICollectionView m_buffListView;
+        private readonly ObservableCollection<FStatus> m_buffList = new ObservableCollection<FStatus>();
+        private readonly CollectionView m_buffListView;
         private string m_buffListFilter = null;
         private bool m_buffShowBuff = false;
         private bool m_buffShowDebuff = false;
@@ -32,10 +34,12 @@ namespace HighWire16Stacks.Windows
         {
             MainWindow.m_instance = this;
 
-            this.m_buffListView = CollectionViewSource.GetDefaultView(FResource.StatusList);
+            this.m_buffList = new ObservableCollection<FStatus>();
+            this.m_buffListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_buffList);
             this.m_buffListView.Filter = this.BuffListView_Filter;
+            ActiveLiveFiltering(this.m_buffListView, "IsChecked");
 
-            this.m_processListView = CollectionViewSource.GetDefaultView(this.m_processList);
+            this.m_processListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_processList);
 
             InitializeComponent();
             this.ctlContent.IsEnabled = false;
@@ -45,6 +49,16 @@ namespace HighWire16Stacks.Windows
             this.Handle = interop.Handle;
 
             Sentry.AddHandler(this.Dispatcher);
+        }
+
+        private static void ActiveLiveFiltering(ICollectionView collectionView, string propertyName)
+        {
+            var collectionViewLiveShaping = collectionView as ICollectionViewLiveShaping;
+            if (collectionViewLiveShaping.CanChangeLiveFiltering)
+            {
+                collectionViewLiveShaping.LiveFilteringProperties.Add(propertyName);
+                collectionViewLiveShaping.IsLiveFiltering = true;
+            }
         }
 
         private void MetroWindow_Closed(object sender, System.EventArgs e)
@@ -82,10 +96,14 @@ namespace HighWire16Stacks.Windows
 
             await Task.Factory.StartNew(Worker.Update);
 
+            FResource.Load();
             await Task.Factory.StartNew(FResource.ReadResources);
             this.m_buffListView.Refresh();
 
+            for (int i = 0; i < FResource.StatusList.Count; ++i)
+                this.m_buffList.Add(FResource.StatusList[i]);
             this.ctlBuffList.ItemsSource = this.m_buffListView;
+            
             this.ctlProcessList.ItemsSource = this.m_processListView;
 
             this.ctlContent.IsEnabled = true;
@@ -105,9 +123,9 @@ namespace HighWire16Stacks.Windows
         {
             this.m_processList.Clear();
             this.m_processList.AddRange(Process.GetProcessesByName("ffxiv"));
-            //this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_multi"));
+            this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_multi"));
             this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_dx11"));
-            //this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_dx11_multi"));
+            this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_dx11_multi"));
             
             this.m_processListView.Refresh();
 
@@ -228,6 +246,36 @@ namespace HighWire16Stacks.Windows
         {
             this.m_buffShowCheckedOnly = false;
             this.m_buffListView.Refresh();
+        }
+
+        private void ctlBuffList_CheckAll_Click(object sender, RoutedEventArgs e)
+        {
+            FStatus status;
+            for (int i = 0; i < this.ctlBuffList.SelectedItems.Count; ++i)
+            {
+                status = (FStatus)this.ctlBuffList.SelectedItems[i];
+                status.IsChecked = true;
+            }
+        }
+
+        private void ctlBuffList_UnCheckAll_Click(object sender, RoutedEventArgs e)
+        {
+            FStatus status;
+            for (int i = 0; i < this.ctlBuffList.SelectedItems.Count; ++i)
+            {
+                status = (FStatus)this.ctlBuffList.SelectedItems[i];
+                status.IsChecked = false;
+            }
+        }
+
+        private void ctlBuffList_ReverseCheck_Click(object sender, RoutedEventArgs e)
+        {
+            FStatus status;
+            for (int i = 0; i < this.ctlBuffList.SelectedItems.Count; ++i)
+            {
+                status = (FStatus)this.ctlBuffList.SelectedItems[i];
+                status.IsChecked = !status.IsChecked;
+            }
         }
     }
 }

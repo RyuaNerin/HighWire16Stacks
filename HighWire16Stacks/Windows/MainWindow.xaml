@@ -285,31 +285,44 @@
                          Margin="0 3 0 3"
                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         SelectionMode="Single">
+                         SelectionMode="Extended">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="모두 체크"
+                                      Click="ctlBuffList_CheckAll_Click" />
+                            <MenuItem Header="모두 체크 해제"
+                                      Click="ctlBuffList_UnCheckAll_Click" />
+                            <Separator />
+                            <MenuItem Header="체크 반전"
+                                      Click="ctlBuffList_ReverseCheck_Click" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <CheckBox HorizontalAlignment="Stretch"
-                                      HorizontalContentAlignment="Stretch"
-                                      IsChecked="{Binding Path=IsChecked}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="26" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <Image Width="18"
-                                           Height="24"
-                                           Margin="0 0 0 0"
-                                           Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding Path=Name}"
-                                               TextWrapping="NoWrap"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Stretch"
-                                               ToolTip="{Binding Path=Desc}"/>
-                                </Grid>
-                            </CheckBox>
+                                <CheckBox HorizontalAlignment="Stretch"
+                                          HorizontalContentAlignment="Stretch"
+                                          IsChecked="{Binding Path=IsChecked, Mode=TwoWay}" />
+
+                                <Image Grid.Column="1"
+                                       Width="18"
+                                       Height="24"
+                                       Margin="0 0 0 0"
+                                       Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}}"/>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Path=Name}"
+                                           TextWrapping="NoWrap"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Stretch"
+                                           ToolTip="{Binding Path=Desc}"/>
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
