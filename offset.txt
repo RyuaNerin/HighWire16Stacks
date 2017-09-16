@@ -1,0 +1,16 @@
+﻿ffxiv_dx11.exe+E5E1C5 - 48 8D 0D E472A400     - lea rcx,[ffxiv_dx11.exe+18A54B0] { [0000001D] }
+ffxiv_dx11.exe+E5E1CC - 49 8B E8              - mov rbp,r8
+ffxiv_dx11.exe+E5E1CF - 4C 8B EA              - mov r13,rdx
+ffxiv_dx11.exe+E5E1D2 - 89 05 CC72A400        - mov [ffxiv_dx11.exe+18A54A4],eax { [00000000] }
+ffxiv_dx11.exe+E5E1D8 - 89 3D C272A400        - mov [ffxiv_dx11.exe+18A54A0],edi { [00000005] }
+ffxiv_dx11.exe+E5E1DE - 66 C7 05 C172A400 0100 - mov word ptr [ffxiv_dx11.exe+18A54A8],0001 { [00000000] }
+ffxiv_dx11.exe+E5E1E7 - E8 14FB65FF           - call ffxiv_dx11.exe+4BDD00
+ffxiv_dx11.exe+E5E1EC - 4C 8B 1D AD4D8600     - mov r11,[ffxiv_dx11.exe+16C2FA0] { [208] }
+ffxiv_dx11.exe+E5E1F3 - B9 0C000000           - mov ecx,0000000C { 12 }
+ffxiv_dx11.exe+E5E1F8 - 48 8D 05 416CA400     - lea rax,[ffxiv_dx11.exe+18A4E40] { [00000000] }
+ffxiv_dx11.exe+E5E1FF - 8B D1                 - mov edx,ecx
+ffxiv_dx11.exe+E5E201 - 4C 89 1D F07FA400     - mov [ffxiv_dx11.exe+18A61F8],r11 { [208] } <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ffxiv_dx11.exe+E5E208 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
+ffxiv_dx11.exe+E5E210 - 48 89 38              - mov [rax],rdi
+ffxiv_dx11.exe+E5E213 - 48 89 78 08           - mov [rax+08],rdi
+ffxiv_dx11.exe+E5E217 - 48 89 78 10           - mov [rax+10],rdi
