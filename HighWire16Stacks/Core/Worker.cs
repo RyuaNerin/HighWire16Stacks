@@ -82,12 +82,12 @@ namespace HighWire16Stacks.Core
 #else
             try
             {
-                var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/offset.json") as HttpWebRequest;
-                req.UserAgent = Assembly.GetExecutingAssembly().FullName;
+                var req = System.Net.HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/offset.json") as System.Net.HttpWebRequest;
+                req.UserAgent = System.Reflection.Assembly.GetExecutingAssembly().FullName;
                 req.Timeout = 5000;
                 using (var res = req.GetResponse())
                 using (var stream = res.GetResponseStream())
-                using (var reader = new StreamReader(stream))
+                using (var reader = new System.IO.StreamReader(stream))
                     body = reader.ReadToEnd();
             }
             catch
