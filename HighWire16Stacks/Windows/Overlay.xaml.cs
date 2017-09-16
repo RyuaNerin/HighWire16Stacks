@@ -32,9 +32,7 @@ namespace HighWire16Stacks.Windows
 
         private void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            var ptr = NativeMethods.GetForegroundWindow();
-
-            if (ptr == Worker.FFXIVHandle)
+            if (NativeMethods.GetForegroundWindow() == Worker.GameWindowHandle)
             {
                 this.Topmost = false;
                 this.Topmost = true;

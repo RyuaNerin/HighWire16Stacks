@@ -50,8 +50,7 @@ namespace HighWire16Stacks.Core
 
                 Settings.Instance.SetChecked(value, this.Id);
 
-                if (this.PropertyChanged != null)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
             }
         }
 

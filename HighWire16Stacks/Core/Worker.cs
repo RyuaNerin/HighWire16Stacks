@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,34 +15,24 @@ namespace HighWire16Stacks.Core
     {
         private static object overlayInstanceSync = new object();
         private static Overlay overlayInstance;
-        public static Overlay OverlayInstance
-        {
-            get
-            {
-                lock (overlayInstanceSync)
-                {
-                    if (overlayInstance == null)
-                        overlayInstance = new Overlay(Settings.Instance.ClickThrough);
-
-                    return overlayInstance;
-                }
-            }
-        }
+        public static Overlay OverlayInstance => CreateOverlay(Settings.Instance.ClickThrough);
 
         public static void SetClickThrough(bool enabled)
         {
+            CreateOverlay(enabled).Show();
+        }
+
+        private static Overlay CreateOverlay(bool clickThough)
+        {
             lock (overlayInstanceSync)
             {
-                var old = overlayInstance;
-
-                overlayInstance = new Overlay(enabled);
-                overlayInstance.Show();
-
-                if (old != null)
+                if (overlayInstance == null || overlayInstance.ClickThourgh != clickThough)
                 {
-                    old.Close();
-                    old = null;
+                    overlayInstance?.Dispatcher.Invoke(new Action(overlayInstance.Close));
+                    overlayInstance = new Overlay(clickThough);
                 }
+
+                return overlayInstance;
             }
         }
 
@@ -54,19 +41,12 @@ namespace HighWire16Stacks.Core
         public readonly static List<UStatus>  SortedStatusesByTime = new List<UStatus>();
 
         private static volatile bool running = false;
-        private static Task task;
+        private static Task taskWorker;
         private static Process ffxivProcess;
         private static IntPtr ffxivHandle;
         private static IntPtr ffxivModulePtr;
-        private static bool ffxivDx11;
-
-        private static MemoryOffsets memoryOffsets;
+        
         private static MemoryOffset memoryOffset;
-
-        public static IntPtr FFXIVHandle
-        {
-            get { return ffxivHandle; }
-        }
 
         private static int delay = 1;
         public static void SetDelay(int value)
@@ -74,12 +54,12 @@ namespace HighWire16Stacks.Core
             delay = value;
         }
 
-        public static IntPtr ffxivWindowHandle { get; private set; }
+        public static IntPtr GameWindowHandle { get; private set; }
 
         static Worker()
         {
             if (Settings.Instance != null)
-                SetDelay(Settings.Instance.OverlayRefreshCycle);
+                SetDelay((int)Math.Ceiling(1000 / Settings.Instance.OverlayFPS));
         }
 
         public static void Load()
@@ -115,12 +95,12 @@ namespace HighWire16Stacks.Core
                 body = Properties.Resources.offset;
             }
 #endif
-            
-            memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(body);
+
+            memoryOffset = JsonConvert.DeserializeObject<MemoryOffset>(body);
             
             UStatus ustatus;
-            Statuses = new UStatus[memoryOffsets.count];
-            for (int i = 0; i < memoryOffsets.count; ++i)
+            Statuses = new UStatus[memoryOffset.count];
+            for (int i = 0; i < memoryOffset.count; ++i)
             {
                 ustatus = new UStatus(i);
                 Statuses[i] = ustatus;
@@ -131,10 +111,10 @@ namespace HighWire16Stacks.Core
         
         public static void Stop()
         {
-            for (int i = 0; i < memoryOffsets.count; ++i)
+            for (int i = 0; i < memoryOffset.count; ++i)
                 Statuses[i].Clear();
 
-            task?.Wait();
+            taskWorker?.Wait();
 
             running = false;
             MainWindow.Instance.Dispatcher.BeginInvoke(new Action(MainWindow.Instance.ExitedProcess));
@@ -155,16 +135,13 @@ namespace HighWire16Stacks.Core
 
                 ffxivModulePtr = ffxivProcess.MainModule.BaseAddress;
                 ffxivHandle = NativeMethods.OpenProcess(NativeMethods.ProcessAccessFlags.All, false, ffxivProcess.Id);
-                ffxivDx11 = !NativeMethods.IsX86Process(ffxivHandle);
-                if (!ffxivDx11)
+                if (NativeMethods.IsX86Process(ffxivHandle))
                     return false;
 
-                ffxivWindowHandle = process.MainWindowHandle;
-
-                memoryOffset = memoryOffsets.x64;
+                GameWindowHandle = process.MainWindowHandle;
 
                 running = true;
-                task = Task.Factory.StartNew(WorkerThread);
+                taskWorker = Task.Factory.StartNew(WorkerThread);
             }
             catch (Exception ex)
             {
@@ -178,7 +155,7 @@ namespace HighWire16Stacks.Core
         private static void WorkerThread()
         {
             IntPtr ptr;
-            byte[] buff = new byte[12 * memoryOffsets.count];
+            byte[] buff = new byte[12 * memoryOffset.count];
             int i;
 
             int id;
@@ -190,7 +167,7 @@ namespace HighWire16Stacks.Core
 
             while (running)
             {
-                ptr = NativeMethods.ReadPointer(ffxivHandle, ffxivDx11, buff, ffxivModulePtr + memoryOffset.ptr);
+                ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.ptr);
                 if (ptr == IntPtr.Zero)
                 {
                     Stop();
@@ -201,7 +178,7 @@ namespace HighWire16Stacks.Core
                 {
                     orderUpdated = false;
 
-                    for (i = 0; i < memoryOffsets.count; ++i)
+                    for (i = 0; i < memoryOffset.count; ++i)
                     {
                         id = BitConverter.ToInt16(buff, 12 * i + 0);
                         if (id == 0)
@@ -255,7 +232,7 @@ namespace HighWire16Stacks.Core
             if (ptr == overlayInstance.Handle)
                 return;
 
-            if (ptr == Worker.ffxivWindowHandle ||
+            if (ptr == Worker.GameWindowHandle ||
                 ptr == MainWindow.Instance.Handle)
             {
                 overlayInstance.Visibility = Visibility.Visible;
@@ -339,18 +316,13 @@ namespace HighWire16Stacks.Core
                 return true;
             }
 
-            public static IntPtr ReadPointer(IntPtr handle, bool isX64, byte[] buffer, IntPtr address)
+            public static IntPtr ReadPointer(IntPtr handle, byte[] buffer, IntPtr address)
             {
-                int size_t = isX64 ? 8 : 4;
-
                 IntPtr read;
-                if (!NativeMethods.ReadProcessMemory(handle, address, buffer, new IntPtr(size_t), out read) || read.ToInt64() != size_t)
+                if (!NativeMethods.ReadProcessMemory(handle, address, buffer, new IntPtr(8), out read) || read.ToInt64() != 8)
                     return IntPtr.Zero;
 
-                if (isX64)
-                    return new IntPtr(BitConverter.ToInt64(buffer, 0));
-                else
-                    return new IntPtr(BitConverter.ToInt32(buffer, 0));
+                return new IntPtr(BitConverter.ToInt64(buffer, 0));
             }
             
             public static int ReadBytes(IntPtr handle, IntPtr address, byte[] array, int length)

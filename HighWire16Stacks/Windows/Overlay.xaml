@@ -1,4 +1,5 @@
 ﻿<Window x:Class="HighWire16Stacks.Windows.Overlay"
+        x:Name="window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:HighWire16Stacks.Converters"
@@ -13,7 +14,7 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        ShowInTaskbar="False"
+        ShowInTaskbar="True"
         Topmost="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Loaded="Window_Loaded"
@@ -46,7 +47,7 @@
                         <MultiBinding Converter="{StaticResource UStatusVisibilityConverter}">
                             <Binding Path="Visible" Mode="OneWay" />
                             <Binding Path="IsChecked" Mode="OneWay" />
-                            <Binding Path="ShowingMode" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
+                            <Binding Path="ShowSelectedOnly" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                         </MultiBinding>
                     </Grid.Visibility>
                     

@@ -94,11 +94,23 @@ namespace HighWire16Stacks.Core
                     this.m_icon += param - 1;
             }
 
+            bool remainChanged = false;
             if (this.m_isCount)
+            {
                 this.m_remain = param;
-            else
-                this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;
-            
+                remainChanged = true;
+            }
+            else if (!this.m_fstatus.IsNonExpries)
+            {
+                this.m_remain = remain < 0 ? remain * -1: remain;
+                remainChanged = true;
+            }
+            else if (this.m_remain != 0)
+            {
+                this.m_remain = 0;
+                remainChanged = true;
+            }
+
             if (this.PropertyChanged != null)
             {
                 if (visibleUpdated)
@@ -111,7 +123,8 @@ namespace HighWire16Stacks.Core
                 if (iconUpdated)
                     this.PropertyChanged(this, new PropertyChangedEventArgs("Icon"));
 
-                this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
+                if (remainChanged)
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
             }
 
             return result;

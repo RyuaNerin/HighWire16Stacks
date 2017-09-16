@@ -34,6 +34,8 @@ namespace HighWire16Stacks.Windows
         {
             MainWindow.instance = this;
 
+            this.DataContext = Settings.Instance;
+
             this.m_buffList = new ObservableCollection<FStatus>();
             this.m_buffListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_buffList);
             this.m_buffListView.Filter = this.BuffListView_Filter;
@@ -122,8 +124,6 @@ namespace HighWire16Stacks.Windows
         private void ctlProcessRefresh_Click(object sender, RoutedEventArgs e)
         {
             this.m_processList.Clear();
-            this.m_processList.AddRange(Process.GetProcessesByName("ffxiv"));
-            this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_multi"));
             this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_dx11"));
             this.m_processList.AddRange(Process.GetProcessesByName("ffxiv_dx11_multi"));
             

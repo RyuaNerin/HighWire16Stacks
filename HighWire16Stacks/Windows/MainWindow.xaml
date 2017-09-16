@@ -137,7 +137,7 @@
                     </Grid.RowDefinitions>
 
                     <Slider Grid.Row="0"
-                            Value="{Binding Path=OverlayFPS, Source={x:Static core:Settings.Instance}}"
+                            Value="{Binding Path=OverlayFPS}"
                             Minimum="1"
                             Maximum="60"
                             LargeChange="10"
@@ -147,7 +147,7 @@
 
                     <metro:NumericUpDown Grid.Row="1"
                                          StringFormat="{}{0:##0} fps"
-                                         Value="{Binding Path=OverlayFPS, Source={x:Static core:Settings.Instance}}"
+                                         Value="{Binding Path=OverlayFPS}"
                                          Interval="1"
                                          Minimum="1"
                                          Maximum="60" />
@@ -163,7 +163,7 @@
                     </Grid.RowDefinitions>
 
                     <Slider Grid.Row="0"
-                            Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Value="{Binding Path=Opacity, Converter={StaticResource PersentConverter}}"
                             Minimum="0"
                             Maximum="100"
                             LargeChange="10"
@@ -173,7 +173,7 @@
 
                     <metro:NumericUpDown Grid.Row="1"
                                          StringFormat="{}{0:##0} %"
-                                         Value="{Binding Path=Opacity, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                                         Value="{Binding Path=Opacity, Converter={StaticResource PersentConverter}}"
                                          Interval="10"
                                          Minimum="0"
                                          Maximum="100" />
@@ -189,7 +189,7 @@
                     </Grid.RowDefinitions>
 
                     <Slider Grid.Row="0"
-                            Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                            Value="{Binding Path=Scale, Converter={StaticResource PersentConverter}}"
                             Minimum="10"
                             Maximum="1000"
                             LargeChange="20"
@@ -199,7 +199,7 @@
 
                     <metro:NumericUpDown Grid.Row="1"
                                          StringFormat="{}{0:##0} %"
-                                         Value="{Binding Path=Scale, Source={x:Static core:Settings.Instance}, Converter={StaticResource PersentConverter}}"
+                                         Value="{Binding Path=Scale, Converter={StaticResource PersentConverter}}"
                                          Interval="20"
                                          Minimum="10"
                                          Maximum="1000" />
@@ -217,19 +217,19 @@
                     </StackPanel.Resources>
                     
                     <CheckBox Content="소수점 표시"
-                              IsChecked="{Binding Path=ShowDecimal, Source={x:Static core:Settings.Instance}}"
+                              IsChecked="{Binding Path=ShowDecimal}"
                               ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다" />
 
                     <CheckBox Content="오버레이 잠그기"
-                              IsChecked="{Binding Path=ClickThrough, Source={x:Static core:Settings.Instance}}"
+                              IsChecked="{Binding Path=ClickThrough}"
                               ToolTip="오버레이를 클릭할 수 없게 설정합니다" />
 
                     <CheckBox Content="자동 숨기기"
-                              IsChecked="{Binding Path=AutoHide, Source={x:Static core:Settings.Instance}}"
+                              IsChecked="{Binding Path=AutoHide}"
                               ToolTip="다른 용무중에 오버레이를 보이지 않게 합니다" />
 
                     <CheckBox Content="시간순 정렬"
-                              IsChecked="{Binding Path=SortByTime, Source={x:Static core:Settings.Instance}}"
+                              IsChecked="{Binding Path=SortByTime}"
                               ToolTip="오버레이를 시간순으로 정렬합니다" />
                 </StackPanel>
             </GroupBox>
@@ -257,7 +257,7 @@
                           Grid.ColumnSpan="2"
                           Content="선택한 것만 오버레이로"
                           Margin="0 3 0 3"
-                          IsChecked="{Binding Path=ShowingMode, Source={x:Static core:Settings.Instance}}"
+                          IsChecked="{Binding Path=ShowingMode}"
                           Checked="SetListGroupName"
                           Unchecked="SetListGroupName" />
                 

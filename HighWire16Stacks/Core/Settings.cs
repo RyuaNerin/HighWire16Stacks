@@ -1,24 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Windows;
-using HighWire16Stacks.Utilities;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace HighWire16Stacks.Core
 {
     [JsonObject(MemberSerialization.OptIn)]
-    internal class Settings : DependencyObject
+    internal class Settings : INotifyPropertyChanged
     {
         private static readonly Settings instance = new Settings();
-        public static Settings Instance { get { return Settings.instance; } }
+        public static Settings Instance => Settings.instance;
 
         private readonly static JsonSerializer JSerializer = new JsonSerializer { Formatting = Formatting.Indented };
         private readonly static string SettingFilePath;
 
         static Settings()
         {
-            Settings.SettingFilePath = Path.GetFullPath(Assembly.GetExecutingAssembly().Location) + ".cnf";
+            Settings.SettingFilePath = Path.ChangeExtension(Path.GetFullPath(Assembly.GetExecutingAssembly().Location), ".cnf");
         }
 
         public static void Load()
@@ -28,16 +29,9 @@ namespace HighWire16Stacks.Core
                 try
                 {
                     using (var fr = File.OpenRead(Settings.SettingFilePath))
-#if DEBUG
                     using (var sr = new StreamReader(fr, System.Text.Encoding.UTF8))
                     using (var jr = new JsonTextReader(sr))
-#else
-                    using (var sr = new BinaryReader(fr))
-                    using (var jr = new Newtonsoft.Json.Bson.BsonReader(fr))
-#endif
-                    {
                         JSerializer.Populate(jr, Settings.instance);
-                    }
                 }
                 catch
                 {
@@ -52,15 +46,10 @@ namespace HighWire16Stacks.Core
                 using (var fw = new FileStream(Settings.SettingFilePath, FileMode.OpenOrCreate))
                 {
                     fw.SetLength(0);
-
-#if DEBUG
+                    
                     using (var sw = new StreamWriter(fw, System.Text.Encoding.UTF8))
                     using (var jw = new JsonTextWriter(sw))
-#else
-                    using (var sw = new BinaryWriter(fw))
-                    using (var jw = new Newtonsoft.Json.Bson.BsonWriter(sw))
-#endif
-                    JSerializer.Serialize(jw, this);
+                        JSerializer.Serialize(jw, this);
                 }
             }
             catch
@@ -68,102 +57,140 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private static readonly DependencyProperty OverlayLeftDP
-            = DependencyProperty.Register("OverlayLeft", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        
+        private double m_overlayLeft = 200;
         [JsonProperty]
         public double OverlayLeft
         {
-            get { return (double)this.GetValue(OverlayLeftDP); }
-            set { this.SetValue(OverlayLeftDP, value); }
+            get => this.m_overlayLeft;
+            set
+            {
+                this.m_overlayLeft = value;
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty OverlayTopDP
-            = DependencyProperty.Register("OverlayTop", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(200d));
+        
+        private double m_overlayTop = 200;
         [JsonProperty]
         public double OverlayTop
         {
-            get { return (double)this.GetValue(OverlayTopDP); }
-            set { this.SetValue(OverlayTopDP, value); }
+            get => this.m_overlayTop;
+            set
+            {
+                this.m_overlayTop = value;
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty OpacityDP
-            = DependencyProperty.Register("Opacity", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(1d));
+        
+        private double m_opacity = 1;
         [JsonProperty]
         public double Opacity
         {
-            get { return (double)this.GetValue(OpacityDP); }
-            set { this.SetValue(OpacityDP, value); }
+            get => this.m_opacity;
+            set
+            {
+                this.m_opacity = value;
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty ScaleDP
-            = DependencyProperty.Register("Scale", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(1d));
+        
+        private double m_scale = 1;
         [JsonProperty]
         public double Scale
         {
-            get { return (double)this.GetValue(ScaleDP); }
-            set { this.SetValue(ScaleDP, value); }
+            get => this.m_scale;
+            set
+            {
+                this.m_scale = value;
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty OverlayFPSDP
-            = DependencyProperty.Register("OverlayFPS", typeof(double), typeof(Settings), new FrameworkPropertyMetadata(30d, PropertyChangedCallback));
+        
+        private double m_overlayFps = 30;
         [JsonProperty]
         public double OverlayFPS
         {
-            get { return (double)this.GetValue(OverlayFPSDP); }
-            set { this.SetValue(OverlayFPSDP, value); }
+            get => this.m_overlayFps;
+            set
+            {
+                this.m_overlayFps = value;
+                Worker.SetDelay((int)Math.Ceiling(1000 / value));
+
+                this.OnPropertyChanged();
+            }
         }
 
-        public int OverlayRefreshCycle
-        {
-            get { return (int)Math.Ceiling(1000 / OverlayFPS); }
-        }
-
-        private static readonly DependencyProperty ClickThroughDP
-            = DependencyProperty.Register("ClickThrough", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false, PropertyChangedCallback));
+        private bool m_clickThrough = false;
         [JsonProperty]
         public bool ClickThrough
         {
-            get { return (bool)this.GetValue(ClickThroughDP); }
-            set { this.SetValue(ClickThroughDP, value); }
+            get => this.m_clickThrough;
+            set
+            {
+                this.m_clickThrough = value;
+                Worker.SetClickThrough(value);
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty ShowDecimalDP
-            = DependencyProperty.Register("ShowDecimal", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false));
+        
+        private bool m_showDecimal = false;
         [JsonProperty]
         public bool ShowDecimal
         {
-            get { return (bool)this.GetValue(ShowDecimalDP); }
-            set { this.SetValue(ShowDecimalDP, value); }
+            get => this.m_showDecimal;
+            set
+            {
+                this.m_showDecimal = value;
+                Worker.SetClickThrough(value);
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty ShowingModeDP
-            = DependencyProperty.Register("ShowingMode", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false));
+        
+        private bool m_showSelectedOnly = false;
         [JsonProperty]
-        public bool ShowingMode
+        public bool ShowSelectedOnly
         {
-            get { return (bool)this.GetValue(ShowingModeDP); }
-            set { this.SetValue(ShowingModeDP, value); }
+            get => this.m_showSelectedOnly;
+            set
+            {
+                this.m_showSelectedOnly = value;
+                this.OnPropertyChanged();
+            }
         }
-
-        private static readonly DependencyProperty AutoHideDP
-            = DependencyProperty.Register("AutoHide", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false, PropertyChangedCallback));
+        
+        private bool m_autoHide = false;
         [JsonProperty]
         public bool AutoHide
         {
-            get { return (bool)this.GetValue(AutoHideDP); }
-            set { this.SetValue(AutoHideDP, value); }
+            get => this.m_autoHide;
+            set
+            {
+                this.m_autoHide = value;
+                Worker.SetAutohide(value);
+                this.OnPropertyChanged();
+            }
         }
 
-        private static readonly DependencyProperty SortByTimeDP
-            = DependencyProperty.Register("SortByTime", typeof(bool), typeof(Settings), new FrameworkPropertyMetadata(false, PropertyChangedCallback));
+        private bool m_sortByTime;
         [JsonProperty]
         public bool SortByTime
         {
-            get { return (bool)this.GetValue(SortByTimeDP); }
-            set { this.SetValue(SortByTimeDP, value); }
+            get => this.m_sortByTime;
+            set
+            {
+                this.m_sortByTime = value;
+                Worker.OverlayInstance.SetSortByTime(value);
+                this.OnPropertyChanged();
+            }
         }
 
-        private SortedList<int> m_checkedList = new SortedList<int>();
+        private readonly List<int> m_checkedList = new List<int>();
         [JsonProperty]
         public int[] Checekd
         {
@@ -195,21 +222,6 @@ namespace HighWire16Stacks.Core
         {
             lock (this.m_checkedList)
                 return this.m_checkedList.Contains(id);
-        }
-        
-        private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.Property == OverlayFPSDP)
-                Worker.SetDelay(((Settings)d).OverlayRefreshCycle);
-
-            else if (e.Property == ClickThroughDP)
-                Worker.SetClickThrough((bool)e.NewValue);
-            
-            else if (e.Property == AutoHideDP)
-                Worker.SetAutohide((bool)e.NewValue);
-
-            else if (e.Property == SortByTimeDP)
-                Worker.OverlayInstance.SetSortByTime((bool)e.NewValue);
         }
     }
 }
