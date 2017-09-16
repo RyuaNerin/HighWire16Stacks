@@ -40,15 +40,14 @@ namespace HighWire16Stacks.Core
                 return;
 
             if (this.m_fstatus != null)
-                this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
+                this.m_fstatus.PropertyChanged -= this.FStatus_PropertyChanged;
 
             this.m_id           = 0;
             this.m_visible      = false;
             this.m_fstatus      = FResource.StatusListDic[0];
             this.m_iconIndex    = -1;
 
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Visible"));
         }
         public bool Update(int id, int param, float remain)
         {
@@ -68,16 +67,16 @@ namespace HighWire16Stacks.Core
                 }
 
                 if (this.m_fstatus != null)
-                    this.m_fstatus.PropertyChanged -= FStatus_PropertyChanged;
+                    this.m_fstatus.PropertyChanged -= this.FStatus_PropertyChanged;
 
                 this.m_visible   = true;
                 this.m_id        = id;
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
 
-                this.m_isCount   = remain == 0 && !this.m_fstatus.IsNonExpries && param > 0;
+                this.m_isCount   = remain == 0 && this.FStatus.IconCount == 0 && (!this.m_fstatus.IsNonExpries || param > 0);
 
-                this.m_fstatus.PropertyChanged += FStatus_PropertyChanged;
+                this.m_fstatus.PropertyChanged += this.FStatus_PropertyChanged;
 
                 iconUpdated = true;
             }
@@ -99,7 +98,7 @@ namespace HighWire16Stacks.Core
                 this.m_remain = param;
             else
                 this.m_remain = this.m_fstatus.IsNonExpries ? 0 : remain;
-
+            
             if (this.PropertyChanged != null)
             {
                 if (visibleUpdated)
@@ -122,8 +121,7 @@ namespace HighWire16Stacks.Core
         {
             this.m_isChecked = this.m_fstatus.IsChecked;
 
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
         }
 
         public static int CompareWithTime(UStatus a, UStatus b)

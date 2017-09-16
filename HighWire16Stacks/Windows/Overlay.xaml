@@ -57,7 +57,7 @@
                     
                     <utility:OutlinedTextBlock HorizontalAlignment="Stretch"
                                                VerticalAlignment="Bottom"
-                                               FontFamily="맑은 고딕"
+                                               FontFamily="Malgun Gothic"
                                                FontSize="13"
                                                FontWeight="ExtraBold"
                                                Fill="White"

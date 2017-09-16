@@ -15,8 +15,8 @@ namespace HighWire16Stacks.Windows
 {
     internal partial class MainWindow : MetroWindow
     {
-        private static MainWindow m_instance;
-        public static MainWindow Instance { get { return MainWindow.m_instance; } }
+        private static MainWindow instance;
+        public static MainWindow Instance { get { return MainWindow.instance; } }
 
         private readonly List<Process> m_processList = new List<Process>();
         private readonly CollectionView m_processListView;
@@ -32,7 +32,7 @@ namespace HighWire16Stacks.Windows
 
         public MainWindow()
         {
-            MainWindow.m_instance = this;
+            MainWindow.instance = this;
 
             this.m_buffList = new ObservableCollection<FStatus>();
             this.m_buffListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_buffList);

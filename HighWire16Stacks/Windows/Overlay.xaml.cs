@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Threading;
 using HighWire16Stacks.Core;
 using HighWire16Stacks.Utilities;
 
@@ -11,6 +10,7 @@ namespace HighWire16Stacks.Windows
     public partial class Overlay : System.Windows.Window
     {
         private readonly bool m_clickThrough;
+        public bool ClickThourgh => this.m_clickThrough;
 
         private readonly SafeHandle m_topMost;
 
@@ -90,7 +90,7 @@ namespace HighWire16Stacks.Windows
             
             var interop = new WindowInteropHelper(this);
             interop.EnsureHandle();
-            this.m_handle = new WindowInteropHelper(this).Handle;
+            this.m_handle = interop.Handle;
 
             var v = NativeMethods.GetWindowLong(this.m_handle, NativeMethods.GWL_EXSTYLE);
 

@@ -63,6 +63,7 @@ namespace HighWire16Stacks.Utilities
                 uint dwFlags);
 
             [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool UnhookWinEvent(
                 IntPtr hWinEventHook);
         }

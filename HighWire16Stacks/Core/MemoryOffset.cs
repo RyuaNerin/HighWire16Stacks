@@ -44,9 +44,6 @@ namespace HighWire16Stacks.Core
     internal class MemoryOffsets
     {
         [JsonProperty]
-        public MemoryOffset x86 { get; set; }
-
-        [JsonProperty]
         public MemoryOffset x64 { get; set; }
 
         [JsonProperty]

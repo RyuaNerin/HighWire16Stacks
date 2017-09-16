@@ -10,8 +10,8 @@ namespace HighWire16Stacks.Core
     [JsonObject(MemberSerialization.OptIn)]
     internal class Settings : DependencyObject
     {
-        private static readonly Settings m_instance = new Settings();
-        public static Settings Instance { get { return Settings.m_instance; } }
+        private static readonly Settings instance = new Settings();
+        public static Settings Instance { get { return Settings.instance; } }
 
         private readonly static JsonSerializer JSerializer = new JsonSerializer { Formatting = Formatting.Indented };
         private readonly static string SettingFilePath;
@@ -36,7 +36,7 @@ namespace HighWire16Stacks.Core
                     using (var jr = new Newtonsoft.Json.Bson.BsonReader(fr))
 #endif
                     {
-                        JSerializer.Populate(jr, Settings.m_instance);
+                        JSerializer.Populate(jr, Settings.instance);
                     }
                 }
                 catch

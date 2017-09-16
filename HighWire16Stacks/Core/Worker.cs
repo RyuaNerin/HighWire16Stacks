@@ -16,30 +16,30 @@ namespace HighWire16Stacks.Core
 {
     internal static class Worker
     {
-        private static object m_overlayInstanceSync = new object();
-        private static Overlay m_overlayInstance;
+        private static object overlayInstanceSync = new object();
+        private static Overlay overlayInstance;
         public static Overlay OverlayInstance
         {
             get
             {
-                lock (m_overlayInstanceSync)
+                lock (overlayInstanceSync)
                 {
-                    if (m_overlayInstance == null)
-                        m_overlayInstance = new Overlay(Settings.Instance.ClickThrough);
+                    if (overlayInstance == null)
+                        overlayInstance = new Overlay(Settings.Instance.ClickThrough);
 
-                    return m_overlayInstance;
+                    return overlayInstance;
                 }
             }
         }
 
         public static void SetClickThrough(bool enabled)
         {
-            lock (m_overlayInstanceSync)
+            lock (overlayInstanceSync)
             {
-                var old = m_overlayInstance;
+                var old = overlayInstance;
 
-                m_overlayInstance = new Overlay(enabled);
-                m_overlayInstance.Show();
+                overlayInstance = new Overlay(enabled);
+                overlayInstance.Show();
 
                 if (old != null)
                 {
@@ -53,28 +53,28 @@ namespace HighWire16Stacks.Core
         public readonly static List<UStatus>  SortedStatuses = new List<UStatus>();
         public readonly static List<UStatus>  SortedStatusesByTime = new List<UStatus>();
 
-        private static volatile bool m_running = false;
-        private static Task m_task;
-        private static Process m_ffxivProcess;
-        private static IntPtr m_ffxivHandle;
-        private static IntPtr m_ffxivModulePtr;
-        private static bool m_ffxivDx11;
+        private static volatile bool running = false;
+        private static Task task;
+        private static Process ffxivProcess;
+        private static IntPtr ffxivHandle;
+        private static IntPtr ffxivModulePtr;
+        private static bool ffxivDx11;
 
-        private static MemoryOffsets m_memoryOffsets;
-        private static MemoryOffset m_memoryOffset;
+        private static MemoryOffsets memoryOffsets;
+        private static MemoryOffset memoryOffset;
 
         public static IntPtr FFXIVHandle
         {
-            get { return m_ffxivHandle; }
+            get { return ffxivHandle; }
         }
 
-        private static int m_delay = 1;
+        private static int delay = 1;
         public static void SetDelay(int value)
         {
-            m_delay = value;
+            delay = value;
         }
 
-        public static IntPtr m_ffxivWindowHandle { get; private set; }
+        public static IntPtr ffxivWindowHandle { get; private set; }
 
         static Worker()
         {
@@ -88,15 +88,18 @@ namespace HighWire16Stacks.Core
 
         public static void Unload()
         {
-            if (m_eventhook != null && !m_eventhook.IsClosed)
-                m_eventhook.Close();
-            m_running = false;
+            if (eventhook != null && !eventhook.IsClosed)
+                eventhook.Close();
+            running = false;
         }
 
         public static void Update()
         {
             string body;
 
+#if DEBUG
+            body = Properties.Resources.offset;
+#else
             try
             {
                 var req = HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/offset.json") as HttpWebRequest;
@@ -111,12 +114,13 @@ namespace HighWire16Stacks.Core
             {
                 body = Properties.Resources.offset;
             }
+#endif
             
-            m_memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(body);
+            memoryOffsets = JsonConvert.DeserializeObject<MemoryOffsets>(body);
             
             UStatus ustatus;
-            Statuses = new UStatus[m_memoryOffsets.count];
-            for (int i = 0; i < m_memoryOffsets.count; ++i)
+            Statuses = new UStatus[memoryOffsets.count];
+            for (int i = 0; i < memoryOffsets.count; ++i)
             {
                 ustatus = new UStatus(i);
                 Statuses[i] = ustatus;
@@ -127,36 +131,40 @@ namespace HighWire16Stacks.Core
         
         public static void Stop()
         {
-            for (int i = 0; i < m_memoryOffsets.count; ++i)
+            for (int i = 0; i < memoryOffsets.count; ++i)
                 Statuses[i].Clear();
 
-            m_running = false;
+            task?.Wait();
+
+            running = false;
             MainWindow.Instance.Dispatcher.BeginInvoke(new Action(MainWindow.Instance.ExitedProcess));
         }
 
         public static bool SetProcess(Process process)
         {
-            if (m_ffxivProcess != null)
+            if (ffxivProcess != null)
             {
-                m_ffxivProcess.Dispose();
-                m_ffxivProcess = null;
+                ffxivProcess.Dispose();
+                ffxivProcess = null;
             }
 
             try
             {
-                m_ffxivProcess = process;
-                m_ffxivProcess.EnableRaisingEvents = true;
+                ffxivProcess = process;
+                ffxivProcess.EnableRaisingEvents = true;
 
-                m_ffxivModulePtr = m_ffxivProcess.MainModule.BaseAddress;
-                m_ffxivHandle = NativeMethods.OpenProcess(NativeMethods.ProcessAccessFlags.All, false, m_ffxivProcess.Id);
-                m_ffxivDx11 = !NativeMethods.IsX86Process(m_ffxivHandle);
+                ffxivModulePtr = ffxivProcess.MainModule.BaseAddress;
+                ffxivHandle = NativeMethods.OpenProcess(NativeMethods.ProcessAccessFlags.All, false, ffxivProcess.Id);
+                ffxivDx11 = !NativeMethods.IsX86Process(ffxivHandle);
+                if (!ffxivDx11)
+                    return false;
 
-                m_ffxivWindowHandle = process.MainWindowHandle;
+                ffxivWindowHandle = process.MainWindowHandle;
 
-                m_memoryOffset = m_ffxivDx11 ? m_memoryOffsets.x64 : m_memoryOffsets.x86;
+                memoryOffset = memoryOffsets.x64;
 
-                m_running = true;
-                m_task = Task.Factory.StartNew(WorkerThread);
+                running = true;
+                task = Task.Factory.StartNew(WorkerThread);
             }
             catch (Exception ex)
             {
@@ -170,30 +178,30 @@ namespace HighWire16Stacks.Core
         private static void WorkerThread()
         {
             IntPtr ptr;
-            byte[] buff = new byte[12 * m_memoryOffsets.count];
+            byte[] buff = new byte[12 * memoryOffsets.count];
             int i;
 
             int id;
             short param;
             float remain;
-            uint owner;
+            //uint owner;
 
             bool orderUpdated;
 
-            while (m_running)
+            while (running)
             {
-                ptr = NativeMethods.ReadPointer(m_ffxivHandle, m_ffxivDx11, buff, m_ffxivModulePtr + m_memoryOffset.ptr);
+                ptr = NativeMethods.ReadPointer(ffxivHandle, ffxivDx11, buff, ffxivModulePtr + memoryOffset.ptr);
                 if (ptr == IntPtr.Zero)
                 {
                     Stop();
                     return;
                 }
 
-                if (NativeMethods.ReadBytes(m_ffxivHandle, ptr + m_memoryOffset.off, buff, buff.Length) == buff.Length)
+                if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOffset.off, buff, buff.Length) == buff.Length)
                 {
                     orderUpdated = false;
 
-                    for (i = 0; i < m_memoryOffsets.count; ++i)
+                    for (i = 0; i < memoryOffsets.count; ++i)
                     {
                         id = BitConverter.ToInt16(buff, 12 * i + 0);
                         if (id == 0)
@@ -204,7 +212,7 @@ namespace HighWire16Stacks.Core
 
                         param  = BitConverter.ToInt16(buff, 12 * i + 2);
                         remain = BitConverter.ToSingle(buff, 12 * i + 4);
-                        owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
+                        //owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
 
                         orderUpdated |= Statuses[i].Update(id, param, remain);
                     }
@@ -214,29 +222,29 @@ namespace HighWire16Stacks.Core
                         SortedStatuses.Sort(UStatus.Compare);
                         SortedStatusesByTime.Sort(UStatus.CompareWithTime);
                         
-                        if (m_overlayInstance != null)
-                            m_overlayInstance.Refresh();
+                        if (overlayInstance != null)
+                            overlayInstance.Refresh();
                     }
                 }
 
-                Thread.Sleep(m_delay);
+                Thread.Sleep(delay);
             }
         }
 
-        private static WinEventHookHandle.WinEventDelegate m_autohideDelegate = new WinEventHookHandle.WinEventDelegate(WinEventProc);
-        private static SafeHandle m_eventhook;
+        private static WinEventHookHandle.WinEventDelegate autohideDelegate = new WinEventHookHandle.WinEventDelegate(WinEventProc);
+        private static SafeHandle eventhook;
 
         public static void SetAutohide(bool enabled)
         {
             if (enabled)
             {
-                m_eventhook = WinEventHookHandle.SetForegroundEvent(m_autohideDelegate);
+                eventhook = WinEventHookHandle.SetForegroundEvent(autohideDelegate);
             }
             else
             {
-                m_eventhook.Close();
+                eventhook.Close();
 
-                m_overlayInstance.Visibility = Visibility.Visible;
+                overlayInstance.Visibility = Visibility.Visible;
             }
         }
         
@@ -244,17 +252,17 @@ namespace HighWire16Stacks.Core
         {
             var ptr = NativeMethods.GetForegroundWindow();
 
-            if (ptr == m_overlayInstance.Handle)
+            if (ptr == overlayInstance.Handle)
                 return;
 
-            if (ptr == Worker.m_ffxivWindowHandle ||
+            if (ptr == Worker.ffxivWindowHandle ||
                 ptr == MainWindow.Instance.Handle)
             {
-                m_overlayInstance.Visibility = Visibility.Visible;
+                overlayInstance.Visibility = Visibility.Visible;
             }
             else
             {
-                m_overlayInstance.Visibility = Visibility.Hidden;
+                overlayInstance.Visibility = Visibility.Hidden;
             }
         }
 

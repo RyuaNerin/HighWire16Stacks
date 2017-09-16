@@ -14,16 +14,10 @@ namespace HighWire16Stacks.Utilities
 
         public SortedList()
         {
-            this.m_lst = new List<T>();
         }
         public SortedList(IEnumerable<T> collection)
         {
-            this.m_lst = new List<T>();
             this.AddRange(collection);
-        }
-        public SortedList(int capacity)
-        {
-            this.m_lst = new List<T>(capacity);
         }
 
         public int Capacity

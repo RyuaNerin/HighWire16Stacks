@@ -1,4 +1,4 @@
-============================
+﻿============================
  고양감 16 스택 (HighWire16Stacks)
 ============================
 
@@ -8,8 +8,8 @@
 
 정보
 ----
-:최신 버전: `v2017.3.16.2 <https://github.com/RyuaNerin/HighWire16Stacks/releases/latest>`_
-:파이널 판타지 버전: v3.25, 2017.02.03.0000.0000(2358315, ex1:2017.02.03.0000.0000)
+:최신 버전: `v2017.6.10.1 <https://github.com/RyuaNerin/HighWire16Stacks/releases/latest>`_
+:파이널 판타지 버전: v3.4 (2017.05.23.0000.0000(2603565, ex1:2017.05.18.0000.0000)
 
 사용방법
 -------
@@ -51,5 +51,11 @@
 
 LICENSE
 -------
-:Final Fantasy XIV: (C) 2010 - 2017 SQUARE ENIX CO., LTD All Rights Reserved. Korea Published by EYEDENTITY MOBILE.
+:Final Fantasy XIV: `(C) 2010 - 2017 SQUARE ENIX CO., LTD All Rights Reserved. Korea Published by EYEDENTITY MOBILE.`
 :FBOverlay: `GNU GENERAL PUBLIC LICENSE v3 LICENSE <LICENSE>`_
+
+
+기타
+-------
+060000.win32.index : IconModifier
+010000.win32.index : status.exh_ko.csv
