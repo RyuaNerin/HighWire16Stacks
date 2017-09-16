@@ -185,7 +185,7 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_sortByTime = value;
-                Worker.OverlayInstance.SetSortByTime(value);
+                Worker.OverlayInstance?.SetSortByTime(value);
                 this.OnPropertyChanged();
             }
         }

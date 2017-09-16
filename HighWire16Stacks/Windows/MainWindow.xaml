@@ -257,10 +257,10 @@
                           Grid.ColumnSpan="2"
                           Content="선택한 것만 오버레이로"
                           Margin="0 3 0 3"
-                          IsChecked="{Binding Path=ShowingMode}"
+                          IsChecked="{Binding Path=ShowSelectedOnly}"
                           Checked="SetListGroupName"
                           Unchecked="SetListGroupName" />
-                
+
                 <metro:ToggleSwitch Grid.Row="1"
                                     x:Name="ctlShowChecked"
                                     Padding="0"
@@ -269,7 +269,7 @@
                                     OnLabel=""
                                     ToolTip="체크한 항목만 표시합니다."
                                     Checked="ctlShowChecked_Checked"
-                                    Unchecked="ctlShowChecked_Unchecked"/>
+                                    Unchecked="ctlShowChecked_Unchecked" />
 
                 <TextBox Grid.Row="1"
                          Grid.Column="1"

@@ -48,7 +48,7 @@ namespace HighWire16Stacks.Core
         
         private static MemoryOffset memoryOffset;
 
-        private static int delay = 1;
+        private static volatile int delay = 1;
         public static void SetDelay(int value)
         {
             delay = value;
@@ -219,7 +219,7 @@ namespace HighWire16Stacks.Core
             }
             else
             {
-                eventhook.Close();
+                eventhook?.Close();
 
                 overlayInstance.Visibility = Visibility.Visible;
             }
