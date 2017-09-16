@@ -8,8 +8,8 @@
 
 정보
 ----
-:최신 버전: `v2017.6.10.1 <https://github.com/RyuaNerin/HighWire16Stacks/releases/latest>`_
-:파이널 판타지 버전: v3.4 (2017.05.23.0000.0000(2603565, ex1:2017.05.18.0000.0000)
+:최신 버전: `v2017.9.16.1 <https://github.com/RyuaNerin/HighWire16Stacks/releases/latest>`_
+:파이널 판타지 버전: v3.5 (2017.09.11.0000.0000(2766276, ex1:2017.08.09.0000.0000)
 
 사용방법
 -------
