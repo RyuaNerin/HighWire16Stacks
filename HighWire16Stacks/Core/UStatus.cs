@@ -16,23 +16,23 @@ namespace HighWire16Stacks.Core
         
         private int m_id;
         private FStatus m_fstatus;
-        public FStatus FStatus { get { return this.m_fstatus; } }
+        public FStatus FStatus => this.m_fstatus;
         
         private int m_iconIndex = -1;
         private int m_icon;
-        public int Icon { get { return this.m_icon; } }
+        public int Icon => this.m_icon;
 
         private float m_remain;
-        public float Remain { get { return this.m_remain; } }
+        public float Remain => this.m_remain;
 
         private bool m_visible;
-        public bool Visible   { get { return this.m_visible; } }
+        public bool Visible => this.m_visible;
 
         private bool m_isChecked;
-        public bool IsChecked { get { return this.m_isChecked; } }
+        public bool IsChecked => this.m_isChecked;
 
         private bool m_isCount;
-        public bool IsCount { get { return this.m_isCount; } }
+        public bool IsCount => this.m_isCount;
 
         public void Clear()
         {
