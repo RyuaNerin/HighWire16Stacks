@@ -119,17 +119,21 @@ namespace HighWire16Stacks.Properties {
         }
         
         /// <summary>
+        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons2x {
+            get {
+                object obj = ResourceManager.GetObject("icons2x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   {
-        ///    &quot;v&quot;: &quot;v3.21, 2016.12.26.0000.0000(2245781, ex1:2016.12.26.0000.0000)&quot;,
+        ///    &quot;v&quot;: &quot;v3.5 (2017.09.11.0000.0000(2766276, ex1:2017.08.09.0000.0000)&quot;,
         ///    &quot;count&quot;: 21,
-        ///    &quot;x86&quot;: {
-        ///        &quot;ptr&quot;: &quot;0x0F67940&quot;,
-        ///        &quot;off&quot;: &quot;0x0001518&quot;
-        ///    },
-        ///    &quot;x64&quot;: {
-        ///        &quot;ptr&quot;: &quot;0x1551FE0&quot;,
-        ///        &quot;off&quot;: &quot;0x00018E0&quot;
-        ///    }    
+        ///    &quot;ptr&quot;: &quot;0x18A61F8&quot;,
+        ///    &quot;off&quot;: &quot;0x0001850&quot;
         ///}
         ///과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -140,9 +144,9 @@ namespace HighWire16Stacks.Properties {
         }
         
         /// <summary>
-        ///   Index,0 [0x0][0x0],1 [0x0][0x4],2 [0x5][0x8],3 [0x3][0xc],4 [0x3][0xd],5 [0x3][0xe],6 [0x3][0xf],7 [0x19][0x14],8 [0x1a][0x14],9 [0x1b][0x14],10 [0x1c][0x14],11 [0x1d][0x14],12 [0x1e][0x14],13 [0x1f][0x14],14 [0x20][0x14],15 [0x3][0x10],16 [0x3][0x11],17 [0x19][0x15],18 [0x5][0xa],19 [0x1a][0x15],20 [0x1b][0x15],21 [0x3][0x12],22 [0x3][0x13]
-        ///0,&quot;&quot;,&quot;&quot;,0,0,0,0,0,false,false,false,false,false,false,false,false,0,0,false,0,false,false,0,0
-        ///1,&quot;석화&quot;,&quot;손발이 석화되어 행동이 불가능한 상태.&quot;,15001,0,2,6,122,true,false,true,false,fal[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Index,0 [0x0][0x0],1 [0x0][0x4],2 [0x5][0x8],3 [0x3][0xc],4 [0x3][0xd],5 [0x3][0xe],6 [0x3][0xf],7 [0x19][0x14],8 [0x1a][0x14],9 [0x1b][0x14],10 [0x1c][0x14],11 [0x1d][0x14],12 [0x1e][0x14],13 [0x1f][0x14],14 [0x20][0x14],15 [0x3][0x10],16 [0x19][0x15],17 [0x3][0x11],18 [0x1a][0x15],19 [0x5][0xa],20 [0x1b][0x15],21 [0x1c][0x15],22 [0x3][0x12],23 [0x3][0x13],24 [0x1d][0x15]
+        ///0,&quot;&quot;,&quot;&quot;,0,0,0,0,0,false,false,false,false,false,false,false,false,0,true,0,false,0,false,false,0,0,false
+        ///1,&quot;석화&quot;,&quot;손발이 석화되어 행동이 불가능한 상태.[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string status_exh_ko {
             get {

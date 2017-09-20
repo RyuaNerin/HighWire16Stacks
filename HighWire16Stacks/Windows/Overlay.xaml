@@ -22,10 +22,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:UStatusTimeConverter x:Key="UStatusTimeConverter" />
-            <converters:IconToImageConverter x:Key="IconToImageConverter" />
+            <converters:SizableStatusIconConverter x:Key="SizableStatusIconConverter" />
             <converters:UStatusVisibilityConverter x:Key="UStatusVisibilityConverter" />
         </ResourceDictionary>
     </Window.Resources>
+    
     <ItemsControl x:Name="ctlStatusesList">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -50,11 +51,17 @@
                             <Binding Path="ShowSelectedOnly" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                         </MultiBinding>
                     </Grid.Visibility>
-                    
-                    <Image Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}, Mode=OneWay}"
-                           RenderOptions.BitmapScalingMode="Fant"
+
+                    <Image RenderOptions.BitmapScalingMode="Fant"
                            RenderOptions.ClearTypeHint="Enabled"
-                           RenderOptions.EdgeMode="Aliased" />
+                           RenderOptions.EdgeMode="Aliased">
+                        <Image.Source>
+                            <MultiBinding Converter="{StaticResource SizableStatusIconConverter}">
+                                <Binding Path="Icon" />
+                                <Binding Path="UseWaifu2x" Source="{x:Static core:Settings.Instance}" />
+                            </MultiBinding>
+                        </Image.Source>
+                    </Image>
                     
                     <utility:OutlinedTextBlock HorizontalAlignment="Stretch"
                                                VerticalAlignment="Bottom"

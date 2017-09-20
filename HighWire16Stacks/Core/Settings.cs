@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HighWire16Stacks.Core
 {
@@ -190,38 +191,52 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private readonly List<int> m_checkedList = new List<int>();
+        private bool m_useWaifu2x;
         [JsonProperty]
-        public int[] Checekd
+        public bool UseWaifu2x
         {
-            get
-            {
-                lock (this.m_checkedList)
-                    return this.m_checkedList.ToArray();
-            }
+            get => this.m_useWaifu2x;
             set
             {
-                lock (this.m_checkedList)
-                    for (int i = 0; i < value.Length; ++i)
-                        this.m_checkedList.AddRange(value);
+                this.m_useWaifu2x = value;
+                this.OnPropertyChanged();
             }
         }
 
-        public void SetChecked(bool isChecked, int id)
-        {
-            lock (this.m_checkedList)
-            {
-                if (isChecked)
-                    this.m_checkedList.Add(id);
-                else
-                    this.m_checkedList.Remove(id);
-            }
-        }
+        private readonly HashSet<int> m_checkedList = new HashSet<int>();
+        [JsonProperty]
+        [JsonConverter(typeof(HashSetConverter))]
+        public HashSet<int> Checked => this.m_checkedList;
 
         public bool IsChecked(int id)
         {
             lock (this.m_checkedList)
                 return this.m_checkedList.Contains(id);
+        }
+
+        public class HashSetConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(HashSet<int>);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var hashSet = (HashSet<int>)existingValue;
+                var jo = JArray.Load(reader);
+                for (int i = 0; i < jo.Count; ++i)
+                    hashSet.Add((int)jo[i]);
+
+                return hashSet;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                var hashSet = (HashSet<int>)value;
+                var jo = new JArray(hashSet);
+                jo.WriteTo(writer);
+            }
         }
     }
 }

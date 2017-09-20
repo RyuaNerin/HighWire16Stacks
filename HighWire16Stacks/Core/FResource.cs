@@ -13,15 +13,26 @@ namespace HighWire16Stacks.Core
     internal static class FResource
     {
         private static readonly BitmapSource IconBitmap;
+        private static readonly BitmapSource IconBitmap2x;
         private static readonly IDictionary<int, Int32Rect>   IconPosition = new SortedDictionary<int, Int32Rect>();
+        private static readonly IDictionary<int, Int32Rect>   IconPosition2x = new SortedDictionary<int, Int32Rect>();
         private static readonly IDictionary<int, ImageSource> IconCollection = new SortedDictionary<int, ImageSource>();
+        private static readonly IDictionary<int, ImageSource> IconCollection2x = new SortedDictionary<int, ImageSource>();
 
         public static readonly IList<FStatus> StatusList = new SortedList<FStatus>();
         public static readonly IDictionary<int, FStatus> StatusListDic = new SortedDictionary<int, FStatus>();
 
         static FResource()
         {
-            var bitmap = Properties.Resources.icons;
+            IconBitmap   = CreateBitmapSource(Properties.Resources.icons);
+            IconBitmap2x = CreateBitmapSource(Properties.Resources.icons2x);
+
+            IconCollection.Add(0, null);
+        }
+        public static void Load()
+        { }
+        private static BitmapSource CreateBitmapSource(Bitmap bitmap)
+        {
             BitmapData scan0 = null;
 
             try
@@ -31,7 +42,7 @@ namespace HighWire16Stacks.Core
                     ImageLockMode.ReadOnly,
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                IconBitmap = BitmapSource.Create(
+                return BitmapSource.Create(
                     scan0.Width,
                     scan0.Height,
                     96,
@@ -43,16 +54,11 @@ namespace HighWire16Stacks.Core
                     scan0.Stride);
             }
             finally
-            { 
+            {
                 if (scan0 != null)
                     bitmap.UnlockBits(scan0);
             }
-
-
-            IconCollection.Add(0, null);
         }
-        public static void Load()
-        { }
 
         public static void ReadResources()
         {            
@@ -71,7 +77,8 @@ namespace HighWire16Stacks.Core
                             csv.TryGetField<int>(1, out x) &&
                             csv.TryGetField<int>(2, out y))
                         {
-                            IconPosition.Add(id, new Int32Rect(x, y, 24, 32));
+                            IconPosition  .Add(id, new Int32Rect(x,     y,     24,     32    ));
+                            IconPosition2x.Add(id, new Int32Rect(x * 2, y * 2, 24 * 2, 32 * 2));
                         }
                     }
                 }                
@@ -112,18 +119,22 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        public static ImageSource GetImage(int iconId)
+        public static ImageSource GetImage(int statusId, bool use2x)
         {
-            lock (IconCollection)
+            var img = use2x ? IconBitmap2x     : IconBitmap;
+            var dic = use2x ? IconCollection2x : IconCollection;
+            var pos = use2x ? IconPosition2x   : IconPosition;
+
+            lock (dic)
             {
-                if (IconCollection.ContainsKey(iconId))
-                    return IconCollection[iconId];
+                if (dic.ContainsKey(statusId))
+                    return dic[statusId];
                 else
                 {
                     try
                     {
-                        var image = new CroppedBitmap(IconBitmap, IconPosition[iconId]);
-                        IconCollection.Add(iconId, image);
+                        var image = new CroppedBitmap(img, pos[statusId]);
+                        dic.Add(statusId, image);
 
                         return image;
                     }

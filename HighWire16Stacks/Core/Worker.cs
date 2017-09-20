@@ -15,21 +15,27 @@ namespace HighWire16Stacks.Core
     {
         private static object overlayInstanceSync = new object();
         private static Overlay overlayInstance;
-        public static Overlay OverlayInstance => CreateOverlay(Settings.Instance.ClickThrough);
+        public static Overlay OverlayInstance => overlayInstance;
 
         public static void SetClickThrough(bool enabled)
         {
             CreateOverlay(enabled).Show();
         }
 
-        private static Overlay CreateOverlay(bool clickThough)
+        private static Overlay CreateOverlay(bool clickThrough)
+        {
+            return (Overlay)Application.Current.Dispatcher.Invoke(new Func<bool, Overlay>(CreateOverlayPriv), new object[] { clickThrough });
+        }
+        private static Overlay CreateOverlayPriv(bool clickThrough)
         {
             lock (overlayInstanceSync)
             {
-                if (overlayInstance == null || overlayInstance.ClickThourgh != clickThough)
+                if (overlayInstance == null || overlayInstance.ClickThourgh != clickThrough)
                 {
-                    overlayInstance?.Dispatcher.Invoke(new Action(overlayInstance.Close));
-                    overlayInstance = new Overlay(clickThough);
+                    if (overlayInstance != null)
+                        Application.Current.Dispatcher.Invoke(new Action(overlayInstance.Close));
+
+                    overlayInstance = new Overlay(clickThrough);
                 }
 
                 return overlayInstance;
@@ -155,6 +161,7 @@ namespace HighWire16Stacks.Core
         private static void WorkerThread()
         {
             IntPtr ptr;
+            IntPtr ptrOld = IntPtr.Zero;
             byte[] buff = new byte[12 * memoryOffset.count];
             int i;
 
@@ -173,6 +180,12 @@ namespace HighWire16Stacks.Core
                     Stop();
                     return;
                 }
+                if (ptrOld != IntPtr.Zero && ptr != ptrOld)
+                    for (i = 0; i < memoryOffset.count; ++i)
+                        Statuses[i].Clear();
+                else
+                    ptrOld = ptr;
+                
 
                 if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOffset.off, buff, buff.Length) == buff.Length)
                 {

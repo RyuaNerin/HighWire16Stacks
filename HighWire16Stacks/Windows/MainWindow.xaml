@@ -28,7 +28,7 @@
 
             <converters:ProcessNameConverter x:Key="ProcessNameConverter" />
 
-            <converters:IconToImageConverter x:Key="IconToImageConverter" />
+            <converters:StatusIconConverter x:Key="StatusIconConverter" />
 
             <converters:BooleanConverter x:Key="True2Visible"
                                          TrueValue="{x:Static Visibility.Visible}"
@@ -186,6 +186,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
                     <Slider Grid.Row="0"
@@ -203,6 +204,11 @@
                                          Interval="20"
                                          Minimum="10"
                                          Maximum="1000" />
+
+                    <CheckBox Grid.Row="2"
+                              Margin="0 5 0 0"
+                              IsChecked="{Binding Path=UseWaifu2x}"
+                              Content="부드러운 이미지" />
                 </Grid>
             </GroupBox>
 
@@ -314,7 +320,7 @@
                                        Width="18"
                                        Height="24"
                                        Margin="0 0 0 0"
-                                       Source="{Binding Path=Icon, Converter={StaticResource IconToImageConverter}}"/>
+                                       Source="{Binding Path=Icon, Converter={StaticResource StatusIconConverter}}" />
 
                                 <TextBlock Grid.Column="2"
                                            Text="{Binding Path=Name}"

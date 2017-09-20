@@ -21,6 +21,7 @@ namespace HighWire16Stacks.Core
             
             this.IsChecked      = isChecked;
         }
+
         /// <summary>A</summary>
         public int      Id              { get; private set; }
         /// <summary>B</summary>
@@ -35,8 +36,7 @@ namespace HighWire16Stacks.Core
         public bool     IsDebuff        { get; private set; }
         /// <summary>O</summary>
         public bool     IsNonExpries    { get; private set; }
-
-
+        
         private bool m_isChecked;
         public bool IsChecked
         {
@@ -48,7 +48,10 @@ namespace HighWire16Stacks.Core
             {
                 this.m_isChecked = value;
 
-                Settings.Instance.SetChecked(value, this.Id);
+                if (value)
+                    Settings.Instance.Checked.Add(this.Id);
+                else
+                    Settings.Instance.Checked.Remove(this.Id);
 
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
             }

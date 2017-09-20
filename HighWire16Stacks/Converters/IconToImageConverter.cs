@@ -5,11 +5,29 @@ using HighWire16Stacks.Core;
 
 namespace HighWire16Stacks.Converters
 {
-    public sealed class IconToImageConverter : IValueConverter
+    public sealed class SizableStatusIconConverter : IMultiValueConverter
+    {
+        public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value[0] is int statusId &&
+                value[1] is bool use2x)
+                return FResource.GetImage(statusId, use2x);
+            else
+                return null;
+        }
+        public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+    public sealed class StatusIconConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is int ? FResource.GetImage((int)value) : null;
+            if (value is int statusId)
+                return FResource.GetImage(statusId, false);
+            else
+                return null;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

@@ -57,5 +57,7 @@ LICENSE
 
 기타
 -------
-060000.win32.index : IconModifier
-010000.win32.index : status.exh_ko.csv
+- 060000.win32.index : IconModifier
+- 010000.win32.index : status.exh_ko.csv
+- memory offset : offset.txt
+- 부드러운 이미지 : waifu2x

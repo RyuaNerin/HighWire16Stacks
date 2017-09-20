@@ -16,7 +16,7 @@ namespace HighWire16Stacks.Windows
     internal partial class MainWindow : MetroWindow
     {
         private static MainWindow instance;
-        public static MainWindow Instance { get { return MainWindow.instance; } }
+        public static MainWindow Instance => instance;
 
         private readonly List<Process> m_processList = new List<Process>();
         private readonly CollectionView m_processListView;
@@ -32,10 +32,9 @@ namespace HighWire16Stacks.Windows
 
         public MainWindow()
         {
+            Settings.Load();
             MainWindow.instance = this;
-
-            this.DataContext = Settings.Instance;
-
+            
             this.m_buffList = new ObservableCollection<FStatus>();
             this.m_buffListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_buffList);
             this.m_buffListView.Filter = this.BuffListView_Filter;
@@ -44,13 +43,15 @@ namespace HighWire16Stacks.Windows
             this.m_processListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_processList);
 
             InitializeComponent();
-            this.ctlContent.IsEnabled = false;
-
+            this.DataContext = Settings.Instance;
+            
             var interop = new WindowInteropHelper(this);
             interop.EnsureHandle();
             this.Handle = interop.Handle;
 
             Sentry.AddHandler(this.Dispatcher);
+
+            this.ctlContent.IsEnabled = false;
         }
 
         private static void ActiveLiveFiltering(ICollectionView collectionView, string propertyName)
