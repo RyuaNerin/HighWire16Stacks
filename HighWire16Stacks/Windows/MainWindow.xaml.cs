@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -277,6 +279,111 @@ namespace HighWire16Stacks.Windows
                 status = (FStatus)this.ctlBuffList.SelectedItems[i];
                 status.IsChecked = !status.IsChecked;
             }
+        }
+
+        private async void ctlUseWaifu2x_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!FResource.CheckWaifu2x())
+            {
+                if (await this.ShowMessageAsync(this.Title,
+                                                "이미지 다운로드가 필요합니다.",
+                                                MessageDialogStyle.AffirmativeAndNegative,
+                                                new MetroDialogSettings {
+                                                    AffirmativeButtonText = "다운로드",
+                                                    NegativeButtonText    = "취소",
+                                                    DefaultButtonFocus    = MessageDialogResult.Negative
+                                                }) == MessageDialogResult.Negative)
+                {
+                    this.ctlUseWaifu2x.IsChecked = false;
+                    return;
+                }
+
+                this.ctlContent.IsEnabled = false;
+                Worker.Stop();
+
+                if (!await Task.Run(new Func<bool>(this.DownloadWaifu2x)))
+                {
+                    await this.ShowMessageAsync(this.Title,
+                                                    "다운로드중 오류가 발생하였습니다.",
+                                                    MessageDialogStyle.Affirmative,
+                                                    new MetroDialogSettings
+                                                    {
+                                                        AffirmativeButtonText = "확인"
+                                                    });
+                        
+                    this.ctlContent.IsEnabled = true;
+                    this.ctlProcessRefresh_Click(null, null);
+                    return;
+                }
+            }
+
+            if (!await Task.Run(new Func<bool>(FResource.LoadWaifu2x)))
+            {
+                await this.ShowMessageAsync(this.Title,
+                                                "이미지를 불러오는 도중 오류가 발생하였습니다.",
+                                                MessageDialogStyle.Affirmative,
+                                                new MetroDialogSettings
+                                                {
+                                                    AffirmativeButtonText = "확인"
+                                                });
+
+                try
+                {
+                    File.Delete(FResource.Icon2xPath);
+                }
+                catch
+                {
+                }
+
+                this.ctlUseWaifu2x.IsChecked = false;
+                this.ctlContent.IsEnabled = true;
+                this.ctlProcessRefresh_Click(null, null);
+
+                return;
+            }
+            
+            this.ctlContent.IsEnabled = true;
+            this.ctlProcessRefresh_Click(null, null);
+
+            Settings.Instance.UseWaifu2x = true;
+        }
+
+        private void ctlUseWaifu2x_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Instance.UseWaifu2x = false;
+        }
+
+        private bool DownloadWaifu2x()
+        {
+            try
+            {
+                var req = WebRequest.Create(FResource.Icon2xUrl) as HttpWebRequest;
+                req.UserAgent = this.Title;
+                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
+
+                using (var res = req.GetResponse())
+                {
+                    using (var resStream = res.GetResponseStream())
+                    {
+                        using (var file = new FileStream(FResource.Icon2xPath, FileMode.OpenOrCreate))
+                        {
+                            file.SetLength(0);
+
+                            var buff = new byte[4096];
+                            int read;
+
+                            while ((read = resStream.Read(buff, 0, 4096)) > 0)
+                                file.Write(buff, 0, read);
+
+                            file.Flush();
+                        }
+                    }
+                }
+            }
+            catch
+            { }
+
+            return false;
         }
     }
 }

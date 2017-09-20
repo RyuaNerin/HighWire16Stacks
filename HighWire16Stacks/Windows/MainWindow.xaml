@@ -206,8 +206,11 @@
                                          Maximum="1000" />
 
                     <CheckBox Grid.Row="2"
+                              x:Name="ctlUseWaifu2x"
                               Margin="0 5 0 0"
-                              IsChecked="{Binding Path=UseWaifu2x}"
+                              IsChecked="{Binding Path=UseWaifu2x, Mode=OneTime}"
+                              Checked="ctlUseWaifu2x_Checked"
+                              Unchecked="ctlUseWaifu2x_Unchecked"
                               Content="부드러운 이미지" />
                 </Grid>
             </GroupBox>

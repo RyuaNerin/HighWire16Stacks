@@ -120,9 +120,9 @@ namespace HighWire16Stacks.Core
             for (int i = 0; i < memoryOffset.count; ++i)
                 Statuses[i].Clear();
 
+            running = false;
             taskWorker?.Wait();
 
-            running = false;
             MainWindow.Instance.Dispatcher.BeginInvoke(new Action(MainWindow.Instance.ExitedProcess));
         }
 

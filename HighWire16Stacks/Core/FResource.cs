@@ -12,8 +12,11 @@ namespace HighWire16Stacks.Core
 {
     internal static class FResource
     {
+        public static readonly string Icon2xPath = Path.Combine(Path.GetDirectoryName(App.ExeLocation), Path.GetFileNameWithoutExtension(App.ExeLocation) + "@2x.png");
+        public static readonly string Icon2xUrl  = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/waifu2x.png";
+
         private static readonly BitmapSource IconBitmap;
-        private static readonly BitmapSource IconBitmap2x;
+        private static          BitmapSource IconBitmap2x;
         private static readonly IDictionary<int, Int32Rect>   IconPosition = new SortedDictionary<int, Int32Rect>();
         private static readonly IDictionary<int, Int32Rect>   IconPosition2x = new SortedDictionary<int, Int32Rect>();
         private static readonly IDictionary<int, ImageSource> IconCollection = new SortedDictionary<int, ImageSource>();
@@ -25,7 +28,6 @@ namespace HighWire16Stacks.Core
         static FResource()
         {
             IconBitmap   = CreateBitmapSource(Properties.Resources.icons);
-            IconBitmap2x = CreateBitmapSource(Properties.Resources.icons2x);
 
             IconCollection.Add(0, null);
         }
@@ -53,10 +55,32 @@ namespace HighWire16Stacks.Core
                     scan0.Stride * scan0.Height,
                     scan0.Stride);
             }
+            catch
+            {
+                return null;
+            }
             finally
             {
                 if (scan0 != null)
                     bitmap.UnlockBits(scan0);
+            }
+        }
+
+        public static bool CheckWaifu2x()
+        {
+            return File.Exists(Icon2xPath);
+        }
+        public static bool LoadWaifu2x()
+        {
+            if (IconBitmap2x != null)
+                return true;
+
+            using (var bitmap = new Bitmap(Icon2xPath))
+            {
+                var bs = CreateBitmapSource(bitmap);
+                IconBitmap2x = bs;
+
+                return bs != null;
             }
         }
 

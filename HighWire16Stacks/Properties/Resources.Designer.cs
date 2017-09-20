@@ -119,16 +119,6 @@ namespace HighWire16Stacks.Properties {
         }
         
         /// <summary>
-        ///   System.Drawing.Bitmap 형식의 지역화된 리소스를 찾습니다.
-        /// </summary>
-        internal static System.Drawing.Bitmap icons2x {
-            get {
-                object obj = ResourceManager.GetObject("icons2x", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   {
         ///    &quot;v&quot;: &quot;v3.5 (2017.09.11.0000.0000(2766276, ex1:2017.08.09.0000.0000)&quot;,
         ///    &quot;count&quot;: 21,

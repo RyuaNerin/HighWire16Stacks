@@ -121,9 +121,6 @@
   <data name="icons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\icons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icons2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\icons_waifu2x_art_noise3_scale_tta_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="icons_pos" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\icons-pos.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +19,7 @@ namespace HighWire16Stacks.Core
 
         static Settings()
         {
-            Settings.SettingFilePath = Path.ChangeExtension(Path.GetFullPath(Assembly.GetExecutingAssembly().Location), ".cnf");
+            Settings.SettingFilePath = Path.ChangeExtension(App.ExeLocation, ".cnf");
         }
 
         public static void Load()
@@ -199,7 +198,7 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_useWaifu2x = value;
-                this.OnPropertyChanged();
+                //this.OnPropertyChanged();
             }
         }
 
