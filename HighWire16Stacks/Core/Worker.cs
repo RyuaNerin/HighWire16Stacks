@@ -180,11 +180,14 @@ namespace HighWire16Stacks.Core
                     Stop();
                     return;
                 }
-                if (ptrOld != IntPtr.Zero && ptr != ptrOld)
-                    for (i = 0; i < memoryOffset.count; ++i)
-                        Statuses[i].Clear();
-                else
-                    ptrOld = ptr;
+                if (ptr != ptrOld)
+                {
+                    if (ptrOld != IntPtr.Zero)
+                        for (i = 0; i < memoryOffset.count; ++i)
+                            Statuses[i].Clear();
+                    else
+                        ptrOld = ptr;
+                }
                 
 
                 if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOffset.off, buff, buff.Length) == buff.Length)
