@@ -286,7 +286,9 @@ namespace HighWire16Stacks.Windows
 
         private async void ctlUseWaifu2x_Checked(object sender, RoutedEventArgs e)
         {
-            if (!FResource.Waifu2xLoaded)
+            if (FResource.Waifu2xLoaded)
+                Settings.Instance.UseWaifu2x = true;
+            else
             {
                 this.ctlContent.IsEnabled = false;
 

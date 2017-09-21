@@ -93,7 +93,7 @@ namespace HighWire16Stacks.Core
                 return bs != null;
             }
         }
-        public static bool Waifu2xLoaded => IconBitmap2x == null;
+        public static bool Waifu2xLoaded => IconBitmap2x != null;
 
         public static void ReadResources()
         {            
@@ -140,7 +140,7 @@ namespace HighWire16Stacks.Core
                     {
                         if (csv.TryGetField<int>   ((int)('A' - 'A'), out id)           &&
                             csv.TryGetField<string>((int)('B' - 'A'), out name)         && !string.IsNullOrEmpty(name)    &&
-                            csv.TryGetField<string>((int)('C' - 'A'), out desc)         &&
+                            csv.TryGetField<string>((int)('C' - 'A'), out desc)         && !string.IsNullOrEmpty(desc)    &&
                             csv.TryGetField<int>   ((int)('D' - 'A'), out icon)         && IconPosition.ContainsKey(icon) &&
                             csv.TryGetField<int>   ((int)('E' - 'A'), out buffStack)    &&
                             csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
