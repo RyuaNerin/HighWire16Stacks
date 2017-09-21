@@ -319,9 +319,8 @@ namespace HighWire16Stacks.Core
                 {
                     using (var csv = new CsvReader(reader))
                     {
-                        csv.ReadHeader();
+                        csv.Configuration.HasHeaderRecord = true;
                         csv.Configuration.RegisterClassMap(typeof(FStatus.Map));
-                        csv.Configuration.IgnoreReferences = true;
                         
                         foreach (var r in csv.GetRecords<FStatus>())
                         {
