@@ -38,9 +38,6 @@ namespace HighWire16Stacks.Core
                 {
                 }
             }
-
-            if (!FResource.CheckWaifu2x())
-                instance.UseWaifu2x = false;
         }
 
         public void Save()
