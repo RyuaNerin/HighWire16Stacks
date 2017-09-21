@@ -117,6 +117,9 @@ namespace HighWire16Stacks.Windows
             Worker.OverlayInstance.Refresh();
 
             this.ctlProcessRefresh_Click(null, null);
+
+            this.ctlUseWaifu2x.Checked   += this.ctlUseWaifu2x_Checked;
+            this.ctlUseWaifu2x.Unchecked += this.ctlUseWaifu2x_Unchecked;
         }
 
         internal void ExitedProcess()
@@ -283,43 +286,50 @@ namespace HighWire16Stacks.Windows
 
         private async void ctlUseWaifu2x_Checked(object sender, RoutedEventArgs e)
         {
-            if (!FResource.CheckWaifu2x())
+            if (!FResource.Waifu2xLoaded)
             {
-                if (await this.ShowMessageAsync(this.Title,
-                                                "이미지 다운로드가 필요합니다.",
-                                                MessageDialogStyle.AffirmativeAndNegative,
-                                                new MetroDialogSettings {
-                                                    AffirmativeButtonText = "다운로드",
-                                                    NegativeButtonText    = "취소",
-                                                    DefaultButtonFocus    = MessageDialogResult.Negative
-                                                }) == MessageDialogResult.Negative)
-                {
-                    this.ctlUseWaifu2x.IsChecked = false;
-                    return;
-                }
-
                 this.ctlContent.IsEnabled = false;
-                Worker.Stop();
 
-                if (!await Task.Run(new Func<bool>(this.DownloadWaifu2x)))
+                if (!FResource.CheckWaifu2x())
                 {
-                    await this.ShowMessageAsync(this.Title,
+                    if (await this.ShowMessageAsync(this.Title,
+                                                    "이미지 다운로드가 필요합니다.",
+                                                    MessageDialogStyle.AffirmativeAndNegative,
+                                                    new MetroDialogSettings
+                                                    {
+                                                        AffirmativeButtonText = "다운로드",
+                                                        NegativeButtonText = "취소",
+                                                        DefaultButtonFocus = MessageDialogResult.Negative
+                                                    }) == MessageDialogResult.Negative)
+                    {
+                        this.ctlUseWaifu2x.IsChecked = false;
+                        this.ctlContent.IsEnabled = true;
+                        return;
+                    }
+
+                    this.ctlContent.IsEnabled = false;
+                    Worker.Stop();
+
+                    if (!await Task.Run(new Func<bool>(this.DownloadWaifu2x)))
+                    {
+                        await this.ShowMessageAsync(this.Title,
                                                     "다운로드중 오류가 발생하였습니다.",
                                                     MessageDialogStyle.Affirmative,
                                                     new MetroDialogSettings
                                                     {
                                                         AffirmativeButtonText = "확인"
                                                     });
-                        
-                    this.ctlContent.IsEnabled = true;
-                    this.ctlProcessRefresh_Click(null, null);
-                    return;
-                }
-            }
 
-            if (!await Task.Run(new Func<bool>(FResource.LoadWaifu2x)))
-            {
-                await this.ShowMessageAsync(this.Title,
+                        this.ctlUseWaifu2x.IsChecked = false;
+                        this.ctlContent.IsEnabled = true;
+                        this.ctlProcessRefresh_Click(null, null);
+                        return;
+                    }
+                }
+
+                if (!await Task.Run(new Func<bool>(FResource.LoadWaifu2x)))
+                {
+                    await this.ShowMessageAsync(this.Title,
                                                 "이미지를 불러오는 도중 오류가 발생하였습니다.",
                                                 MessageDialogStyle.Affirmative,
                                                 new MetroDialogSettings
@@ -327,25 +337,26 @@ namespace HighWire16Stacks.Windows
                                                     AffirmativeButtonText = "확인"
                                                 });
 
-                try
-                {
-                    File.Delete(FResource.Icon2xPath);
-                }
-                catch
-                {
+                    try
+                    {
+                        File.Delete(FResource.Icon2xPath);
+                    }
+                    catch
+                    {
+                    }
+
+                    this.ctlUseWaifu2x.IsChecked = false;
+                    this.ctlContent.IsEnabled = true;
+                    this.ctlProcessRefresh_Click(null, null);
+
+                    return;
                 }
 
-                this.ctlUseWaifu2x.IsChecked = false;
+                Settings.Instance.UseWaifu2x = true;
+
                 this.ctlContent.IsEnabled = true;
                 this.ctlProcessRefresh_Click(null, null);
-
-                return;
             }
-            
-            this.ctlContent.IsEnabled = true;
-            this.ctlProcessRefresh_Click(null, null);
-
-            Settings.Instance.UseWaifu2x = true;
         }
 
         private void ctlUseWaifu2x_Unchecked(object sender, RoutedEventArgs e)
@@ -358,7 +369,7 @@ namespace HighWire16Stacks.Windows
             try
             {
                 var req = WebRequest.Create(FResource.Icon2xUrl) as HttpWebRequest;
-                req.UserAgent = this.Title;
+                req.UserAgent = "HighWire16Stacks";
                 req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
 
                 using (var res = req.GetResponse())
@@ -379,6 +390,8 @@ namespace HighWire16Stacks.Windows
                         }
                     }
                 }
+
+                return true;
             }
             catch
             { }

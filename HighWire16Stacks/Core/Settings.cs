@@ -37,6 +37,9 @@ namespace HighWire16Stacks.Core
                 {
                 }
             }
+
+            if (!FResource.CheckWaifu2x())
+                instance.UseWaifu2x = false;
         }
 
         public void Save()
@@ -198,7 +201,7 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_useWaifu2x = value;
-                //this.OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 

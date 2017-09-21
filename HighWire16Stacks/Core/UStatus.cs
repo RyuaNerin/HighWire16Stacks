@@ -74,7 +74,7 @@ namespace HighWire16Stacks.Core
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
 
-                this.m_isCount   = remain == 0 && this.FStatus.IconCount == 0 && (!this.m_fstatus.IsNonExpries || param > 0);
+                this.m_isCount   = remain == 0 && this.FStatus.IconCount == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsFists));
 
                 this.m_fstatus.PropertyChanged += this.FStatus_PropertyChanged;
 

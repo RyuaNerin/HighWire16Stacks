@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -29,11 +30,18 @@ namespace HighWire16Stacks.Core
         {
             IconBitmap   = CreateBitmapSource(Properties.Resources.icons);
 
+            if (CheckWaifu2x())
+                LoadWaifu2x();
+
             IconCollection.Add(0, null);
         }
         public static void Load()
         { }
         private static BitmapSource CreateBitmapSource(Bitmap bitmap)
+        {
+            return (BitmapSource)App.Current.Dispatcher.Invoke(new Func<Bitmap, BitmapSource>(CreateBitmapSourcePriv), bitmap);
+        }
+        private static BitmapSource CreateBitmapSourcePriv(Bitmap bitmap)
         {
             BitmapData scan0 = null;
 
@@ -80,9 +88,12 @@ namespace HighWire16Stacks.Core
                 var bs = CreateBitmapSource(bitmap);
                 IconBitmap2x = bs;
 
+                IconCollection2x.Clear();
+
                 return bs != null;
             }
         }
+        public static bool Waifu2xLoaded => IconBitmap2x == null;
 
         public static void ReadResources()
         {            
@@ -108,7 +119,7 @@ namespace HighWire16Stacks.Core
                 }                
             }
 
-            FStatus status = new FStatus(0, null, null, 0, 0, false, false, false);
+            FStatus status = new FStatus(0, null, null, 0, 0, false, false, false, false);
             StatusList.Add(status);
             StatusListDic.Add(0, status);
 
@@ -121,6 +132,7 @@ namespace HighWire16Stacks.Core
                 int     buffStack;
                 int     isBad;
                 bool    isNonExpries;
+                bool    isFists;
 
                 using (csv = new CsvReader(reader))
                 {
@@ -132,9 +144,10 @@ namespace HighWire16Stacks.Core
                             csv.TryGetField<int>   ((int)('D' - 'A'), out icon)         && IconPosition.ContainsKey(icon) &&
                             csv.TryGetField<int>   ((int)('E' - 'A'), out buffStack)    &&
                             csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
-                            csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries))
+                            csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries) &&
+                            csv.TryGetField((int)('P' - 'A'), out isFists))
                         {
-                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, Settings.Instance.IsChecked(id));
+                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, isFists, Settings.Instance.IsChecked(id));
                             StatusList.Add(status);
                             StatusListDic.Add(id, status);
                         }
@@ -145,8 +158,12 @@ namespace HighWire16Stacks.Core
 
         public static ImageSource GetImage(int statusId, bool use2x)
         {
-            var img = use2x ? IconBitmap2x     : IconBitmap;
+            if (statusId == 0) return null;
+
             var dic = use2x ? IconCollection2x : IconCollection;
+
+            if (IconBitmap2x == null) use2x = false;
+            var img = use2x ? IconBitmap2x     : IconBitmap;
             var pos = use2x ? IconPosition2x   : IconPosition;
 
             lock (dic)

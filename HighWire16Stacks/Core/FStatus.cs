@@ -9,7 +9,7 @@ namespace HighWire16Stacks.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public FStatus(int id, string name, string desc, int icon, int iconStack, bool isBad, bool isNonExpries, bool isChecked)
+        public FStatus(int id, string name, string desc, int icon, int iconStack, bool isBad, bool isNonExpries, bool isFists, bool isChecked)
         {
             this.Id             = id;
             this.Icon           = icon;
@@ -18,6 +18,7 @@ namespace HighWire16Stacks.Core
             this.IsDebuff       = isBad;
             this.IconCount      = iconStack;
             this.IsNonExpries   = isNonExpries;
+            this.IsFists        = isFists;
             
             this.IsChecked      = isChecked;
         }
@@ -36,6 +37,8 @@ namespace HighWire16Stacks.Core
         public bool     IsDebuff        { get; private set; }
         /// <summary>O</summary>
         public bool     IsNonExpries    { get; private set; }
+        /// <summary>P</summary>
+        public bool     IsFists         { get; private set; }
         
         private bool m_isChecked;
         public bool IsChecked
