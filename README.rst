@@ -60,4 +60,4 @@ LICENSE
 - 060000.win32.index : IconModifier
 - 010000.win32.index : status.exh_ko.csv
 - memory offset : offset.txt
-- 부드러운 이미지 : waifu2x
+- 부드러운 이미지 : icons_waifu2x_art_noise3_scale_tta_1

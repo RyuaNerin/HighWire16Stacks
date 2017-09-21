@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using CsvHelper;
 
 namespace IconModifier
 {
@@ -11,10 +12,31 @@ namespace IconModifier
     {
         static void Main(string[] args)
         {
-            var files = Directory.GetFiles(@".\icons", "*.tex");
+            //var files = Directory.GetFiles(@".\icons", "*.tex");
 
-            int w = (int)Math.Ceiling(Math.Sqrt(files.Length)) + 1;
-            int h = (int)Math.Ceiling((double)files.Length / w);
+            var files = new SortedSet<int>();
+            using (var reader = new StreamReader("status.exh_ko.csv"))
+            {
+                using (var csv = new CsvReader(reader))
+                {
+                    csv.Read();
+                    while (csv.Read())
+                    {
+                        if (csv.TryGetField((int)('C' - 'A'), out string desc) && !string.IsNullOrEmpty(desc) &&
+                            csv.TryGetField((int)('D' - 'A'), out int icon) &&
+                            csv.TryGetField((int)('E' - 'A'), out int buffStack))
+                        {
+                            files.Add(icon);
+
+                            for (int i = 0; i < buffStack; ++i)
+                                files.Add(icon + i);
+                        }
+                    }
+                }
+            }
+
+            int w = (int)Math.Ceiling(Math.Sqrt(files.Count)) + 1;
+            int h = (int)Math.Ceiling((double)files.Count / w);
 
             Dictionary<int, Point> dic = new Dictionary<int,Point>();
 
@@ -29,18 +51,22 @@ namespace IconModifier
 
             uint type;
 
-            using (var imgOrig = new Bitmap(w * 24, h * 32, PixelFormat.Format32bppArgb))
+            string path;
+
+            using (var imgOrig = new Bitmap(w * (2 + 24 + 2), h * (2 + 32 + 2), PixelFormat.Format32bppArgb))
             {
                 foreach (var file in files)
                 {
                     xx = index % w;
                     yy = index / w;
 
-                    Console.WriteLine(Path.GetFileName(file));
+                    path = Path.Combine("icons", string.Format("{0:000000}.tex", file));
+
+                    Console.WriteLine(Path.GetFileName(path));
 
                     try
                     {
-                        using (var tex = File.OpenRead(file))
+                        using (var tex = File.OpenRead(path))
                         {
                             var reader = new BinaryReader(tex);
 
@@ -49,7 +75,6 @@ namespace IconModifier
                             type = reader.ReadUInt32();
 
                             tex.Seek(0x50, SeekOrigin.Begin);
-
                             
                             if (type == 0x00001440)
                             {
@@ -66,7 +91,7 @@ namespace IconModifier
 
                                         c = Color.FromArgb(a, r, g, b);
 
-                                        imgOrig.SetPixel(xx * 24 + x, yy * 32 + y, c);
+                                        imgOrig.SetPixel(xx * (2 + 24 + 2) + x + 2, yy * (2 + 32 + 2) + y + 2, c);
                                     }
                                 }
                             }
@@ -74,9 +99,6 @@ namespace IconModifier
                             else if (type == 0x00003420)
                             {   
                                 // DX1
-
-                                byte[] imageData = new byte[24 * 32 * 4];
-
                                 int blockCountX = (24 + 3) / 4;
                                 int blockCountY = (32 + 3) / 4;
 
@@ -84,7 +106,7 @@ namespace IconModifier
                                 {
                                     for (x = 0; x < blockCountX; x++)
                                     {
-                                        DecompressDxt1Block(reader, x, y, blockCountX, 24, 32, imgOrig, xx * 24, yy * 32);
+                                        DecompressDxt1Block(reader, x, y, blockCountX, 24, 32, imgOrig, xx * (2 + 24 + 2) + 2, yy * (2 + 32 + 2) + 2);
                                     }
                                 }
                             }
@@ -94,7 +116,7 @@ namespace IconModifier
                     {
                     }
 
-                    dic.Add(int.Parse(Path.GetFileName(file).Substring(0, 6)), new Point(xx * 24, yy * 32));
+                    dic.Add(file, new Point(xx * (2 + 24 + 2) + 2, yy * (2 + 32 + 2) + 2));
 
                     index++;
                 }
@@ -103,7 +125,7 @@ namespace IconModifier
                 var param = new EncoderParameters(2);
                 param.Param[0] = new EncoderParameter(Encoder.ColorDepth, 8L);
                 param.Param[1] = new EncoderParameter(Encoder.Compression, (long)EncoderValue.CompressionLZW);
-                imgOrig.Save("icons.png", codec, param);         
+                imgOrig.Save("icons.png", codec, param);
             }
 
             using (var writer = new StreamWriter("icons-pos.csv", false, System.Text.Encoding.UTF8))
@@ -197,13 +219,7 @@ namespace IconModifier
                     int px = (x << 2) + blockX;
                     int py = (y << 2) + blockY;
                     if ((px < width) && (py < height))
-                    {
-                        int offset = ((py * width) + px) << 2;
-
-                        offset /= 4;
-                        
-                        img.SetPixel(xx + offset % width, yy + offset / width, Color.FromArgb(a, r, g, b));
-                    }
+                        img.SetPixel(xx + px, yy + py, Color.FromArgb(a, r, g, b));
                 }
             }
         }
