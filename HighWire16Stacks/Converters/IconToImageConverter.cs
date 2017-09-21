@@ -9,7 +9,9 @@ namespace HighWire16Stacks.Converters
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value[0] is int statusId &&
+            if (value != null &&
+                value.Length == 2 &&
+                value[0] is int statusId &&
                 value[1] is bool use2x)
                 return FResource.GetImage(statusId, use2x);
             else

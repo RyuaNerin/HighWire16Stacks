@@ -147,7 +147,7 @@ namespace HighWire16Stacks.Core
                             csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries) &&
                             csv.TryGetField((int)('P' - 'A'), out isFists))
                         {
-                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, isFists, Settings.Instance.IsChecked(id));
+                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, isFists, Settings.Instance.Checked.Contains(id));
                             StatusList.Add(status);
                             StatusListDic.Add(id, status);
                         }
