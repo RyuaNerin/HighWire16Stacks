@@ -8,7 +8,7 @@ namespace HighWire16Stacks.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is double) ? ((double)value / 1000) : 0d;
+            return (value is double d) ? (d / 1000) : 0d;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

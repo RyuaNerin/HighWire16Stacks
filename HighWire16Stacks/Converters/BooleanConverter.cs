@@ -11,7 +11,7 @@ namespace HighWire16Stacks.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is bool && (bool)value) ? this.TrueValue : this.FalseValue;
+            return (value is bool b && b) ? this.TrueValue : this.FalseValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

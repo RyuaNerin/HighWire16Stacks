@@ -8,12 +8,12 @@ namespace HighWire16Stacks.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !(value is bool && (bool)value);
+            return !(value is bool b && b);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !(value is bool && (bool)value);
+            return !(value is bool b && b);
         }
     }
 }

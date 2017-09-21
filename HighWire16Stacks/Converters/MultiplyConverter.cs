@@ -10,11 +10,11 @@ namespace HighWire16Stacks.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is double) ? ((double)value * this.Multiply) : 0d;
+            return (value is double d) ? (d * this.Multiply) : 0d;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is double) ? ((double)value / this.Multiply) : 0d;
+            return (value is double d) ? (d / this.Multiply) : 0d;
         }
     }
 }
