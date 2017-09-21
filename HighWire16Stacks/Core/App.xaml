@@ -41,7 +41,8 @@
                                                      To="1" />
                                 </Storyboard>
                             </ControlTemplate.Resources>
-                            <Grid Background="{TemplateBinding Background}">
+                            <Grid Background="{TemplateBinding Background}"
+                                  Margin="5">
                                 <Border FocusVisualStyle="{x:Null}"
                                         Focusable="False">
                                     <Grid>
