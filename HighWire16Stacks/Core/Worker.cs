@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -79,15 +81,21 @@ namespace HighWire16Stacks.Core
             running = false;
         }
 
-        public static bool SetOffset(string offsetData)
+        public static bool SetOffset(Stream stream)
         {
-            try
+            using (var reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
             {
-                memoryOffset = JsonConvert.DeserializeObject<MemoryOffset>(offsetData);
-            }
-            catch
-            {
-                return false;
+                try
+                {
+                    var serializer = new JsonSerializer();
+
+                    using (var jsonReader = new JsonTextReader(reader))
+                        memoryOffset = serializer.Deserialize<MemoryOffset>(jsonReader);
+                }
+                catch
+                {
+                    return false;
+                }
             }
             
             UStatus ustatus;

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 
 namespace HighWire16Stacks.Core
 {
@@ -17,22 +18,30 @@ namespace HighWire16Stacks.Core
                 Map(e => e.Desc        ).Index('C' - 'A');
                 Map(e => e.Icon        ).Index('D' - 'A');
                 Map(e => e.IconRange   ).Index('E' - 'A');
-                Map(e => e.IsDebuff    ).Index('F' - 'A');
+                Map(e => e.IsDebuff    ).Index('F' - 'A').TypeConverter<IntToBooleanConverter>();
                 Map(e => e.IsNonExpries).Index('O' - 'A');
                 Map(e => e.IsStance    ).Index('P' - 'A');
+                Map(e => e.IsChecked   ).Ignore(true);
+            }
+            public class IntToBooleanConverter : DefaultTypeConverter
+            {
+                public override object ConvertFromString(TypeConverterOptions options, string value)
+                {
+                    return int.TryParse(value, out int i) && i > 0;
+                }
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         
-        public int      Id              { get; private set; }
-        public int      Icon            { get; private set; }
-        public string   Name            { get; private set; }
-        public string   Desc            { get; private set; }
-        public int      IconRange       { get; private set; }
-        public bool     IsDebuff        { get; private set; }
-        public bool     IsNonExpries    { get; private set; }
-        public bool     IsStance        { get; private set; }
+        public int      Id              { get; set; }
+        public string   Name            { get; set; }
+        public string   Desc            { get; set; }
+        public int      Icon            { get; set; }
+        public int      IconRange       { get; set; }
+        public bool     IsDebuff        { get; set; }
+        public bool     IsNonExpries    { get; set; }
+        public bool     IsStance        { get; set; }
         
         public bool IsChecked
         {

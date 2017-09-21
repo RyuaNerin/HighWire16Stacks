@@ -4,7 +4,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -18,7 +20,8 @@ namespace HighWire16Stacks.Core
     internal static class FResource
     {
         public static readonly string ResourcePath = Path.ChangeExtension(App.ExeLocation, ".dat");
-        public static readonly string ResourceUrl = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/resource-from-github/Resources/Resources.tar";
+        public static readonly string ResourceUrl  = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/resource-from-github/Resources/Resources.tar";
+        public static readonly string ResourceHash = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/resource-from-github/Resources/Resources.tar.md5";
 
         private static BitmapSource IconBitmap;
         private static BitmapSource IconBitmap2x;
@@ -35,8 +38,6 @@ namespace HighWire16Stacks.Core
             IconCollection.Add(0, null);
             IconCollection2x.Add(0, null);
         }
-        public static void Load()
-        { }
         private static BitmapSource CreateBitmapSource(Bitmap bitmap)
         {
             return (BitmapSource)App.Current.Dispatcher.Invoke(new Func<Bitmap, BitmapSource>(CreateBitmapSourcePriv), bitmap);
@@ -112,8 +113,8 @@ namespace HighWire16Stacks.Core
             UnknownError,
             DataError,
         }
-        public static event Action<int, int> DownloadProgressChanged;
-        public static ResourceResult ReadResource(string path)
+        public static event Action<long, long> DownloadProgressChanged;
+        public static ResourceResult ReadResource()
         {
             ResourceResult result;
 
@@ -131,72 +132,78 @@ namespace HighWire16Stacks.Core
         {
             var fileInfo = new FileInfo(ResourcePath);
             if (!fileInfo.Exists) return ResourceResult.NeedToDownload;
-
+            
             try
             {
-                var req = WebRequest.Create(ResourcePath) as HttpWebRequest;
-                req.Method = "HEAD";
-                req.UserAgent = "HighWire16Stacks";
-                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
-
-                using (var res = req.GetResponse() as HttpWebResponse)
-                    if (fileInfo.Length != res.ContentLength)
-                        return ResourceResult.Success;
-                    else
+                using (var wc = new WebClientEx())
+                {
+                    // 파일 사이즈 비교
+                    wc.Method = "HEAD";
+                    wc.DownloadData(ResourceUrl);
+                    if (fileInfo.Length != wc.ContentLength)
                         return ResourceResult.NeedToDownload;
+
+                    if (fileInfo.Exists)
+                    {
+                        // 파일 해싱 비교
+                        string hashCurrent, hashRemote;
+
+                        using (var md5 = MD5.Create())
+                        using (var file = File.OpenRead(ResourcePath))
+                            hashCurrent = BitConverter.ToString(md5.ComputeHash(file)).Replace("-", "").ToLower();
+
+                        hashRemote = wc.DownloadString(ResourceHash).ToLower();
+
+                        if (hashCurrent == hashRemote)
+                            return ResourceResult.Success;
+                    }
+                }
             }
             catch (WebException ex)
             {
+                Sentry.Error(ex);
                 return ResourceResult.NetworkError;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return ResourceResult.UnknownError;
             }
+
+            return ResourceResult.NeedToDownload;
         }
         private static ResourceResult DownloadResource()
         {
             try
             {
-                var req = WebRequest.Create(ResourcePath) as HttpWebRequest;
-                req.UserAgent = "HighWire16Stacks";
-                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
-
-                using (var res = req.GetResponse() as HttpWebResponse)
-                using (var stm = res.GetResponseStream())
-                using (var file = new FileStream(ResourcePath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (var wc = new WebClientEx())
                 {
-                    int cur = 0;
-                    int max = (int)res.ContentLength;
+                    wc.DownloadProgressChanged += (ls, le) => DownloadProgressChanged?.Invoke(le.BytesReceived, le.TotalBytesToReceive);
 
-                    var buff = new byte[4096];
-                    int read;
-                    while ((read = stm.Read(buff, 0, 4096)) > 0)
-                    {
-                        file.Write(buff, 0, read);
-
-                        cur += read;
-                        DownloadProgressChanged?.Invoke(cur, max);
-                    }
+                    wc.DownloadFileAsync(new Uri(ResourceUrl), ResourcePath);
+                    while (wc.IsBusy)
+                        Thread.Sleep(100);
                 }
 
                 return ResourceResult.Success;
             }
-            catch (WebException)
+            catch (WebException ex)
             {
+                Sentry.Error(ex);
                 return ResourceResult.NetworkError;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return ResourceResult.UnknownError;
             }
         }
-        public static ResourceResult ReadResourceFromDat()
+        private static ResourceResult ReadResourceFromDat()
         {
             try
             {
-                using (var memory = new MemoryStream(5 * 1024 * 1024))
-                using (var file = new FileStream(ResourcePath, FileMode.Open, FileAccess.Read))
+                using (var memory = new MemoryStream())
+                using (var file = new FileStream(ResourcePath, FileMode.Open, FileAccess.ReadWrite))
                 using (var tar = new TarInputStream(file))
                 {
                     TarEntry entry;
@@ -204,12 +211,14 @@ namespace HighWire16Stacks.Core
                     {
                         if (entry.IsDirectory) continue;
 
-                        if (entry.Name.EndsWith("icons.png") || entry.Name.EndsWith("waifu2x.png"))
+                        if (entry.Name.EndsWith("icons.png") ||
+                            entry.Name.EndsWith("icons@2x.png"))
                         {
                             memory.SetLength(0);
                             tar.CopyEntryContents(memory);
                             memory.Position = 0;
-                            if (!ReadIcon(memory, entry.Name.EndsWith("waifu2x.png")))
+
+                            if (!ReadIcon(memory, entry.Name.EndsWith("icons@2x.png")))
                                 return ResourceResult.DataError;
                         }
                         else if (entry.Name.EndsWith("offset.json"))
@@ -218,7 +227,7 @@ namespace HighWire16Stacks.Core
                             tar.CopyEntryContents(memory);
                             memory.Position = 0;
 
-                            if (!Worker.SetOffset(Encoding.UTF8.GetString(memory.ToArray())))
+                            if (!Worker.SetOffset(memory))
                                 return ResourceResult.DataError;
                         }
                         else if (entry.Name.EndsWith("icons-pos.csv"))
@@ -244,8 +253,9 @@ namespace HighWire16Stacks.Core
 
                 return ResourceResult.Success;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return ResourceResult.UnknownError;
             }
         }
@@ -257,15 +267,16 @@ namespace HighWire16Stacks.Core
                 using (var bitmap = Image.FromStream(stream) as Bitmap)
                 {
                     if (waifu2x)
-                        IconBitmap = CreateBitmapSource(bitmap);
-                    else
                         IconBitmap2x = CreateBitmapSource(bitmap);
+                    else
+                        IconBitmap   = CreateBitmapSource(bitmap);
                 }
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return false;
             }
         }
@@ -273,7 +284,7 @@ namespace HighWire16Stacks.Core
         {
             try
             {
-                using (var reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
                 {
                     using (var csv = new CsvReader(reader))
                     {
@@ -282,7 +293,7 @@ namespace HighWire16Stacks.Core
                         
                         foreach (var r in csv.GetRecords<PosRecord>())
                         {
-                            IconPosition.Add(r.StatusId, new Int32Rect(r.X, r.Y, 24, 32));
+                            IconPosition  .Add(r.StatusId, new Int32Rect(r.X,     r.Y,     24,     32));
                             IconPosition2x.Add(r.StatusId, new Int32Rect(r.X * 2, r.Y * 2, 24 * 2, 32 * 2));
                         }
                     }
@@ -290,8 +301,9 @@ namespace HighWire16Stacks.Core
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return false;
             }
         }
@@ -303,19 +315,20 @@ namespace HighWire16Stacks.Core
 
             try
             {
-                using (var reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
                 {
                     using (var csv = new CsvReader(reader))
                     {
-                        csv.Configuration.HasHeaderRecord = true;
-                        csv.Configuration.RegisterClassMap(typeof(PosRecord.Map));
+                        csv.ReadHeader();
+                        csv.Configuration.RegisterClassMap(typeof(FStatus.Map));
+                        csv.Configuration.IgnoreReferences = true;
                         
                         foreach (var r in csv.GetRecords<FStatus>())
                         {
-                            if (!string.IsNullOrEmpty(r.Name) || !string.IsNullOrEmpty(r.Desc))
+                            if (string.IsNullOrEmpty(r.Name) || string.IsNullOrEmpty(r.Desc))
                                 continue;
 
-                            StatusList   .Add(      r);
+                            StatusList.Add(r);
                             StatusListDic.Add(r.Id, r);
                         }
                     }
@@ -323,8 +336,9 @@ namespace HighWire16Stacks.Core
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Sentry.Error(ex);
                 return false;
             }
         }
@@ -342,8 +356,43 @@ namespace HighWire16Stacks.Core
             }
 
             public int StatusId { get; set; }
-            public int X { get; set; }
-            public int Y { get; set; }
+            public int X        { get; set; }
+            public int Y        { get; set; }
+        }
+
+        private class WebClientEx : WebClient
+        {
+            private long m_contentLength;
+            public long ContentLength => this.m_contentLength;
+
+            public string Method { get; set; }
+
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                var req = base.GetWebRequest(address) as HttpWebRequest;
+                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
+                req.UserAgent = "HighWire16Stacks";
+
+                if (this.Method != null) req.Method = this.Method;
+
+                return req;
+            }
+
+            protected override WebResponse GetWebResponse(WebRequest request)
+            {
+                var res = base.GetWebResponse(request) as HttpWebResponse;
+                this.m_contentLength = res.ContentLength;
+
+                return res;
+            }
+
+            protected override WebResponse GetWebResponse(WebRequest request, IAsyncResult result)
+            {
+                var res = base.GetWebResponse(request, result) as HttpWebResponse;
+                this.m_contentLength = res.ContentLength;
+
+                return res;
+            }
         }
     }
 }

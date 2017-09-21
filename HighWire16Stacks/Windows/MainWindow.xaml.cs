@@ -99,10 +99,30 @@ namespace HighWire16Stacks.Windows
 
             Worker.Load();
 
-            await Task.Factory.StartNew(Worker.Update);
+            string msg = null;
+            switch (await Task.Factory.StartNew(FResource.ReadResource))
+            {
+                case FResource.ResourceResult.NetworkError: msg = "최신 리소스 데이터를 읽지 못하였습니다."; break;
+                case FResource.ResourceResult.UnknownError: msg = "알 수 없는 오류가 발생하였습니다.";       break;
+                case FResource.ResourceResult.DataError:
+                    msg = "리소스를 읽지 못하였습니다.";
 
-            FResource.Load();
-            await Task.Factory.StartNew(FResource.ReadResources);
+                    try
+                    {
+                        File.Delete(FResource.ResourcePath);
+                    }
+                    catch
+                    { }
+                    break;
+            }
+
+            if (msg != null)
+            {
+                await this.ShowMessageAsync(null, msg);
+                App.Current.Shutdown();
+                return;
+            }
+
             this.m_buffListView.Refresh();
 
             for (int i = 0; i < FResource.StatusList.Count; ++i)
@@ -117,9 +137,6 @@ namespace HighWire16Stacks.Windows
             Worker.OverlayInstance.Refresh();
 
             this.ctlProcessRefresh_Click(null, null);
-
-            this.ctlUseWaifu2x.Checked   += this.ctlUseWaifu2x_Checked;
-            this.ctlUseWaifu2x.Unchecked += this.ctlUseWaifu2x_Unchecked;
         }
 
         internal void ExitedProcess()
@@ -282,123 +299,6 @@ namespace HighWire16Stacks.Windows
                 status = (FStatus)this.ctlBuffList.SelectedItems[i];
                 status.IsChecked = !status.IsChecked;
             }
-        }
-
-        private async void ctlUseWaifu2x_Checked(object sender, RoutedEventArgs e)
-        {
-            if (FResource.Waifu2xLoaded)
-                Settings.Instance.UseWaifu2x = true;
-            else
-            {
-                this.ctlContent.IsEnabled = false;
-
-                if (!FResource.CheckWaifu2x())
-                {
-                    if (await this.ShowMessageAsync(this.Title,
-                                                    "이미지 다운로드가 필요합니다.",
-                                                    MessageDialogStyle.AffirmativeAndNegative,
-                                                    new MetroDialogSettings
-                                                    {
-                                                        AffirmativeButtonText = "다운로드",
-                                                        NegativeButtonText = "취소",
-                                                        DefaultButtonFocus = MessageDialogResult.Negative
-                                                    }) == MessageDialogResult.Negative)
-                    {
-                        this.ctlUseWaifu2x.IsChecked = false;
-                        this.ctlContent.IsEnabled = true;
-                        return;
-                    }
-
-                    this.ctlContent.IsEnabled = false;
-                    Worker.Stop();
-
-                    if (!await Task.Run(new Func<bool>(this.DownloadWaifu2x)))
-                    {
-                        await this.ShowMessageAsync(this.Title,
-                                                    "다운로드중 오류가 발생하였습니다.",
-                                                    MessageDialogStyle.Affirmative,
-                                                    new MetroDialogSettings
-                                                    {
-                                                        AffirmativeButtonText = "확인"
-                                                    });
-
-                        this.ctlUseWaifu2x.IsChecked = false;
-                        this.ctlContent.IsEnabled = true;
-                        this.ctlProcessRefresh_Click(null, null);
-                        return;
-                    }
-                }
-
-                if (!await Task.Run(new Func<bool>(FResource.LoadWaifu2x)))
-                {
-                    await this.ShowMessageAsync(this.Title,
-                                                "이미지를 불러오는 도중 오류가 발생하였습니다.",
-                                                MessageDialogStyle.Affirmative,
-                                                new MetroDialogSettings
-                                                {
-                                                    AffirmativeButtonText = "확인"
-                                                });
-
-                    try
-                    {
-                        File.Delete(FResource.Icon2xPath);
-                    }
-                    catch
-                    {
-                    }
-
-                    this.ctlUseWaifu2x.IsChecked = false;
-                    this.ctlContent.IsEnabled = true;
-                    this.ctlProcessRefresh_Click(null, null);
-
-                    return;
-                }
-
-                Settings.Instance.UseWaifu2x = true;
-
-                this.ctlContent.IsEnabled = true;
-                this.ctlProcessRefresh_Click(null, null);
-            }
-        }
-
-        private void ctlUseWaifu2x_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Settings.Instance.UseWaifu2x = false;
-        }
-
-        private bool DownloadWaifu2x()
-        {
-            try
-            {
-                var req = WebRequest.Create(FResource.Icon2xUrl) as HttpWebRequest;
-                req.UserAgent = "HighWire16Stacks";
-                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
-
-                using (var res = req.GetResponse())
-                {
-                    using (var resStream = res.GetResponseStream())
-                    {
-                        using (var file = new FileStream(FResource.Icon2xPath, FileMode.OpenOrCreate))
-                        {
-                            file.SetLength(0);
-
-                            var buff = new byte[4096];
-                            int read;
-
-                            while ((read = resStream.Read(buff, 0, 4096)) > 0)
-                                file.Write(buff, 0, read);
-
-                            file.Flush();
-                        }
-                    }
-                }
-
-                return true;
-            }
-            catch
-            { }
-
-            return false;
         }
     }
 }
