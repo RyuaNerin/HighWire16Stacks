@@ -74,7 +74,7 @@ namespace HighWire16Stacks.Core
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
 
-                this.m_isCount   = remain == 0 && this.FStatus.IconCount == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsFists));
+                this.m_isCount   = remain == 0 && this.FStatus.IconRange == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsStance));
 
                 this.m_fstatus.PropertyChanged += this.FStatus_PropertyChanged;
 
@@ -90,7 +90,7 @@ namespace HighWire16Stacks.Core
                 this.m_iconIndex = param;
                 this.m_icon = this.m_fstatus.Icon;
 
-                if (this.m_fstatus.IconCount > 0 && param <= this.m_fstatus.IconCount)
+                if (this.m_fstatus.IconRange > 0 && param <= this.m_fstatus.IconRange)
                     this.m_icon += param - 1;
             }
 

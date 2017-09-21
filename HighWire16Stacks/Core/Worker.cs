@@ -79,30 +79,16 @@ namespace HighWire16Stacks.Core
             running = false;
         }
 
-        public static void Update()
+        public static bool SetOffset(string offsetData)
         {
-            string body;
-
-#if DEBUG
-            body = Properties.Resources.offset;
-#else
             try
             {
-                var req = System.Net.HttpWebRequest.Create("https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/offset.json") as System.Net.HttpWebRequest;
-                req.UserAgent = System.Reflection.Assembly.GetExecutingAssembly().FullName;
-                req.Timeout = 5000;
-                using (var res = req.GetResponse())
-                using (var stream = res.GetResponseStream())
-                using (var reader = new System.IO.StreamReader(stream))
-                    body = reader.ReadToEnd();
+                memoryOffset = JsonConvert.DeserializeObject<MemoryOffset>(offsetData);
             }
             catch
             {
-                body = Properties.Resources.offset;
+                return false;
             }
-#endif
-
-            memoryOffset = JsonConvert.DeserializeObject<MemoryOffset>(body);
             
             UStatus ustatus;
             Statuses = new UStatus[memoryOffset.count];
@@ -113,6 +99,8 @@ namespace HighWire16Stacks.Core
                 SortedStatuses.Add(ustatus);
                 SortedStatusesByTime.Add(ustatus);
             }
+
+            return true;
         }
         
         public static void Stop()

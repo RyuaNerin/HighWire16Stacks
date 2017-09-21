@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CsvHelper;
+using CsvHelper.Configuration;
 using HighWire16Stacks.Utilities;
+using ICSharpCode.SharpZipLib.Tar;
 
 namespace HighWire16Stacks.Core
 {
     internal static class FResource
     {
-        public static readonly string Icon2xPath = Path.Combine(Path.GetDirectoryName(App.ExeLocation), Path.GetFileNameWithoutExtension(App.ExeLocation) + "@2x.png");
-        public static readonly string Icon2xUrl  = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/HighWire16Stacks/Resources/waifu2x.png";
+        public static readonly string ResourcePath = Path.ChangeExtension(App.ExeLocation, ".dat");
+        public static readonly string ResourceUrl = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/Resources/Resources.tar";
 
-        private static readonly BitmapSource IconBitmap;
-        private static          BitmapSource IconBitmap2x;
-        private static readonly IDictionary<int, Int32Rect>   IconPosition = new SortedDictionary<int, Int32Rect>();
-        private static readonly IDictionary<int, Int32Rect>   IconPosition2x = new SortedDictionary<int, Int32Rect>();
+        private static BitmapSource IconBitmap;
+        private static BitmapSource IconBitmap2x;
+        private static readonly IDictionary<int, Int32Rect> IconPosition = new SortedDictionary<int, Int32Rect>();
+        private static readonly IDictionary<int, Int32Rect> IconPosition2x = new SortedDictionary<int, Int32Rect>();
         private static readonly IDictionary<int, ImageSource> IconCollection = new SortedDictionary<int, ImageSource>();
         private static readonly IDictionary<int, ImageSource> IconCollection2x = new SortedDictionary<int, ImageSource>();
 
@@ -28,12 +32,8 @@ namespace HighWire16Stacks.Core
 
         static FResource()
         {
-            IconBitmap   = CreateBitmapSource(Properties.Resources.icons);
-
-            if (CheckWaifu2x())
-                LoadWaifu2x();
-
             IconCollection.Add(0, null);
+            IconCollection2x.Add(0, null);
         }
         public static void Load()
         { }
@@ -74,97 +74,13 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        public static bool CheckWaifu2x()
-        {
-            return File.Exists(Icon2xPath);
-        }
-        public static bool LoadWaifu2x()
-        {
-            if (IconBitmap2x != null)
-                return true;
-
-            using (var bitmap = new Bitmap(Icon2xPath))
-            {
-                var bs = CreateBitmapSource(bitmap);
-                IconBitmap2x = bs;
-
-                IconCollection2x.Clear();
-
-                return bs != null;
-            }
-        }
-        public static bool Waifu2xLoaded => IconBitmap2x != null;
-
-        public static void ReadResources()
-        {            
-            StringReader reader;
-            CsvReader csv;
-
-            using (reader = new StringReader(Properties.Resources.icons_pos))
-            {
-                int id, x, y;
-
-                using (csv = new CsvReader(reader))
-                {
-                    while (csv.Read())
-                    {
-                        if (csv.TryGetField<int>(0, out id) &&
-                            csv.TryGetField<int>(1, out x) &&
-                            csv.TryGetField<int>(2, out y))
-                        {
-                            IconPosition  .Add(id, new Int32Rect(x,     y,     24,     32    ));
-                            IconPosition2x.Add(id, new Int32Rect(x * 2, y * 2, 24 * 2, 32 * 2));
-                        }
-                    }
-                }                
-            }
-
-            FStatus status = new FStatus(0, null, null, 0, 0, false, false, false, false);
-            StatusList.Add(status);
-            StatusListDic.Add(0, status);
-
-            using (reader = new StringReader(Properties.Resources.status_exh_ko))
-            {
-                int     id;
-                string  name;
-                string  desc;
-                int     icon;
-                int     buffStack;
-                int     isBad;
-                bool    isNonExpries;
-                bool    isFists;
-
-                using (csv = new CsvReader(reader))
-                {
-                    while (csv.Read())
-                    {
-                        if (csv.TryGetField<int>   ((int)('A' - 'A'), out id)           &&
-                            csv.TryGetField<string>((int)('B' - 'A'), out name)         && !string.IsNullOrEmpty(name)    &&
-                            csv.TryGetField<string>((int)('C' - 'A'), out desc)         && !string.IsNullOrEmpty(desc)    &&
-                            csv.TryGetField<int>   ((int)('D' - 'A'), out icon)         && IconPosition.ContainsKey(icon) &&
-                            csv.TryGetField<int>   ((int)('E' - 'A'), out buffStack)    &&
-                            csv.TryGetField<int>   ((int)('F' - 'A'), out isBad)        &&
-                            csv.TryGetField<bool>  ((int)('O' - 'A'), out isNonExpries) &&
-                            csv.TryGetField((int)('P' - 'A'), out isFists))
-                        {
-                            status = new FStatus(id, name, desc, icon, buffStack, isBad == 2, isNonExpries, isFists, Settings.Instance.Checked.Contains(id));
-                            StatusList.Add(status);
-                            StatusListDic.Add(id, status);
-                        }
-                    }
-                }
-            }
-        }
-
         public static ImageSource GetImage(int statusId, bool use2x)
         {
             if (statusId == 0) return null;
 
             var dic = use2x ? IconCollection2x : IconCollection;
-
-            if (IconBitmap2x == null) use2x = false;
-            var img = use2x ? IconBitmap2x     : IconBitmap;
-            var pos = use2x ? IconPosition2x   : IconPosition;
+            var img = use2x ? IconBitmap2x : IconBitmap;
+            var pos = use2x ? IconPosition2x : IconPosition;
 
             lock (dic)
             {
@@ -186,6 +102,248 @@ namespace HighWire16Stacks.Core
 
                 }
             }
+        }
+
+        public enum ResourceResult
+        {
+            Success,
+            NeedToDownload,
+            NetworkError,
+            UnknownError,
+            DataError,
+        }
+        public static event Action<int, int> DownloadProgressChanged;
+        public static ResourceResult ReadResource(string path)
+        {
+            ResourceResult result;
+
+            result = CheckResource();
+
+            if (result == ResourceResult.NeedToDownload)
+                result = DownloadResource();
+
+            if (result == ResourceResult.Success)
+                result = ReadResourceFromDat();
+
+            return result;
+        }
+        private static ResourceResult CheckResource()
+        {
+            var fileInfo = new FileInfo(ResourcePath);
+            if (!fileInfo.Exists) return ResourceResult.NeedToDownload;
+
+            try
+            {
+                var req = WebRequest.Create(ResourcePath) as HttpWebRequest;
+                req.Method = "HEAD";
+                req.UserAgent = "HighWire16Stacks";
+                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
+
+                using (var res = req.GetResponse() as HttpWebResponse)
+                    if (fileInfo.Length != res.ContentLength)
+                        return ResourceResult.Success;
+                    else
+                        return ResourceResult.NeedToDownload;
+            }
+            catch (WebException ex)
+            {
+                return ResourceResult.NetworkError;
+            }
+            catch
+            {
+                return ResourceResult.UnknownError;
+            }
+        }
+        private static ResourceResult DownloadResource()
+        {
+            try
+            {
+                var req = WebRequest.Create(ResourcePath) as HttpWebRequest;
+                req.UserAgent = "HighWire16Stacks";
+                req.Timeout = req.ContinueTimeout = req.ReadWriteTimeout = 5 * 1000;
+
+                using (var res = req.GetResponse() as HttpWebResponse)
+                using (var stm = res.GetResponseStream())
+                using (var file = new FileStream(ResourcePath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    int cur = 0;
+                    int max = (int)res.ContentLength;
+
+                    var buff = new byte[4096];
+                    int read;
+                    while ((read = stm.Read(buff, 0, 4096)) > 0)
+                    {
+                        file.Write(buff, 0, read);
+
+                        cur += read;
+                        DownloadProgressChanged?.Invoke(cur, max);
+                    }
+                }
+
+                return ResourceResult.Success;
+            }
+            catch (WebException)
+            {
+                return ResourceResult.NetworkError;
+            }
+            catch
+            {
+                return ResourceResult.UnknownError;
+            }
+        }
+        public static ResourceResult ReadResourceFromDat()
+        {
+            try
+            {
+                using (var memory = new MemoryStream(5 * 1024 * 1024))
+                using (var file = new FileStream(ResourcePath, FileMode.Open, FileAccess.Read))
+                using (var tar = new TarInputStream(file))
+                {
+                    TarEntry entry;
+                    while ((entry = tar.GetNextEntry()) != null)
+                    {
+                        if (entry.IsDirectory) continue;
+
+                        if (entry.Name.EndsWith("icons.png") || entry.Name.EndsWith("waifu2x.png"))
+                        {
+                            memory.SetLength(0);
+                            tar.CopyEntryContents(memory);
+                            memory.Position = 0;
+                            if (!ReadIcon(memory, entry.Name.EndsWith("waifu2x.png")))
+                                return ResourceResult.DataError;
+                        }
+                        else if (entry.Name.EndsWith("offset.json"))
+                        {
+                            memory.SetLength(0);
+                            tar.CopyEntryContents(memory);
+                            memory.Position = 0;
+
+                            if (!Worker.SetOffset(Encoding.UTF8.GetString(memory.ToArray())))
+                                return ResourceResult.DataError;
+                        }
+                        else if (entry.Name.EndsWith("icons-pos.csv"))
+                        {
+                            memory.SetLength(0);
+                            tar.CopyEntryContents(memory);
+                            memory.Position = 0;
+
+                            if (!ReadIconPos(memory))
+                                return ResourceResult.DataError;
+                        }
+                        else if (entry.Name.EndsWith("status.exh_ko.csv"))
+                        {
+                            memory.SetLength(0);
+                            tar.CopyEntryContents(memory);
+                            memory.Position = 0;
+
+                            if (!ReadStatus(memory))
+                                return ResourceResult.DataError;
+                        }
+                    }
+                }
+
+                return ResourceResult.Success;
+            }
+            catch
+            {
+                return ResourceResult.UnknownError;
+            }
+        }
+
+        private static bool ReadIcon(Stream stream, bool waifu2x)
+        {
+            try
+            {
+                using (var bitmap = Image.FromStream(stream) as Bitmap)
+                {
+                    if (waifu2x)
+                        IconBitmap = CreateBitmapSource(bitmap);
+                    else
+                        IconBitmap2x = CreateBitmapSource(bitmap);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        private static bool ReadIconPos(Stream stream)
+        {
+            try
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    using (var csv = new CsvReader(reader))
+                    {
+                        csv.Configuration.HasHeaderRecord = true;
+                        csv.Configuration.RegisterClassMap(typeof(PosRecord.Map));
+                        
+                        foreach (var r in csv.GetRecords<PosRecord>())
+                        {
+                            IconPosition.Add(r.StatusId, new Int32Rect(r.X, r.Y, 24, 32));
+                            IconPosition2x.Add(r.StatusId, new Int32Rect(r.X * 2, r.Y * 2, 24 * 2, 32 * 2));
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        private static bool ReadStatus(Stream stream)
+        {
+            FStatus status = new FStatus();
+            StatusList.Add(status);
+            StatusListDic.Add(0, status);
+
+            try
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    using (var csv = new CsvReader(reader))
+                    {
+                        csv.Configuration.HasHeaderRecord = true;
+                        csv.Configuration.RegisterClassMap(typeof(PosRecord.Map));
+                        
+                        foreach (var r in csv.GetRecords<FStatus>())
+                        {
+                            if (!string.IsNullOrEmpty(r.Name) || !string.IsNullOrEmpty(r.Desc))
+                                continue;
+
+                            StatusList   .Add(      r);
+                            StatusListDic.Add(r.Id, r);
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public struct PosRecord
+        {
+            public class Map : CsvClassMap<PosRecord>
+            {
+                public Map()
+                {
+                    Map(m => m.StatusId).Index('A' - 'A');
+                    Map(m => m.X       ).Index('B' - 'A');
+                    Map(m => m.Y       ).Index('C' - 'A');
+                }
+            }
+
+            public int StatusId { get; set; }
+            public int X { get; set; }
+            public int Y { get; set; }
         }
     }
 }

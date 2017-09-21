@@ -1,56 +1,47 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using CsvHelper.Configuration;
 
 namespace HighWire16Stacks.Core
 {
     [DebuggerDisplay("[{Id}] {Name} : {Desc}")]
     internal class FStatus : IComparable<FStatus>, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public FStatus(int id, string name, string desc, int icon, int iconStack, bool isBad, bool isNonExpries, bool isFists, bool isChecked)
+        public class Map : CsvClassMap<FStatus>
         {
-            this.Id             = id;
-            this.Icon           = icon;
-            this.Name           = name;
-            this.Desc           = desc;
-            this.IsDebuff       = isBad;
-            this.IconCount      = iconStack;
-            this.IsNonExpries   = isNonExpries;
-            this.IsFists        = isFists;
-            
-            this.IsChecked      = isChecked;
+            public Map()
+            {
+                Map(e => e.Id          ).Index('A' - 'A');
+                Map(e => e.Name        ).Index('B' - 'A');
+                Map(e => e.Desc        ).Index('C' - 'A');
+                Map(e => e.Icon        ).Index('D' - 'A');
+                Map(e => e.IconRange   ).Index('E' - 'A');
+                Map(e => e.IsDebuff    ).Index('F' - 'A');
+                Map(e => e.IsNonExpries).Index('O' - 'A');
+                Map(e => e.IsStance    ).Index('P' - 'A');
+            }
         }
 
-        /// <summary>A</summary>
-        public int      Id              { get; private set; }
-        /// <summary>B</summary>
-        public int      Icon            { get; private set; }
-        /// <summary>C</summary>
-        public string   Name            { get; private set; }
-        /// <summary>D</summary>
-        public string   Desc            { get; private set; }
-        /// <summary>E</summary>
-        public int      IconCount       { get; private set; }
-        /// <summary>F==2</summary>
-        public bool     IsDebuff        { get; private set; }
-        /// <summary>O</summary>
-        public bool     IsNonExpries    { get; private set; }
-        /// <summary>P</summary>
-        public bool     IsFists         { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
         
-        private bool m_isChecked;
+        public int      Id              { get; private set; }
+        public int      Icon            { get; private set; }
+        public string   Name            { get; private set; }
+        public string   Desc            { get; private set; }
+        public int      IconRange       { get; private set; }
+        public bool     IsDebuff        { get; private set; }
+        public bool     IsNonExpries    { get; private set; }
+        public bool     IsStance        { get; private set; }
+        
         public bool IsChecked
         {
             get
             {
-                return this.m_isChecked;
+                return Settings.Instance.Checked.Contains(this.Id);
             }
             set
             {
-                this.m_isChecked = value;
-
                 if (value)
                     Settings.Instance.Checked.Add(this.Id);
                 else
