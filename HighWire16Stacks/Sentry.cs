@@ -64,7 +64,7 @@ namespace HighWire16Stacks
         
         public static void Error(Exception ex)
         {
-            Error(ex);
+            Error(ex, null);
         }
         public static void Error(Exception ex, object data)
         {
