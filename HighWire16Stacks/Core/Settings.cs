@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace HighWire16Stacks.Core
 {
-    public enum ShowingModes
+    public enum ShowingModes : int
     {
         ShowAll = 0,
         ShowChecked = 1,

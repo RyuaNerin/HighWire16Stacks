@@ -138,6 +138,8 @@ namespace HighWire16Stacks.Windows
             Worker.OverlayInstance.Show();
             Worker.OverlayInstance.Refresh();
 
+            this.ctlShowingMode.SelectedIndex = (int)Settings.Instance.ShowingMode;
+
             this.ctlProcessRefresh_Click(null, null);
         }
 

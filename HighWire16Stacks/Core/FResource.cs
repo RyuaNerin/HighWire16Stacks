@@ -152,6 +152,7 @@ namespace HighWire16Stacks.Core
                         using (var file = File.OpenRead(ResourcePath))
                             hashCurrent = BitConverter.ToString(md5.ComputeHash(file)).Replace("-", "").ToLower();
 
+                        wc.Method = null;
                         hashRemote = wc.DownloadString(ResourceHash).ToLower();
 
                         if (hashCurrent == hashRemote)

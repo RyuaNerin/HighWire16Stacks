@@ -10,7 +10,7 @@
                    Title="고양감 16 스택"
                    WindowStartupLocation="CenterScreen"
                    Width="350"
-                   Height="520"
+                   Height="545"
                    BorderBrush="{DynamicResource AccentColorBrush}"
                    BorderThickness="1"
                    EnableDWMDropShadow="True"
@@ -41,7 +41,7 @@
     </metro:MetroWindow.Resources>
 
     <Grid x:Name="ctlContent"
-          IsEnabled="False"
+          IsEnabled="True"
           Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -295,7 +295,8 @@
 
                 <ComboBox Grid.Row="0"
                           Grid.ColumnSpan="2"
-                          SelectedIndex="{Binding Path=ShowingMode}"
+                          x:Name="ctlShowingMode"
+                          SelectedIndex="{Binding Path=ShowingMode, Mode=TwoWay}"
                           Margin="0 3 0 3">
                     <ComboBoxItem Content="모든 상태 표시" />
                     <ComboBoxItem Content="특정 상태만 보기" />
