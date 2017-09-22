@@ -52,9 +52,7 @@
                         </MultiBinding>
                     </Grid.Visibility>
 
-                    <Image RenderOptions.BitmapScalingMode="Fant"
-                           RenderOptions.ClearTypeHint="Enabled"
-                           RenderOptions.EdgeMode="Aliased">
+                    <Image>
                         <Image.Source>
                             <MultiBinding Converter="{StaticResource SizableStatusIconConverter}">
                                 <Binding Path="Icon" />
