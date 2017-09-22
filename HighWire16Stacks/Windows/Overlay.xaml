@@ -22,7 +22,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:UStatusTimeConverter x:Key="UStatusTimeConverter" />
-            <converters:SizableStatusIconConverter x:Key="SizableStatusIconConverter" />
+            <converters:OverlayStatusIconConverter x:Key="OverlayStatusIconConverter" />
             <converters:UStatusVisibilityConverter x:Key="UStatusVisibilityConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -54,7 +54,7 @@
 
                     <Image>
                         <Image.Source>
-                            <MultiBinding Converter="{StaticResource SizableStatusIconConverter}">
+                            <MultiBinding Converter="{StaticResource OverlayStatusIconConverter}">
                                 <Binding Path="Icon" />
                                 <Binding Path="UseWaifu2x" Source="{x:Static core:Settings.Instance}" />
                             </MultiBinding>

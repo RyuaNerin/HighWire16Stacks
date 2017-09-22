@@ -5,7 +5,7 @@ using HighWire16Stacks.Core;
 
 namespace HighWire16Stacks.Converters
 {
-    public sealed class SizableStatusIconConverter : IMultiValueConverter
+    public sealed class OverlayStatusIconConverter : IMultiValueConverter
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
