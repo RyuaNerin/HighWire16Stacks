@@ -244,6 +244,16 @@ namespace HighWire16Stacks.Core
             if (ptr == overlayInstance.Handle)
                 return;
 
+            if (GameWindowHandle == IntPtr.Zero)
+            {
+                try
+                {
+                    GameWindowHandle = ffxivProcess.MainWindowHandle;
+                }
+                catch
+                { }
+            }
+
             if (ptr == Worker.GameWindowHandle ||
                 ptr == MainWindow.Instance.Handle)
             {
