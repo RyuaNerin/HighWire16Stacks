@@ -42,15 +42,18 @@ namespace HighWire16Stacks.Core
         public bool     IsDebuff        { get; set; }
         public bool     IsNonExpries    { get; set; }
         public bool     IsStance        { get; set; }
-        
+
+        private bool? m_isChecked;
         public bool IsChecked
         {
             get
             {
-                return Settings.Instance.Checked.Contains(this.Id);
+                return (this.m_isChecked ?? (this.m_isChecked = Settings.Instance.Checked.Contains(this.Id))).Value;
             }
             set
             {
+                this.m_isChecked = value;
+
                 if (value)
                     Settings.Instance.Checked.Add(this.Id);
                 else
