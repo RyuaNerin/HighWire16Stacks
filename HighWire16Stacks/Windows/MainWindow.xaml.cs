@@ -99,6 +99,8 @@ namespace HighWire16Stacks.Windows
 
             Worker.Load();
 
+            FResource.DownloadProgressChanged += le => this.Dispatcher.Invoke(new Action(() => this.ctlProgress.Value = le));
+
             string msg = null;
             switch (await Task.Factory.StartNew(FResource.ReadResource))
             {
@@ -115,6 +117,7 @@ namespace HighWire16Stacks.Windows
                     { }
                     break;
             }
+            this.ctlProgress.Value = 0;
 
             if (msg != null)
             {

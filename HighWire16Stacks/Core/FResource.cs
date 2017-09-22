@@ -113,7 +113,7 @@ namespace HighWire16Stacks.Core
             UnknownError,
             DataError,
         }
-        public static event Action<long, long> DownloadProgressChanged;
+        public static event Action<int> DownloadProgressChanged;
         public static ResourceResult ReadResource()
         {
             ResourceResult result;
@@ -178,7 +178,7 @@ namespace HighWire16Stacks.Core
             {
                 using (var wc = new WebClientEx())
                 {
-                    wc.DownloadProgressChanged += (ls, le) => DownloadProgressChanged?.Invoke(le.BytesReceived, le.TotalBytesToReceive);
+                    wc.DownloadProgressChanged += (ls, le) => DownloadProgressChanged?.Invoke(le.ProgressPercentage);
 
                     wc.DownloadFileAsync(new Uri(ResourceUrl), ResourcePath);
                     while (wc.IsBusy)

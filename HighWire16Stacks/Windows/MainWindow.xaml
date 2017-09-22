@@ -33,19 +33,52 @@
             <converters:BooleanConverter x:Key="True2Visible"
                                          TrueValue="{x:Static Visibility.Visible}"
                                          FalseValue="{x:Static Visibility.Collapsed}" />
+
+            <converters:BooleanConverter x:Key="False2Visible"
+                                         TrueValue="{x:Static Visibility.Collapsed}"
+                                         FalseValue="{x:Static Visibility.Visible}" />
         </ResourceDictionary>
     </metro:MetroWindow.Resources>
 
     <Grid x:Name="ctlContent"
+          IsEnabled="False"
           Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
-        <metro:ProgressRing Grid.ColumnSpan="2"
-                            IsActive="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource BooleanInvert}}" />
-        
+
+        <Grid Grid.ColumnSpan="2"
+              Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource False2Visible}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <metro:ProgressRing Grid.Row="0"
+                                Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                IsActive="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource BooleanInvert}}" />
+            
+            <TextBlock Grid.Row="1"
+                       Grid.Column="1"
+                       Text="데이터를 읽고 있습니다"
+                       Margin="0 5 0 5"
+                       TextAlignment="Center" />
+
+            <metro:MetroProgressBar Grid.Row="2"
+                                    Grid.Column="1"
+                                    x:Name="ctlProgress"
+                                    Maximum="100"
+                                    VerticalAlignment="Top"/>
+        </Grid>
+            
         <StackPanel x:Name="ctlLeftPanel"
                     Grid.Column="0"
                     Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource True2Visible}}"
