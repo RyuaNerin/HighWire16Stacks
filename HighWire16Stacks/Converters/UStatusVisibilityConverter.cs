@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using HighWire16Stacks.Core;
 
 namespace HighWire16Stacks.Converters
 {
@@ -9,30 +10,28 @@ namespace HighWire16Stacks.Converters
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null ||
-                value.Length != 3 ||
-                !(value[0] is bool) ||
-                !(value[1] is bool) ||
-                !(value[2] is bool))
-                return Visibility.Collapsed;
-            
-            var visible = (bool)value[0];
-            if (!visible)
+            // 0 : visible
+            // 1 : checked
+            // 2 : ShowingModes
+
+            if (value == null) return Visibility.Collapsed;
+
+            if (value[0] is bool visible && !visible)
                 return Visibility.Collapsed;
 
-            if (!(value[2] is bool))
+            if (!(value[2] is ShowingModes sm))
                 return Visibility.Collapsed;
 
-            // c > !c | s | v
-            // 0 >  1 | 0 | 1
-            // 1 >  0 | 0 | 0
-            // 0 >  1 | 1 | 0
-            // 1 >  0 | 1 | 1
-            //
-            // s ^ !c
+            if (sm == ShowingModes.ShowAll)
+                return Visibility.Visible;
 
-            var v =(visible && ((bool)value[1] ^ !(bool)value[2])) ? Visibility.Visible : Visibility.Collapsed; 
-            return  v;
+            if (!(value[1] is bool @checked))
+                return Visibility.Collapsed;
+
+            if (sm == ShowingModes.HideChecked)
+                @checked = !@checked;
+
+            return @checked ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

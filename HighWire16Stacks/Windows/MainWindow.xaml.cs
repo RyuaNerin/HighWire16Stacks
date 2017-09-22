@@ -224,17 +224,6 @@ namespace HighWire16Stacks.Windows
                 );
         }
 
-        private void SetListGroupName(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                this.ctlListGroup.Header = this.ctlShowChecked.IsChecked.Value ? "보일 버프/디버프 선택" : "숨길 버프/디버프 선택";
-            }
-            catch
-            {
-            }
-        }
-
         private void ctlShowBuff_Checked(object sender, RoutedEventArgs e)
         {
             this.m_buffShowBuff = true;

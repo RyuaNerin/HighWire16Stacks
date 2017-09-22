@@ -35,7 +35,7 @@
                                          FalseValue="{x:Static Visibility.Collapsed}" />
         </ResourceDictionary>
     </metro:MetroWindow.Resources>
-    
+
     <Grid x:Name="ctlContent"
           Margin="5">
         <Grid.ColumnDefinitions>
@@ -245,7 +245,7 @@
         <GroupBox Grid.Column="1"
                   x:Name="ctlListGroup"
                   Margin="5 0 0 0"
-                  Header="숨길 버프/디버프 선택"
+                  Header="버프/디버프 표시"
                   VerticalAlignment="Stretch"
                   Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource True2Visible}}">
             <Grid>
@@ -260,17 +260,18 @@
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <CheckBox Grid.Row="0"
+                <ComboBox Grid.Row="0"
                           Grid.ColumnSpan="2"
-                          Content="선택한 것만 오버레이로"
-                          Margin="0 3 0 3"
-                          IsChecked="{Binding Path=ShowSelectedOnly}"
-                          Checked="SetListGroupName"
-                          Unchecked="SetListGroupName" />
+                          SelectedIndex="{Binding Path=ShowingMode}"
+                          Margin="0 3 0 3">
+                    <ComboBoxItem Content="모든 상태 표시" />
+                    <ComboBoxItem Content="특정 상태만 보기" />
+                    <ComboBoxItem Content="특정 상태 숨기기" />
+                </ComboBox>
 
                 <metro:ToggleSwitch Grid.Row="1"
                                     x:Name="ctlShowChecked"
-                                    Padding="0"
+                                    Padding="-2"
                                     Margin="0 0 3 0"
                                     OffLabel=""
                                     OnLabel=""
@@ -334,7 +335,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <StackPanel Grid.Row="4"
+                <StackPanel Grid.Row="3"
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal">
                     <CheckBox x:Name="ctlShowBuff"

@@ -48,7 +48,7 @@
                         <MultiBinding Converter="{StaticResource UStatusVisibilityConverter}">
                             <Binding Path="Visible" Mode="OneWay" />
                             <Binding Path="IsChecked" Mode="OneWay" />
-                            <Binding Path="ShowSelectedOnly" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
+                            <Binding Path="ShowingMode" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                         </MultiBinding>
                     </Grid.Visibility>
 

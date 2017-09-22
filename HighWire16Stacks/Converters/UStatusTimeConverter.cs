@@ -9,21 +9,9 @@ namespace HighWire16Stacks.Converters
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null ||
-                value.Length != 3 ||
-                !(value[0] is bool) ||
-                !(value[1] is float) ||
-                !(value[2] is bool))
-                return " ";
-
-            // 0 bool   False:분 / True:회
-            // 1 float  남은 시간
-            // 2 bool   소수점 표시
-            
-            var isCount     = (bool)value[0];
-            var remain      = (float)value[1];
-            var showDecimal = (bool)value[2];
-            
-            if (remain == 0)
+                !(value[0] is bool  isCount) ||
+                !(value[1] is float remain) || remain == 0 ||
+                !(value[2] is bool  showDecimal))
                 return " ";
 
             if (!isCount)

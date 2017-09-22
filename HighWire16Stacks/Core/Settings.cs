@@ -9,6 +9,13 @@ using Newtonsoft.Json.Linq;
 
 namespace HighWire16Stacks.Core
 {
+    public enum ShowingModes
+    {
+        ShowAll = 0,
+        ShowChecked = 1,
+        HideChecked = 2
+    }
+
     [JsonObject(MemberSerialization.OptIn)]
     internal class Settings : INotifyPropertyChanged
     {
@@ -153,14 +160,14 @@ namespace HighWire16Stacks.Core
             }
         }
         
-        private bool m_showSelectedOnly = false;
+        private ShowingModes m_showMode = ShowingModes.ShowAll;
         [JsonProperty]
-        public bool ShowSelectedOnly
+        public ShowingModes ShowingMode
         {
-            get => this.m_showSelectedOnly;
+            get => this.m_showMode;
             set
             {
-                this.m_showSelectedOnly = value;
+                this.m_showMode = value;
                 this.OnPropertyChanged();
             }
         }
