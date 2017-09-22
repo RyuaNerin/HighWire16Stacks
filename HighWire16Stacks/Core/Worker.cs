@@ -17,7 +17,14 @@ namespace HighWire16Stacks.Core
     {
         private static object overlayInstanceSync = new object();
         private static Overlay overlayInstance;
-        public static Overlay OverlayInstance => overlayInstance;
+        public static Overlay OverlayInstance
+        {
+            get
+            {
+                lock (overlayInstanceSync)
+                    return overlayInstance ?? (overlayInstance = CreateOverlay(Settings.Instance.ClickThrough));
+            }
+        }
 
         public static void SetClickThrough(bool enabled)
         {
