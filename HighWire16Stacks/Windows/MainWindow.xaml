@@ -234,7 +234,7 @@
                               x:Name="ctlUseWaifu2x"
                               Margin="0 5 0 0"
                               IsChecked="{Binding Path=UseWaifu2x}"
-                              Content="부드러운 이미지" />
+                              Content="부드러운 아이콘" />
                 </Grid>
             </GroupBox>
 
@@ -265,7 +265,7 @@
                       Header="오버레이 설정"
                       VerticalAlignment="Stretch">
                 <StackPanel>
-                    <CheckBox Content="소수점으로 보기"
+                    <CheckBox Content="소수점 보기"
                               IsChecked="{Binding Path=ShowDecimal}"
                               ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다"
                               Margin="0 0 0 3" />
@@ -344,6 +344,8 @@
                                  Margin="0 3 0 3"
                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.ScrollUnit="Pixel"
                                  SelectionMode="Extended">
                             <ListBox.ContextMenu>
                                 <ContextMenu>
