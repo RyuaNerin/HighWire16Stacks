@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -256,7 +255,7 @@ namespace HighWire16Stacks.Core
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 var hashSet = (HashSet<int>)existingValue;
-                hashSet.UnionWith(JArray.Load(reader).Cast<int>());
+                hashSet.UnionWith(JArray.Load(reader).Values<int>());
 
                 return hashSet;
             }
