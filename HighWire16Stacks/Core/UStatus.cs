@@ -145,12 +145,12 @@ namespace HighWire16Stacks.Core
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
             if (a.m_fstatus == null && b.m_fstatus != null) return -1;
             if (a.m_fstatus != null && b.m_fstatus == null) return  1;
+            
+            if ( a.m_own && !b.m_own) return -1;
+            if (!a.m_own &&  b.m_own) return  1;
 
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
-
-            if ( a.m_own && !b.m_own) return -1;
-            if (!a.m_own &&  b.m_own) return 1;
 
             var compare = a.m_remain.CompareTo(b.m_remain);
             if (compare != 0)
@@ -164,12 +164,12 @@ namespace HighWire16Stacks.Core
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
             if (a.m_fstatus == null && b.m_fstatus != null) return -1;
             if (a.m_fstatus != null && b.m_fstatus == null) return  1;
+            
+            if ( a.m_own && !b.m_own) return -1;
+            if (!a.m_own &&  b.m_own) return  1;
 
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
-            
-            if ( a.m_own && !b.m_own) return -1;
-            if (!a.m_own &&  b.m_own) return 1;
 
             return a.m_index.CompareTo(b.m_index);
         }
