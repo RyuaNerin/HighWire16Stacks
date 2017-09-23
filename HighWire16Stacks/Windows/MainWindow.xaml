@@ -3,10 +3,8 @@
                    x:Name="ctlWindow"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                   xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
-                   xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                    xmlns:converters="clr-namespace:HighWire16Stacks.Converters"
-                   xmlns:core="clr-namespace:HighWire16Stacks.Core"
+                   xmlns:metro="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                    Title="고양감 16 스택"
                    WindowStartupLocation="CenterScreen"
                    Width="350"
@@ -285,7 +283,7 @@
                     <CheckBox Grid.Row="0"
                               Grid.ColumnSpan="2"
                               Content="내가 건 상태이상만 표시"
-                              IsEnabled="{Binding Path=ShowTargetSTatus}"
+                              IsEnabled="{Binding Path=ShowTargetStatus}"
                               IsChecked="{Binding Path=ShowOwnOnly}" />
                 </StackPanel>
             </GroupBox>

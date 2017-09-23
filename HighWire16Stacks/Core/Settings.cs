@@ -184,7 +184,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_sortByTime;
+        private bool m_sortByTime = false;
         [JsonProperty]
         public bool SortByTime
         {
@@ -197,7 +197,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_useWaifu2x;
+        private bool m_useWaifu2x = false;
         [JsonProperty]
         public bool UseWaifu2x
         {
@@ -209,7 +209,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_showTargetStatus;
+        private bool m_showTargetStatus = false;
         [JsonProperty]
         public bool ShowTargetStatus
         {
@@ -222,7 +222,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_showOwnOnly;
+        private bool m_showOwnOnly = false;
         [JsonProperty]
         public bool ShowOwnOnly
         {
