@@ -32,6 +32,10 @@ namespace HighWire16Stacks.Core
     internal class MemoryOffset
     {
         [JsonProperty]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
+        public int myid { get; set; }
+
+        [JsonProperty]
         public int count { get; set; }
 
         [JsonProperty]

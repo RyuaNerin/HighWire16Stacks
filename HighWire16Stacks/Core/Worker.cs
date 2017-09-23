@@ -67,10 +67,13 @@ namespace HighWire16Stacks.Core
         private static int memoryOff;
         private static int memoryCount;
         private static int memoryCountMax;
+        private static bool memoryShowTargetStatus;
         public static void SetOverlayMode(bool showTargetStatus)
         {
             if (memoryOffset == null)
                 return;
+
+            memoryShowTargetStatus = showTargetStatus;
 
             memoryPtr   = !showTargetStatus ? memoryOffset.ptr   : memoryOffset.ptr_target;
             memoryOff   = !showTargetStatus ? memoryOffset.off   : memoryOffset.off_target;
@@ -186,14 +189,28 @@ namespace HighWire16Stacks.Core
             int i;
 
             int id;
+
+            uint myId = 0;
+
             short param;
             float remain;
-            uint owner;
+            uint owner = 0;
 
             bool orderUpdated;
 
             while (running)
             {
+                if (memoryShowTargetStatus)
+                {
+                    ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.myid);
+                    if (ptr == IntPtr.Zero)
+                    {
+                        Stop();
+                        return;
+                    }
+                    myId = BitConverter.ToUInt32(buff, 0);
+                }
+
                 ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryPtr);
                 if (ptr == IntPtr.Zero)
                 {
@@ -216,10 +233,11 @@ namespace HighWire16Stacks.Core
 
                         param  = BitConverter.ToInt16(buff, 12 * i + 2);
                         remain = BitConverter.ToSingle(buff, 12 * i + 4);
-                        owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
-                        Console.WriteLine("owner : " + owner);
 
-                        orderUpdated |= Statuses[i].Update(id, param, remain);
+                        if (memoryShowTargetStatus)
+                            owner = BitConverter.ToUInt32(buff, 12 * i + 8);
+
+                        orderUpdated |= Statuses[i].Update(id, param, remain, memoryShowTargetStatus && owner == myId);
                     }
 
                     if (orderUpdated)

@@ -34,6 +34,9 @@ namespace HighWire16Stacks.Core
         private bool m_isCount;
         public bool IsCount => this.m_isCount;
 
+        private bool m_own;
+        public bool Own => this.m_own;
+
         public void Clear()
         {
             if (this.m_id == 0)
@@ -49,7 +52,7 @@ namespace HighWire16Stacks.Core
 
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Visible"));
         }
-        public bool Update(int id, int param, float remain)
+        public bool Update(int id, int param, float remain, bool own)
         {
             bool result = false;
 
@@ -146,6 +149,9 @@ namespace HighWire16Stacks.Core
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
 
+            if ( a.m_own && !b.m_own) return -1;
+            if (!a.m_own &&  b.m_own) return 1;
+
             var compare = a.m_remain.CompareTo(b.m_remain);
             if (compare != 0)
                 return compare;
@@ -161,6 +167,9 @@ namespace HighWire16Stacks.Core
 
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
+            
+            if ( a.m_own && !b.m_own) return -1;
+            if (!a.m_own &&  b.m_own) return 1;
 
             return a.m_index.CompareTo(b.m_index);
         }
