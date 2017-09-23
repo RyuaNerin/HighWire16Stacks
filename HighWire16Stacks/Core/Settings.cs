@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -185,7 +184,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_sortByTime;
+        private bool m_sortByTime = false;
         [JsonProperty]
         public bool SortByTime
         {
@@ -198,7 +197,7 @@ namespace HighWire16Stacks.Core
             }
         }
 
-        private bool m_useWaifu2x;
+        private bool m_useWaifu2x = false;
         [JsonProperty]
         public bool UseWaifu2x
         {
@@ -206,6 +205,31 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_useWaifu2x = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        private bool m_showTargetStatus = false;
+        [JsonProperty]
+        public bool ShowTargetStatus
+        {
+            get => this.m_showTargetStatus;
+            set
+            {
+                this.m_showTargetStatus = value;
+                Worker.SetOverlayMode(value);
+                this.OnPropertyChanged();
+            }
+        }
+
+        private bool m_showOwnOnly = false;
+        [JsonProperty]
+        public bool ShowOwnOnly
+        {
+            get => this.m_showOwnOnly;
+            set
+            {
+                this.m_showOwnOnly = value;
                 this.OnPropertyChanged();
             }
         }
@@ -231,7 +255,7 @@ namespace HighWire16Stacks.Core
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 var hashSet = (HashSet<int>)existingValue;
-                hashSet.UnionWith(JArray.Load(reader).Cast<int>());
+                hashSet.UnionWith(JArray.Load(reader).Values<int>());
 
                 return hashSet;
             }

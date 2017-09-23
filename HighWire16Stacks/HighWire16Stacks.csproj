@@ -118,6 +118,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\IntToBooleanConverter.cs" />
+    <Compile Include="Converters\ShowingModesEnumConverter.cs" />
     <Compile Include="Converters\MilliConverter.cs" />
     <Compile Include="Converters\UStatusVisibilityConverter.cs" />
     <Compile Include="Converters\IconToImageConverter.cs" />

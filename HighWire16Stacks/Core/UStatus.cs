@@ -34,6 +34,9 @@ namespace HighWire16Stacks.Core
         private bool m_isCount;
         public bool IsCount => this.m_isCount;
 
+        private bool m_isOwn;
+        public bool IsOwn => this.m_isOwn;
+
         public void Clear()
         {
             if (this.m_id == 0)
@@ -49,7 +52,7 @@ namespace HighWire16Stacks.Core
 
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Visible"));
         }
-        public bool Update(int id, int param, float remain)
+        public bool Update(int id, int param, float remain, bool own)
         {
             bool result = false;
 
@@ -73,6 +76,7 @@ namespace HighWire16Stacks.Core
                 this.m_id        = id;
                 this.m_fstatus   = FResource.StatusListDic[id];
                 this.m_isChecked = this.m_fstatus.IsChecked;
+                this.m_isOwn       = own;
 
                 this.m_isCount   = remain == 0 && this.FStatus.IconRange == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsStance));
 
@@ -115,16 +119,17 @@ namespace HighWire16Stacks.Core
             {
                 if (visibleUpdated)
                 {
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsCount"));
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Visible"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCount"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsOwn"));
                 }
 
                 if (iconUpdated)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Icon"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Icon"));
 
                 if (remainChanged)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Remain"));
             }
 
             return result;
@@ -142,6 +147,9 @@ namespace HighWire16Stacks.Core
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
             if (a.m_fstatus == null && b.m_fstatus != null) return -1;
             if (a.m_fstatus != null && b.m_fstatus == null) return  1;
+            
+            if ( a.m_isOwn && !b.m_isOwn) return -1;
+            if (!a.m_isOwn &&  b.m_isOwn) return  1;
 
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;
@@ -158,6 +166,9 @@ namespace HighWire16Stacks.Core
             if (a.m_fstatus == null && b.m_fstatus == null) return  0;
             if (a.m_fstatus == null && b.m_fstatus != null) return -1;
             if (a.m_fstatus != null && b.m_fstatus == null) return  1;
+            
+            if ( a.m_isOwn && !b.m_isOwn) return -1;
+            if (!a.m_isOwn &&  b.m_isOwn) return  1;
 
             if ( a.m_fstatus.IsDebuff && !b.m_fstatus.IsDebuff) return -1;
             if (!a.m_fstatus.IsDebuff &&  b.m_fstatus.IsDebuff) return  1;

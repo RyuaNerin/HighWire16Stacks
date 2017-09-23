@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{582400A7-A235-4BCD-9C27-EA3D68D26107}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
+		offset-target.txt = offset-target.txt
 		offset.txt = offset.txt
 		README.rst = README.rst
 	EndProjectSection
@@ -13,6 +14,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HighWire16Stacks", "HighWire16Stacks\HighWire16Stacks.csproj", "{5F076D42-2133-4342-9249-5A340E639DCE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconModifier", "IconModifier\IconModifier.csproj", "{FF68047B-11A9-4B90-9EEA-669875A0ABAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{D943DDFA-46D0-4814-9C6C-E52CDBF3F5ED}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\icons-pos.csv = Resources\icons-pos.csv
+		Resources\icons.png = Resources\icons.png
+		Resources\icons@2x.png = Resources\icons@2x.png
+		Resources\offset.json = Resources\offset.json
+		Resources\status.exh_ko.csv = Resources\status.exh_ko.csv
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

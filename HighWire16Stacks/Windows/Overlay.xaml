@@ -24,6 +24,12 @@
             <converters:UStatusTimeConverter x:Key="UStatusTimeConverter" />
             <converters:OverlayStatusIconConverter x:Key="OverlayStatusIconConverter" />
             <converters:UStatusVisibilityConverter x:Key="UStatusVisibilityConverter" />
+            <converters:BooleanConverter x:Key="OwnTextColorConverter"
+                                         TrueValue="{x:Static Brushes.LightGreen}"
+                                         FalseValue="{x:Static Brushes.White}" />
+            <converters:BooleanConverter x:Key="OwnTextBorderConverter"
+                                         TrueValue="{x:Static Brushes.Green}"
+                                         FalseValue="{x:Static Brushes.Black}" />
         </ResourceDictionary>
     </Window.Resources>
     
@@ -48,7 +54,9 @@
                         <MultiBinding Converter="{StaticResource UStatusVisibilityConverter}">
                             <Binding Path="Visible" Mode="OneWay" />
                             <Binding Path="IsChecked" Mode="OneWay" />
+                            <Binding Path="IsOwn" Mode="OneWay" />
                             <Binding Path="ShowingMode" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
+                            <Binding Path="ShowOwnOnly" Source="{x:Static core:Settings.Instance}" Mode="OneWay" />
                         </MultiBinding>
                     </Grid.Visibility>
 
@@ -65,11 +73,11 @@
                                                VerticalAlignment="Bottom"
                                                FontFamily="Malgun Gothic"
                                                FontSize="13"
-                                               FontWeight="ExtraBold"
-                                               Fill="White"
-                                               Stroke="Black"
+                                               FontWeight="ExtraBold"                                               
                                                TextAlignment="Center"
                                                FontStretch="SemiCondensed"
+                                               Fill="{Binding Path=IsOwn, Converter={StaticResource OwnTextColorConverter}}"
+                                               Stroke="{Binding Path=IsOwn, Converter={StaticResource OwnTextBorderConverter}}"
                                                StrokeThickness="0.5"
                                                Margin="-3 0 -3 0">
                         <utility:OutlinedTextBlock.Text>

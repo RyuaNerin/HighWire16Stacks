@@ -43,8 +43,8 @@ namespace HighWire16Stacks.Windows
 
             this.m_processListView = (CollectionView)CollectionViewSource.GetDefaultView(this.m_processList);
 
-            InitializeComponent();
             this.DataContext = Settings.Instance;
+            InitializeComponent();
             
             var interop = new WindowInteropHelper(this);
             interop.EnsureHandle();
