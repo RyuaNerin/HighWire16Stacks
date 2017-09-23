@@ -210,6 +210,19 @@ namespace HighWire16Stacks.Core
             }
         }
 
+        private bool m_showTargetStatus;
+        [JsonProperty]
+        public bool ShowTargetStatus
+        {
+            get => this.m_showTargetStatus;
+            set
+            {
+                this.m_showTargetStatus = value;
+                Worker.SetOverlayMode(!value);
+                this.OnPropertyChanged();
+            }
+        }
+
         private readonly HashSet<int> m_checkedList = new HashSet<int>();
         [JsonProperty]
         [JsonConverter(typeof(HashSetConverter))]

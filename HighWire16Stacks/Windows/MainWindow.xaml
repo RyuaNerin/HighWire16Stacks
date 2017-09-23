@@ -128,6 +128,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
                     <ComboBox Grid.Row="0"
@@ -289,11 +290,17 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <ComboBox Grid.Row="0"
+                <CheckBox Grid.Row="0"
+                          Grid.ColumnSpan="2"
+                          Content="선택 대상 상태 표시"
+                          ToolTip="내 버프를 보는게 아니라 현재 내가 선택한 대상의 버프를 봅니다."/>
+
+                <ComboBox Grid.Row="1"
                           Grid.ColumnSpan="2"
                           x:Name="ctlShowingMode"
                           SelectedIndex="{Binding Path=ShowingMode, Mode=TwoWay}"
@@ -303,7 +310,7 @@
                     <ComboBoxItem Content="특정 상태 숨기기" />
                 </ComboBox>
 
-                <metro:ToggleSwitch Grid.Row="1"
+                <metro:ToggleSwitch Grid.Row="2"
                                     x:Name="ctlShowChecked"
                                     Padding="-2"
                                     Margin="0 0 3 0"
@@ -313,7 +320,7 @@
                                     Checked="ctlShowChecked_Checked"
                                     Unchecked="ctlShowChecked_Unchecked" />
 
-                <TextBox Grid.Row="1"
+                <TextBox Grid.Row="2"
                          Grid.Column="1"
                          x:Name="ctlBuffListFilter"
                          VerticalAlignment="Center"
@@ -321,7 +328,7 @@
                          metro:TextBoxHelper.ClearTextButton="True"
                          TextChanged="ctlBuffListFilter_TextChanged" />
 
-                <ListBox Grid.Row="2"
+                <ListBox Grid.Row="3"
                          Grid.ColumnSpan="2"
                          x:Name="ctlBuffList"
                          Margin="0 3 0 3"
@@ -369,9 +376,13 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <StackPanel Grid.Row="3"
+                <StackPanel Grid.Row="4"
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal">
+                    <TextBlock Text="필터 :"
+                               HorizontalAlignment="Center"
+                               Margin="0 0 10 0"/>
+                    
                     <CheckBox x:Name="ctlShowBuff"
                               Content="버프"
                               IsChecked="True"

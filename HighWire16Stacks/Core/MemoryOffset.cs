@@ -41,5 +41,16 @@ namespace HighWire16Stacks.Core
         [JsonProperty]
         [JsonConverter(typeof(JsonHexToIntConverter))]
         public int off { get; set; }
+
+        [JsonProperty]
+        public int count_target { get; set; }
+
+        [JsonProperty]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
+        public int ptr_target { get; set; }
+
+        [JsonProperty]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
+        public int off_target { get; set; }
     }
 }

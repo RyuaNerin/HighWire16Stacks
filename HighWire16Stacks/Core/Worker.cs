@@ -63,6 +63,19 @@ namespace HighWire16Stacks.Core
         
         private static MemoryOffset memoryOffset;
 
+        private static int memoryPtr;
+        private static int memoryOff;
+        private static int memoryCount;
+        public static void SetOverlayMode(bool showTargetStatus)
+        {
+            if (memoryOffset == null)
+                return;
+
+            memoryPtr   = !showTargetStatus ? memoryOffset.ptr   : memoryOffset.ptr_target;
+            memoryOff   = !showTargetStatus ? memoryOffset.off   : memoryOffset.off_target;
+            memoryCount = !showTargetStatus ? memoryOffset.count : memoryOffset.count_target;
+        }
+
         private static volatile int delay = 1;
         public static void SetDelay(int value)
         {
@@ -104,9 +117,11 @@ namespace HighWire16Stacks.Core
                     return false;
                 }
             }
-            
+
+            SetOverlayMode(Settings.Instance.ShowTargetStatus);
+
             UStatus ustatus;
-            Statuses = new UStatus[memoryOffset.count];
+            Statuses = new UStatus[Math.Max(memoryOffset.count, memoryOffset.count_target)];
             for (int i = 0; i < memoryOffset.count; ++i)
             {
                 ustatus = new UStatus(i);
@@ -177,7 +192,7 @@ namespace HighWire16Stacks.Core
 
             while (running)
             {
-                ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.ptr);
+                ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryPtr);
                 if (ptr == IntPtr.Zero)
                 {
                     Stop();
@@ -186,14 +201,13 @@ namespace HighWire16Stacks.Core
                 if (ptr != ptrOld)
                 {
                     if (ptrOld != IntPtr.Zero)
-                        for (i = 0; i < memoryOffset.count; ++i)
+                        for (i = 0; i < memoryCount; ++i)
                             Statuses[i].Clear();
                     else
                         ptrOld = ptr;
                 }
                 
-
-                if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOffset.off, buff, buff.Length) == buff.Length)
+                if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOff, buff, buff.Length) == buff.Length)
                 {
                     orderUpdated = false;
 
