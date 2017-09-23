@@ -160,7 +160,7 @@ namespace HighWire16Stacks.Core
                         wc.Method = null;
                         hashRemote = wc.DownloadString(ResourceHash).ToLower();
 
-                        if (hashCurrent == hashRemote)
+                        if (!string.IsNullOrWhiteSpace(hashRemote) && hashRemote.StartsWith(hashCurrent))
                             return ResourceResult.Success;
                     }
                 }
