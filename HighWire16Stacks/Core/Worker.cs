@@ -120,9 +120,11 @@ namespace HighWire16Stacks.Core
 
             SetOverlayMode(Settings.Instance.ShowTargetStatus);
 
+            int count = Math.Max(memoryOffset.count, memoryOffset.count_target);
+
             UStatus ustatus;
-            Statuses = new UStatus[Math.Max(memoryOffset.count, memoryOffset.count_target)];
-            for (int i = 0; i < memoryOffset.count; ++i)
+            Statuses = new UStatus[count];
+            for (int i = 0; i < count; ++i)
             {
                 ustatus = new UStatus(i);
                 Statuses[i] = ustatus;
@@ -178,6 +180,10 @@ namespace HighWire16Stacks.Core
 
         private static void WorkerThread()
         {
+#if DEBUG
+            try
+            {
+#endif
             IntPtr ptr;
             IntPtr ptrOld = IntPtr.Zero;
             byte[] buff = new byte[12 * memoryOffset.count];
@@ -201,7 +207,7 @@ namespace HighWire16Stacks.Core
                 if (ptr != ptrOld)
                 {
                     if (ptrOld != IntPtr.Zero)
-                        for (i = 0; i < memoryCount; ++i)
+                        for (i = 0; i < Statuses.Length; ++i)
                             Statuses[i].Clear();
                     else
                         ptrOld = ptr;
@@ -211,7 +217,7 @@ namespace HighWire16Stacks.Core
                 {
                     orderUpdated = false;
 
-                    for (i = 0; i < memoryOffset.count; ++i)
+                    for (i = 0; i < memoryCount; ++i)
                     {
                         id = BitConverter.ToInt16(buff, 12 * i + 0);
                         if (id == 0)
@@ -239,6 +245,12 @@ namespace HighWire16Stacks.Core
 
                 Thread.Sleep(delay);
             }
+#if DEBUG
+            }
+            catch
+            {
+            }
+#endif
         }
 
         private static WinEventHookHandle.WinEventDelegate autohideDelegate = new WinEventHookHandle.WinEventDelegate(WinEventProc);
