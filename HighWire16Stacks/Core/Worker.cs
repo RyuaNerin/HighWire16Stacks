@@ -181,10 +181,6 @@ namespace HighWire16Stacks.Core
 
         private static void WorkerThread()
         {
-#if DEBUG
-            try
-            {
-#endif
             IntPtr ptr;
             byte[] buff = new byte[12 * memoryCountMax];
             int i;
@@ -238,12 +234,6 @@ namespace HighWire16Stacks.Core
 
                 Thread.Sleep(delay);
             }
-#if DEBUG
-            }
-            catch
-            {
-            }
-#endif
         }
 
         private static WinEventHookHandle.WinEventDelegate autohideDelegate = new WinEventHookHandle.WinEventDelegate(WinEventProc);
