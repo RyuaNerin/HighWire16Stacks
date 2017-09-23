@@ -20,8 +20,13 @@ namespace HighWire16Stacks.Core
     internal static class FResource
     {
         public static readonly string ResourcePath = Path.ChangeExtension(App.ExeLocation, ".dat");
+#if DEBUG
+        public static readonly string ResourceUrl  = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/develop/Resources/Resources.tar";
+        public static readonly string ResourceHash = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/develop/Resources/Resources.tar.md5";
+#else
         public static readonly string ResourceUrl  = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/Resources/Resources.tar";
         public static readonly string ResourceHash = "https://raw.githubusercontent.com/RyuaNerin/HighWire16Stacks/master/Resources/Resources.tar.md5";
+#endif
 
         private static BitmapSource IconBitmap;
         private static BitmapSource IconBitmap2x;
