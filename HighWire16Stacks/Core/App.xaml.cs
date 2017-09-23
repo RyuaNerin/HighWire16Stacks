@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Net;
+using System.Net.Cache;
 using System.Reflection;
 using System.Windows;
 
@@ -12,6 +14,9 @@ namespace HighWire16Stacks.Core
         static App()
         {
             exeLocation = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+
+            WebRequest.DefaultCachePolicy = new RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+            WebRequest.DefaultWebProxy = null;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

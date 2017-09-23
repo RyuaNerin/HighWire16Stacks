@@ -223,6 +223,18 @@ namespace HighWire16Stacks.Core
             }
         }
 
+        private bool m_showOwnOnly;
+        [JsonProperty]
+        public bool ShowOwnOnly
+        {
+            get => this.m_showOwnOnly;
+            set
+            {
+                this.m_showOwnOnly = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private readonly HashSet<int> m_checkedList = new HashSet<int>();
         [JsonProperty]
         [JsonConverter(typeof(HashSetConverter))]

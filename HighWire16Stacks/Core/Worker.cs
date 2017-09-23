@@ -184,7 +184,7 @@ namespace HighWire16Stacks.Core
 
         private static void WorkerThread()
         {
-            IntPtr ptr;
+            IntPtr? ptr;
             byte[] buff = new byte[12 * memoryCountMax];
             int i;
 
@@ -203,7 +203,7 @@ namespace HighWire16Stacks.Core
                 if (memoryShowTargetStatus)
                 {
                     ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.myid);
-                    if (ptr == IntPtr.Zero)
+                    if (!ptr.HasValue)
                     {
                         Stop();
                         return;
@@ -212,13 +212,13 @@ namespace HighWire16Stacks.Core
                 }
 
                 ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryPtr);
-                if (ptr == IntPtr.Zero)
+                if (!ptr.HasValue)
                 {
                     Stop();
                     return;
                 }
                 
-                if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOff, buff, buff.Length) == buff.Length)
+                if (NativeMethods.ReadBytes(ffxivHandle, ptr.Value + memoryOff, buff, buff.Length) == buff.Length)
                 {
                     orderUpdated = false;
 
@@ -237,7 +237,7 @@ namespace HighWire16Stacks.Core
                         if (memoryShowTargetStatus)
                             owner = BitConverter.ToUInt32(buff, 12 * i + 8);
 
-                        orderUpdated |= Statuses[i].Update(id, param, remain, memoryShowTargetStatus && owner == myId);
+                        orderUpdated |= Statuses[i].Update(id, param, remain, !memoryShowTargetStatus ^ (owner == myId));
                     }
 
                     if (orderUpdated)
@@ -372,11 +372,11 @@ namespace HighWire16Stacks.Core
                 return true;
             }
 
-            public static IntPtr ReadPointer(IntPtr handle, byte[] buffer, IntPtr address)
+            public static IntPtr? ReadPointer(IntPtr handle, byte[] buffer, IntPtr address)
             {
                 IntPtr read;
                 if (!NativeMethods.ReadProcessMemory(handle, address, buffer, new IntPtr(8), out read) || read.ToInt64() != 8)
-                    return IntPtr.Zero;
+                    return null;
 
                 return new IntPtr(BitConverter.ToInt64(buffer, 0));
             }

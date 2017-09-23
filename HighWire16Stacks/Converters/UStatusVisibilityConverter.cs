@@ -12,26 +12,31 @@ namespace HighWire16Stacks.Converters
         {
             // 0 : visible
             // 1 : checked
-            // 2 : ShowingModes
+            // 2 : IsOwn
+            // 3 : ShowingModes
+            // 4 : ShowOwnOnly
 
-            if (value == null) return Visibility.Collapsed;
-
-            if (value[0] is bool visible && !visible)
+            if (value == null ||
+                !(value[0] is bool visible) ||
+                !(value[1] is bool isChecked) ||
+                !(value[2] is bool isOwn) ||
+                !(value[3] is ShowingModes showingMode) ||
+                !(value[4] is bool showOwnOnly))
                 return Visibility.Collapsed;
 
-            if (!(value[2] is ShowingModes sm))
+            if (!visible)
                 return Visibility.Collapsed;
 
-            if (sm == ShowingModes.ShowAll)
+            if (showOwnOnly && !isOwn)
+                return Visibility.Collapsed;
+
+            if (showingMode == ShowingModes.ShowAll)
                 return Visibility.Visible;
 
-            if (!(value[1] is bool @checked))
-                return Visibility.Collapsed;
+            if (showingMode == ShowingModes.HideChecked)
+                isChecked = !isChecked;
 
-            if (sm == ShowingModes.HideChecked)
-                @checked = !@checked;
-
-            return @checked ? Visibility.Visible : Visibility.Collapsed;
+            return isChecked ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

@@ -30,6 +30,8 @@
 
             <converters:StatusIconConverter x:Key="StatusIconConverter" />
 
+            <converters:IntToBooleanConverter x:Key="IntToBooleanConverter" />
+
             <converters:BooleanConverter x:Key="True2Visible"
                                          TrueValue="{x:Static Visibility.Visible}"
                                          FalseValue="{x:Static Visibility.Collapsed}" />
@@ -92,17 +94,6 @@
                     <Style.Resources>
                         <Style TargetType="{x:Type Grid}">
                             <Style.Resources>
-                                <Style TargetType="{x:Type TextBox}">
-                                    <Setter Property="HorizontalAlignment"
-                                            Value="Stretch" />
-                                    <Setter Property="VerticalAlignment"
-                                            Value="Stretch" />
-                                    <Setter Property="TextAlignment"
-                                            Value="Center" />
-                                    <Setter Property="Margin"
-                                            Value="0 0 3 0" />
-                                </Style>
-                                
                                 <Style TargetType="{x:Type Slider}"
                                        BasedOn="{StaticResource FlatSlider}">
                                     <Setter Property="metro:SliderHelper.ChangeValueBy"
@@ -248,158 +239,178 @@
             </GroupBox>
 
             <GroupBox Header="기타 옵션">
-                <StackPanel Margin="0 0 0 -3">
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type CheckBox}"
-                               BasedOn="{StaticResource MetroCheckBox}">
-                            <Setter Property="Margin"
-                                    Value="0 0 0 3" />
-                        </Style>
-                    </StackPanel.Resources>
-                    
-                    <CheckBox Content="소수점 표시"
-                              IsChecked="{Binding Path=ShowDecimal}"
-                              ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다" />
-
+                <StackPanel>
                     <CheckBox Content="오버레이 잠그기"
                               IsChecked="{Binding Path=ClickThrough}"
+                              Margin="0 0 0 3"
                               ToolTip="오버레이를 클릭할 수 없게 설정합니다" />
 
                     <CheckBox Content="자동 숨기기"
                               IsChecked="{Binding Path=AutoHide}"
                               ToolTip="다른 용무중에 오버레이를 보이지 않게 합니다" />
-
-                    <CheckBox Content="시간순 정렬"
-                              IsChecked="{Binding Path=SortByTime}"
-                              ToolTip="오버레이를 시간순으로 정렬합니다" />
                 </StackPanel>
             </GroupBox>
         </StackPanel>
 
-        <GroupBox Grid.Column="1"
-                  x:Name="ctlListGroup"
-                  Margin="5 0 0 0"
-                  Header="버프/디버프 표시"
-                  VerticalAlignment="Stretch"
-                  Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource True2Visible}}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition />                    
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+        <Grid Grid.Column="1"
+                    Margin="5 0 0 0"
+                    Visibility="{Binding IsEnabled, ElementName=ctlContent, Converter={StaticResource True2Visible}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <GroupBox Grid.Row="0"
+                      Margin="0"
+                      Header="오버레이 설정"
+                      VerticalAlignment="Stretch">
+                <StackPanel>
+                    <CheckBox Content="소수점으로 보기"
+                              IsChecked="{Binding Path=ShowDecimal}"
+                              ToolTip="버프/디버프의 남은 시간에 소수점을 표시합니다"
+                              Margin="0 0 0 3" />
 
-                <CheckBox Grid.Row="0"
-                          Grid.ColumnSpan="2"
-                          Content="선택 대상 상태 표시"
-                          ToolTip="내 버프를 보는게 아니라 현재 내가 선택한 대상의 버프를 봅니다."
-                          IsChecked="{Binding Path=ShowTargetStatus}" />
+                    <CheckBox Content="상태이상 시간순 정렬"
+                              IsChecked="{Binding Path=SortByTime}"
+                              ToolTip="오버레이를 시간순으로 정렬합니다"
+                              Margin="0 0 0 3" />
 
-                <ComboBox Grid.Row="1"
-                          Grid.ColumnSpan="2"
-                          x:Name="ctlShowingMode"
-                          SelectedIndex="{Binding Path=ShowingMode, Mode=TwoWay}"
-                          Margin="0 3 0 3">
-                    <ComboBoxItem Content="모든 상태 표시" />
-                    <ComboBoxItem Content="특정 상태만 보기" />
-                    <ComboBoxItem Content="특정 상태 숨기기" />
-                </ComboBox>
+                    <CheckBox Grid.Row="0"
+                              Grid.ColumnSpan="2"
+                              Content="선택 대상의 상태이상 표시"
+                              ToolTip="내 버프를 보는게 아니라 현재 내가 선택한 대상의 버프를 봅니다."
+                              IsChecked="{Binding Path=ShowTargetStatus}"
+                              Margin="0 0 0 3" />
 
-                <metro:ToggleSwitch Grid.Row="2"
-                                    x:Name="ctlShowChecked"
-                                    Padding="-2"
-                                    Margin="0 0 3 0"
-                                    OffLabel=""
-                                    OnLabel=""
-                                    ToolTip="체크한 항목만 표시합니다."
-                                    Checked="ctlShowChecked_Checked"
-                                    Unchecked="ctlShowChecked_Unchecked" />
-
-                <TextBox Grid.Row="2"
-                         Grid.Column="1"
-                         x:Name="ctlBuffListFilter"
-                         VerticalAlignment="Center"
-                         metro:TextBoxHelper.Watermark="검색"
-                         metro:TextBoxHelper.ClearTextButton="True"
-                         TextChanged="ctlBuffListFilter_TextChanged" />
-
-                <ListBox Grid.Row="3"
-                         Grid.ColumnSpan="2"
-                         x:Name="ctlBuffList"
-                         Margin="0 3 0 3"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         SelectionMode="Extended">
-                    <ListBox.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="모두 체크"
-                                      Click="ctlBuffList_CheckAll_Click" />
-                            <MenuItem Header="모두 체크 해제"
-                                      Click="ctlBuffList_UnCheckAll_Click" />
-                            <Separator />
-                            <MenuItem Header="체크 반전"
-                                      Click="ctlBuffList_ReverseCheck_Click" />
-                        </ContextMenu>
-                    </ListBox.ContextMenu>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
-                                    <ColumnDefinition Width="26" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
-                                <CheckBox HorizontalAlignment="Stretch"
-                                          HorizontalContentAlignment="Stretch"
-                                          IsChecked="{Binding Path=IsChecked, Mode=TwoWay}" />
-
-                                <Image Grid.Column="1"
-                                       Width="18"
-                                       Height="24"
-                                       Margin="0 0 0 0"
-                                       Source="{Binding Path=Icon, Converter={StaticResource StatusIconConverter}}" />
-
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding Path=Name}"
-                                           TextWrapping="NoWrap"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Stretch"
-                                           ToolTip="{Binding Path=Desc}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-                <StackPanel Grid.Row="4"
-                            Grid.ColumnSpan="2"
-                            Orientation="Horizontal">
-                    <TextBlock Text="필터 :"
-                               HorizontalAlignment="Center"
-                               Margin="0 0 10 0"/>
-                    
-                    <CheckBox x:Name="ctlShowBuff"
-                              Content="버프"
-                              IsChecked="True"
-                              Margin="0 0 10 0"
-                              ToolTip="버프만 표시합니다"
-                              Checked="ctlShowBuff_Checked"
-                              Unchecked="ctlShowBuff_Unchecked" />
-                    
-                    <CheckBox x:Name="ctlShowDebuff"
-                              Content="디버프"
-                              IsChecked="True"
-                              ToolTip="디버프만 표시합니다"
-                              Checked="ctlShowDebuff_Checked"
-                              Unchecked="ctlShowDebuff_Unchecked" />
+                    <CheckBox Grid.Row="0"
+                              Grid.ColumnSpan="2"
+                              Content="내가 건 상태이상만 표시"
+                              IsEnabled="{Binding Path=ShowTargetSTatus}"
+                              IsChecked="{Binding Path=ShowOwnOnly}" />
                 </StackPanel>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
+
+
+            <GroupBox Grid.Row="1"
+                      Margin="0 5 0 0"                      
+                      Header="상태이상 필터">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <ComboBox x:Name="ctlShowingMode"
+                              SelectedIndex="{Binding Path=ShowingMode, Mode=TwoWay}"
+                              Margin="0 0 0 3">
+                        <ComboBoxItem Content="모든 상태 표시" />
+                        <ComboBoxItem Content="특정 상태만 보기" />
+                        <ComboBoxItem Content="특정 상태 숨기기" />
+                    </ComboBox>
+
+                    <Grid Grid.Row="1"
+                          IsEnabled="{Binding Path=SelectedIndex, ElementName=ctlShowingMode, Converter={StaticResource IntToBooleanConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <metro:ToggleSwitch Grid.Row="0"
+                                            x:Name="ctlShowChecked"
+                                            Padding="-2"
+                                            Margin="0 0 3 0"
+                                            OffLabel=""
+                                            OnLabel=""
+                                            ToolTip="체크한 항목만 표시합니다."
+                                            Checked="ctlShowChecked_Checked"
+                                            Unchecked="ctlShowChecked_Unchecked" />
+
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="1"
+                                 x:Name="ctlBuffListFilter"
+                                 VerticalAlignment="Center"
+                                 metro:TextBoxHelper.Watermark="검색"
+                                 metro:TextBoxHelper.ClearTextButton="True"
+                                 TextChanged="ctlBuffListFilter_TextChanged" />
+
+                        <ListBox Grid.Row="1"
+                                 Grid.ColumnSpan="2"
+                                 x:Name="ctlBuffList"
+                                 Margin="0 3 0 3"
+                                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 SelectionMode="Extended">
+                            <ListBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="모두 체크"
+                                              Click="ctlBuffList_CheckAll_Click" />
+                                    <MenuItem Header="모두 체크 해제"
+                                              Click="ctlBuffList_UnCheckAll_Click" />
+                                    <Separator />
+                                    <MenuItem Header="체크 반전"
+                                              Click="ctlBuffList_ReverseCheck_Click" />
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="26" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox HorizontalAlignment="Stretch"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  IsChecked="{Binding Path=IsChecked, Mode=TwoWay}" />
+
+                                        <Image Grid.Column="1"
+                                               Width="18"
+                                               Height="24"
+                                               Margin="0 0 0 0"
+                                               Source="{Binding Path=Icon, Converter={StaticResource StatusIconConverter}}" />
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Path=Name}"
+                                                   TextWrapping="NoWrap"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Stretch"
+                                                   ToolTip="{Binding Path=Desc}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <StackPanel Grid.Row="2"
+                                    Grid.ColumnSpan="2"
+                                    Orientation="Horizontal">
+                            <TextBlock Text="필터 :"
+                                       HorizontalAlignment="Center"
+                                       Margin="0 0 10 0"/>
+
+                            <CheckBox x:Name="ctlShowBuff"
+                                      Content="버프"
+                                      IsChecked="True"
+                                      Margin="0 0 10 0"
+                                      ToolTip="버프만 표시합니다"
+                                      Checked="ctlShowBuff_Checked"
+                                      Unchecked="ctlShowBuff_Unchecked" />
+
+                            <CheckBox x:Name="ctlShowDebuff"
+                                      Content="디버프"
+                                      IsChecked="True"
+                                      ToolTip="디버프만 표시합니다"
+                                      Checked="ctlShowDebuff_Checked"
+                                      Unchecked="ctlShowDebuff_Unchecked" />
+                        </StackPanel>
+                    </Grid>                    
+                </Grid>
+            </GroupBox>
+        </Grid>
     </Grid>
 </metro:MetroWindow>
