@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{582400A7-A235-4BCD-9C27-EA3D68D26107}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
+		offset-target.txt = offset-target.txt
 		offset.txt = offset.txt
 		README.rst = README.rst
 	EndProjectSection

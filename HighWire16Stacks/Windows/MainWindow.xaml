@@ -298,7 +298,8 @@
                 <CheckBox Grid.Row="0"
                           Grid.ColumnSpan="2"
                           Content="선택 대상 상태 표시"
-                          ToolTip="내 버프를 보는게 아니라 현재 내가 선택한 대상의 버프를 봅니다."/>
+                          ToolTip="내 버프를 보는게 아니라 현재 내가 선택한 대상의 버프를 봅니다."
+                          IsChecked="{Binding Path=ShowTargetStatus}" />
 
                 <ComboBox Grid.Row="1"
                           Grid.ColumnSpan="2"

@@ -218,7 +218,7 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_showTargetStatus = value;
-                Worker.SetOverlayMode(!value);
+                Worker.SetOverlayMode(value);
                 this.OnPropertyChanged();
             }
         }

@@ -66,6 +66,7 @@ namespace HighWire16Stacks.Core
         private static int memoryPtr;
         private static int memoryOff;
         private static int memoryCount;
+        private static int memoryCountMax;
         public static void SetOverlayMode(bool showTargetStatus)
         {
             if (memoryOffset == null)
@@ -120,11 +121,11 @@ namespace HighWire16Stacks.Core
 
             SetOverlayMode(Settings.Instance.ShowTargetStatus);
 
-            int count = Math.Max(memoryOffset.count, memoryOffset.count_target);
+            memoryCountMax = Math.Max(memoryOffset.count, memoryOffset.count_target);
 
             UStatus ustatus;
-            Statuses = new UStatus[count];
-            for (int i = 0; i < count; ++i)
+            Statuses = new UStatus[memoryCountMax];
+            for (int i = 0; i < memoryCountMax; ++i)
             {
                 ustatus = new UStatus(i);
                 Statuses[i] = ustatus;
@@ -185,14 +186,13 @@ namespace HighWire16Stacks.Core
             {
 #endif
             IntPtr ptr;
-            IntPtr ptrOld = IntPtr.Zero;
-            byte[] buff = new byte[12 * memoryOffset.count];
+            byte[] buff = new byte[12 * memoryCountMax];
             int i;
 
             int id;
             short param;
             float remain;
-            //uint owner;
+            uint owner;
 
             bool orderUpdated;
 
@@ -203,14 +203,6 @@ namespace HighWire16Stacks.Core
                 {
                     Stop();
                     return;
-                }
-                if (ptr != ptrOld)
-                {
-                    if (ptrOld != IntPtr.Zero)
-                        for (i = 0; i < Statuses.Length; ++i)
-                            Statuses[i].Clear();
-                    else
-                        ptrOld = ptr;
                 }
                 
                 if (NativeMethods.ReadBytes(ffxivHandle, ptr + memoryOff, buff, buff.Length) == buff.Length)
@@ -228,7 +220,8 @@ namespace HighWire16Stacks.Core
 
                         param  = BitConverter.ToInt16(buff, 12 * i + 2);
                         remain = BitConverter.ToSingle(buff, 12 * i + 4);
-                        //owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
+                        owner  = BitConverter.ToUInt32(buff, 12 * i + 8);
+                        Console.WriteLine("owner : " + owner);
 
                         orderUpdated |= Statuses[i].Update(id, param, remain);
                     }

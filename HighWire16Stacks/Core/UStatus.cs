@@ -115,16 +115,16 @@ namespace HighWire16Stacks.Core
             {
                 if (visibleUpdated)
                 {
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Visible"));
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsCount"));
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Visible"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsCount"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
                 }
 
                 if (iconUpdated)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Icon"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Icon"));
 
                 if (remainChanged)
-                    this.PropertyChanged(this, new PropertyChangedEventArgs("Remain"));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Remain"));
             }
 
             return result;
