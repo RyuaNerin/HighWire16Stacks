@@ -1,0 +1,2 @@
+bandizip c -fmt:tar -y "Resources\Resources.tar" "Resources\icons.png" "Resources\icons@2x.png" "Resources\icons-pos.csv" "Resources\offset.json" "Resources\status.exh_ko.csv"
+$(CertUtil -hashfile .\Resources\Resources.tar MD5)[1] -replace " ","" > "Resources\Resources.tar.md5"
