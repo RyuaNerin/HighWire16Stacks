@@ -1129,7 +1129,15 @@ Index,0 [0x0][0x0],1 [0x0][0x4],2 [0x5][0x8],3 [0x3][0xc],4 [0x3][0xd],5 [0x3][0
 1146,"투지","투지가 불타올라, 주는 피해량이 증가하고 HP가 서서히 회복되는 상태.",15755,0,1,16,0,false,false,false,false,false,false,true,true,200,true,0,false,0,false,false,0,0,false
 1147,"그림자 족쇄","그림자 족쇄에 얽매여 이동 속도가 느려지고 HP가 서서히 줄어드는 상태.",15756,0,2,4,134,false,false,false,false,false,false,false,false,200,true,1,false,0,false,false,0,0,false
 1148,"그림자 손","그림자 손이 돋아난 상태.",15757,0,1,16,0,false,false,false,false,false,false,true,true,200,true,0,false,0,false,false,0,0,false
+1149,"늑대심장","늑대심장을 사용하여, HP와 MP가 서서히 회복되며 이동 속도가 상승하고 자동 공격 주기, 무기 기술 및 마법 재사용 대기 시간이 줄어든 상태.",15752,0,1,0,0,false,false,false,false,false,false,false,false,100,true,0,true,0,false,false,0,0,false
 1150,"빙결","몸이 얼어붙어 HP가 서서히 줄어들며 행동이 불가능한 상태. ",15637,0,2,17,127,true,false,true,false,false,false,true,true,100,true,0,false,0,false,false,0,0,false
+1154,"야수왕의 가호","야수왕의 가호를 받은 상태.",15760,0,1,16,0,false,false,false,false,false,false,true,true,199,true,0,false,0,false,false,0,0,false
+1155,"에테르 강화","에테르가 강화되어 적에게 주는 피해량이 증가한 상태.",15761,0,1,16,0,false,false,false,false,false,false,true,true,199,true,0,false,0,false,false,0,0,false
+1156,"마법 공격 피해량 증가","마법 공격으로 주는 피해량이 증가한 상태.",18481,16,1,16,0,false,false,false,false,false,false,false,false,1,true,0,false,0,false,false,0,0,false
 1157,"물속성 저항 감소[강]","물속성 저항이 크게 감소한 상태.",15698,0,2,17,0,false,false,false,false,false,false,false,false,200,true,0,false,0,false,false,0,0,false
+1158,"전투 조짐","전투가 벌어질 것을 감지하고 힘이 솟아나는 상태.",15762,0,1,16,0,false,false,false,false,false,false,true,true,0,true,0,false,0,false,false,0,0,false
 1159,"고통의 각인","각인이 극심한 통증을 유발하여 HP가 서서히 줄어들고 받는 피해량이 증가하는 상태.",15643,0,2,17,0,false,false,false,false,false,false,false,false,0,true,0,false,0,false,false,0,0,false
+1160,"약화 시약","약화 시약을 맞아 HP가 서서히 줄어드는 상태.",15517,0,2,1,0,false,false,false,false,false,false,false,false,10,true,0,false,0,false,false,0,0,false
+1161,"ダメージ上昇","与ダメージが上昇した状態。",15519,0,1,16,0,false,false,false,false,false,false,true,true,1,true,0,false,0,false,false,0,0,false
 1162,"고통의 각인","각인이 극심한 통증을 유발하여 HP가 서서히 줄어들고 받는 피해량이 증가하는 상태.",15643,0,2,17,0,false,false,false,false,false,false,true,true,0,true,0,false,0,false,false,0,0,false
+1266,"투명[강]","몸이 투명해져 마물의 공격을 받지 않는 상태.",16209,0,1,16,0,false,false,false,false,false,false,false,false,2,true,0,false,0,false,true,0,0,false
