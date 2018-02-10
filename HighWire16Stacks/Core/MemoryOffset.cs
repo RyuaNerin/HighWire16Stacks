@@ -55,6 +55,7 @@ namespace HighWire16Stacks.Core
         public int StatusOffset { get; set; }
 
         [JsonProperty(PropertyName = "player_status_count")]
+        [JsonConverter(typeof(JsonHexToIntConverter))]
         public int StatusCount { get; set; }
     }
 }
