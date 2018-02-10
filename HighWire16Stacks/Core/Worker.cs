@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -62,23 +62,8 @@ namespace HighWire16Stacks.Core
         private static IntPtr ffxivModulePtr;
         
         private static MemoryOffset memoryOffset;
-
-        private static int memoryPtr;
-        private static int memoryOff;
-        private static int memoryCount;
-        private static int memoryCountMax;
-        private static bool memoryShowTargetStatus;
-        public static void SetOverlayMode(bool showTargetStatus)
-        {
-            if (memoryOffset == null)
-                return;
-
-            memoryShowTargetStatus = showTargetStatus;
-
-            memoryPtr   = !showTargetStatus ? memoryOffset.ptr   : memoryOffset.ptr_target;
-            memoryOff   = !showTargetStatus ? memoryOffset.off   : memoryOffset.off_target;
-            memoryCount = !showTargetStatus ? memoryOffset.count : memoryOffset.count_target;
-        }
+        
+        public static bool ShowTargetStatus { get; set; }
 
         private static volatile int delay = 1;
         public static void SetDelay(int value)
@@ -122,13 +107,11 @@ namespace HighWire16Stacks.Core
                 }
             }
 
-            SetOverlayMode(Settings.Instance.ShowTargetStatus);
-
-            memoryCountMax = Math.Max(memoryOffset.count, memoryOffset.count_target);
+            ShowTargetStatus = Settings.Instance.ShowTargetStatus;
 
             UStatus ustatus;
-            Statuses = new UStatus[memoryCountMax];
-            for (int i = 0; i < memoryCountMax; ++i)
+            Statuses = new UStatus[memoryOffset.StatusCount];
+            for (int i = 0; i < memoryOffset.StatusCount; ++i)
             {
                 ustatus = new UStatus(i);
                 Statuses[i] = ustatus;
@@ -141,7 +124,7 @@ namespace HighWire16Stacks.Core
         
         public static void Stop()
         {
-            for (int i = 0; i < memoryOffset.count; ++i)
+            for (int i = 0; i < memoryOffset.StatusCount; ++i)
                 Statuses[i].Clear();
 
             running = false;
@@ -185,7 +168,7 @@ namespace HighWire16Stacks.Core
         private static void WorkerThread()
         {
             IntPtr? ptr;
-            byte[] buff = new byte[12 * memoryCountMax];
+            byte[] buff = new byte[12 * memoryOffset.StatusCount];
             int i;
 
             int id;
@@ -200,29 +183,34 @@ namespace HighWire16Stacks.Core
 
             while (running)
             {
-                if (memoryShowTargetStatus)
+                if (ShowTargetStatus)
                 {
-                    ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.myid);
+                    ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryOffset.PtrPlayerId);
                     if (!ptr.HasValue)
                     {
                         Stop();
                         return;
                     }
                     myId = BitConverter.ToUInt32(buff, 0);
+
                 }
 
-                ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + memoryPtr);
+                ptr = NativeMethods.ReadPointer(ffxivHandle, buff, ffxivModulePtr + (ShowTargetStatus ? memoryOffset.PtrTarget : memoryOffset.PtrPlayer));
                 if (!ptr.HasValue)
                 {
                     Stop();
                     return;
                 }
-                
-                if (NativeMethods.ReadBytes(ffxivHandle, ptr.Value + memoryOff, buff, buff.Length) == buff.Length)
+                else if (ptr == IntPtr.Zero)
+                {
+                    for (i = 0; i < memoryOffset.StatusCount; ++i)
+                        Statuses[i].Clear();
+                }
+                else if (NativeMethods.ReadBytes(ffxivHandle, ptr.Value + memoryOffset.StatusOffset, buff, buff.Length) == buff.Length)
                 {
                     orderUpdated = false;
 
-                    for (i = 0; i < memoryCount; ++i)
+                    for (i = 0; i < memoryOffset.StatusCount; ++i)
                     {
                         id = BitConverter.ToInt16(buff, 12 * i + 0);
                         if (id == 0)
@@ -234,10 +222,10 @@ namespace HighWire16Stacks.Core
                         param  = BitConverter.ToInt16(buff, 12 * i + 2);
                         remain = BitConverter.ToSingle(buff, 12 * i + 4);
 
-                        if (memoryShowTargetStatus)
+                        if (ShowTargetStatus)
                             owner = BitConverter.ToUInt32(buff, 12 * i + 8);
 
-                        orderUpdated |= Statuses[i].Update(id, param, remain, !memoryShowTargetStatus ^ (owner == myId));
+                        orderUpdated |= Statuses[i].Update(id, param, remain, !ShowTargetStatus ^ (owner == myId));
                     }
 
                     if (orderUpdated)

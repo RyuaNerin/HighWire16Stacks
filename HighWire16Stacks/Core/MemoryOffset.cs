@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json;
 
 namespace HighWire16Stacks.Core
@@ -12,14 +12,21 @@ namespace HighWire16Stacks.Core
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var v = reader.Value as string;
-            if (v == null)
-                return null;
+            var rv = reader.Value;
+            
+            if (rv is string sv)
+            {
+                if (sv.StartsWith("0x"))
+                    return Convert.ToInt32(sv.Substring(2), 16);
+                else
+                    return Convert.ToInt32(sv);
+            }
+            else if (rv is int iv)
+            {
+                return iv;
+            }
 
-            if (v.StartsWith("0x"))
-                v = v.Substring(2);
-
-            return Convert.ToInt32(v, 16);
+            return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -31,30 +38,23 @@ namespace HighWire16Stacks.Core
     [JsonObject]
     internal class MemoryOffset
     {
-        [JsonProperty]
+        [JsonProperty(PropertyName = "player_id_offset")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int myid { get; set; }
+        public int PtrPlayerId { get; set; }
 
-        [JsonProperty]
-        public int count { get; set; }
-
-        [JsonProperty]
+        [JsonProperty(PropertyName = "ptr_player")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int ptr { get; set; }
+        public int PtrPlayer { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(PropertyName = "ptr_target")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int off { get; set; }
+        public int PtrTarget { get; set; }
 
-        [JsonProperty]
-        public int count_target { get; set; }
-
-        [JsonProperty]
+        [JsonProperty(PropertyName = "player_status_offset")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int ptr_target { get; set; }
+        public int StatusOffset { get; set; }
 
-        [JsonProperty]
-        [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int off_target { get; set; }
+        [JsonProperty(PropertyName = "player_status_count")]
+        public int StatusCount { get; set; }
     }
 }
