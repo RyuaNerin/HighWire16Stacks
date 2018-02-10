@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -217,7 +217,7 @@ namespace HighWire16Stacks.Core
             set
             {
                 this.m_showTargetStatus = value;
-                Worker.SetOverlayMode(value);
+                Worker.ShowTargetStatus = value;
                 this.OnPropertyChanged();
             }
         }

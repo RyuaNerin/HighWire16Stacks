@@ -1,15 +1,16 @@
-﻿ffxiv_dx11.exe+1CEC30 - 48 8B C8              - mov rcx,rax
-ffxiv_dx11.exe+1CEC33 - E8 A8684A00           - call ffxiv_dx11.exe+6754E0
-ffxiv_dx11.exe+1CEC38 - 48 8B 6C 24 30        - mov rbp,[rsp+30]
-ffxiv_dx11.exe+1CEC3D - 48 8B 83 90000000     - mov rax,[rbx+00000090]
-ffxiv_dx11.exe+1CEC44 - 48 3B C7              - cmp rax,rdi
-ffxiv_dx11.exe+1CEC47 - 74 11                 - je ffxiv_dx11.exe+1CEC5A
-ffxiv_dx11.exe+1CEC49 - 48 85 C0              - test rax,rax
-ffxiv_dx11.exe+1CEC4C - 74 07                 - je ffxiv_dx11.exe+1CEC55
-ffxiv_dx11.exe+1CEC4E - 48 89 83 20010000     - mov [rbx+00000120],rax
-ffxiv_dx11.exe+1CEC55 - 48 3B C7              - cmp rax,rdi
-ffxiv_dx11.exe+1CEC58 - 75 07                 - jne ffxiv_dx11.exe+1CEC61
-ffxiv_dx11.exe+1CEC5A - 48 89 BB A8000000     - mov [rbx+000000A8],rdi
-ffxiv_dx11.exe+1CEC61 - 48 89 BB 90000000     - mov [rbx+00000090],rdi				<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-ffxiv_dx11.exe+1CEC68 - 48 85 FF              - test rdi,rdi
-ffxiv_dx11.exe+1CEC6B - 74 23                 - je ffxiv_dx11.exe+1CEC90
+ffxiv_dx11.exe+5A182F - 7E 2A                 - jle ffxiv_dx11.exe+5A185B
+ffxiv_dx11.exe+5A1831 - 48 8D 83 68010000     - lea rax,[rbx+00000168]
+ffxiv_dx11.exe+5A1838 - 48 39 10              - cmp [rax],rdx
+ffxiv_dx11.exe+5A183B - 74 17                 - je ffxiv_dx11.exe+5A1854
+ffxiv_dx11.exe+5A183D - 48 FF C1              - inc rcx
+ffxiv_dx11.exe+5A1840 - 48 83 C0 08           - add rax,08 { 8 }
+ffxiv_dx11.exe+5A1844 - 49 3B C8              - cmp rcx,r8
+ffxiv_dx11.exe+5A1847 - 7C EF                 - jl ffxiv_dx11.exe+5A1838
+ffxiv_dx11.exe+5A1849 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+ffxiv_dx11.exe+5A184E - 48 83 C4 20           - add rsp,20 { 32 }
+ffxiv_dx11.exe+5A1852 - 5F                    - pop rdi
+ffxiv_dx11.exe+5A1853 - C3                    - ret 
+ffxiv_dx11.exe+5A1854 - 48 89 93 10010000     - mov [rbx+00000110],rdx  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ffxiv_dx11.exe+5A185B - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+ffxiv_dx11.exe+5A1860 - 48 83 C4 20           - add rsp,20 { 32 }
+ffxiv_dx11.exe+5A1864 - 5F                    - pop rdi

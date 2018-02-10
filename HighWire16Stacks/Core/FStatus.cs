@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using CsvHelper.Configuration;
@@ -17,17 +17,18 @@ namespace HighWire16Stacks.Core
                 Map(e => e.Name        ).Index('B' - 'A');
                 Map(e => e.Desc        ).Index('C' - 'A');
                 Map(e => e.Icon        ).Index('D' - 'A');
-                Map(e => e.IconRange   ).Index('E' - 'A');
-                Map(e => e.IsDebuff    ).Index('F' - 'A').TypeConverter<IntToBooleanConverter>();
-                Map(e => e.IsNonExpries).Index('O' - 'A');
-                Map(e => e.IsStance    ).Index('P' - 'A');
+                Map(e => e.IconStack   ).Index('E' - 'A');
+                Map(e => e.IsDebuff    ).Index('F' - 'A').TypeConverter<IsDebuffConverter>();
+                Map(e => e.IsNonExpries).Index('P' - 'A');
+                Map(e => e.IsStance    ).Index('Q' - 'A');
+                Map(e => e.IsFCBuff    ).Index('W' - 'A');
                 Map(e => e.IsChecked   ).Ignore(true);
             }
-            public class IntToBooleanConverter : DefaultTypeConverter
+            public class IsDebuffConverter : DefaultTypeConverter
             {
                 public override object ConvertFromString(TypeConverterOptions options, string value)
                 {
-                    return int.TryParse(value, out int i) && i > 0;
+                    return int.TryParse(value, out int i) && i == 2;
                 }
             }
         }
@@ -38,9 +39,10 @@ namespace HighWire16Stacks.Core
         public string   Name            { get; set; }
         public string   Desc            { get; set; }
         public int      Icon            { get; set; }
-        public int      IconRange       { get; set; }
+        public int      IconStack       { get; set; }
         public bool     IsDebuff        { get; set; }
         public bool     IsNonExpries    { get; set; }
+        public bool     IsFCBuff        { get; set; }
         public bool     IsStance        { get; set; }
 
         private bool? m_isChecked;

@@ -1,10 +1,8 @@
 {
-    "v": "v3.57 (2017.11.03.0000.0000(2867205, ex1:2017.10.27.0000.0000)",
-    "myid": "0x16C2FA0",
-    "count": 22,
-    "ptr": "0x18A6278",
-    "off": "0x0001850",
-    "count_target": 22,
-    "ptr_target": "0x16BEDB8",
-    "off_target": "0x0001850"
+  "v": "v4.05",
+  "ptr_target"   : "0x1785410",
+  "ptr_player"   : "0x17867C0",
+  "ptr_player_id": "0x17895A8",
+  "player_status_offset": "0x0001738",
+  "player_status_count": 21
 }
