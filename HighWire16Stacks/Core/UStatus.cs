@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace HighWire16Stacks.Core
@@ -78,7 +78,7 @@ namespace HighWire16Stacks.Core
                 this.m_isChecked = this.m_fstatus.IsChecked;
                 this.m_isOwn       = own;
 
-                this.m_isCount   = remain == 0 && this.FStatus.IconRange == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsStance));
+                this.m_isCount   = remain == 0 && this.FStatus.IconStack == 0 && (!this.m_fstatus.IsNonExpries || (param > 0 && !this.FStatus.IsStance));
 
                 this.m_fstatus.PropertyChanged += this.FStatus_PropertyChanged;
 
@@ -94,7 +94,7 @@ namespace HighWire16Stacks.Core
                 this.m_iconIndex = param;
                 this.m_icon = this.m_fstatus.Icon;
 
-                if (this.m_fstatus.IconRange > 0 && param <= this.m_fstatus.IconRange)
+                if (this.m_fstatus.IconStack > 0 && param <= this.m_fstatus.IconStack)
                     this.m_icon += param - 1;
             }
 
@@ -104,9 +104,9 @@ namespace HighWire16Stacks.Core
                 this.m_remain = param;
                 remainChanged = true;
             }
-            else if (!this.m_fstatus.IsNonExpries)
+            else if (!this.m_fstatus.IsFCBuff && !this.m_fstatus.IsNonExpries)
             {
-                this.m_remain = remain < 0 ? remain * -1: remain;
+                this.m_remain = remain < 0 ? remain * -1 : remain;
                 remainChanged = true;
             }
             else if (this.m_remain != 0)

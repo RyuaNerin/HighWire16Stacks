@@ -12,21 +12,12 @@ namespace HighWire16Stacks.Core
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var rv = reader.Value;
-            
-            if (rv is string sv)
-            {
-                if (sv.StartsWith("0x"))
-                    return Convert.ToInt32(sv.Substring(2), 16);
-                else
-                    return Convert.ToInt32(sv);
-            }
-            else if (rv is int iv)
-            {
-                return iv;
-            }
+            var v = reader.Value.ToString();
 
-            return null;
+            if (v.StartsWith("0x"))
+                return Convert.ToInt32(v.Substring(2), 16);
+
+            return Convert.ToInt32(v.ToString());
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -38,17 +29,17 @@ namespace HighWire16Stacks.Core
     [JsonObject]
     internal class MemoryOffset
     {
-        [JsonProperty(PropertyName = "player_id_offset")]
+        [JsonProperty(PropertyName = "ptr_target")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int PtrPlayerId { get; set; }
+        public int PtrTarget { get; set; }
 
         [JsonProperty(PropertyName = "ptr_player")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
         public int PtrPlayer { get; set; }
 
-        [JsonProperty(PropertyName = "ptr_target")]
+        [JsonProperty(PropertyName = "ptr_player_id")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
-        public int PtrTarget { get; set; }
+        public int PtrPlayerId { get; set; }
 
         [JsonProperty(PropertyName = "player_status_offset")]
         [JsonConverter(typeof(JsonHexToIntConverter))]
